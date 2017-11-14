@@ -13,3 +13,6 @@ Basically where I (Noisy) want to go with this project is to-
 
 3. Have a little fun. I'm not doing this project for no reason or to gain profit! I'm quite new to Github!
    I would love to see what other people have to say about the project and maybe even work with some people!
+
+
+Please request for Collaboration! 
