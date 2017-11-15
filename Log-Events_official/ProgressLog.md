@@ -1,5 +1,5 @@
 # 11/13/17: 
- *Program writing began. 
+* Program writing began. 
 # 11/14/17: 
 
 * Revised the Ciphersuite
