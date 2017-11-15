@@ -44,7 +44,7 @@ Module Ciphersuite
     If checkalf$ = checkdem$
       Debug "ENCODE OK."
       ;Forming an address list...
-      Rawdata$ = str(
+      Rawdata$ = str(PeekS(GenHex(*dem)))
     Else
       Debug "BAD ENCODE."
       MessageRequester("Internal Error","Failed to Generate a secure varification key.")
