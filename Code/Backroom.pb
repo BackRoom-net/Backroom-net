@@ -1,36 +1,71 @@
 ﻿;Code is really Incomplete... Just a jumbled mess.
-;I'm really working on it.
-
 
 
 OpenConsole("BackRoom 1.0")
 
-If ReadFile(1,"ClientData.bin")
-  OpenFile(1,"ClientData.bin")
-  While Not Eof(1)
-    
-  Wend
-Else
-  MessageRequester("Network Connection")
-EndIf
+;This is the next step.
+
+; If ReadFile(1,"ClientData.bin")
+;   OpenFile(1,"ClientData.bin")
+; ;   While Not Eof(1)
+; ;     
+; ;   Wend
+; Else
+;   MessageRequester("Network Connection")
+; EndIf
 
 
 
 
-Procedure CreateNetkey(*mem)
-  OpenCryptRandom()
-  *dem = AllocateMemory(128)
+
+DeclareModule Ciphersuite
+  Declare.i CreateNetkey(*mem)
+  Declare.i Decryptkey(*mem)
+EndDeclareModule
+
+Module Ciphersuite
+  
+ Procedure.i CreateNetkey(*mem,*hex,*raw)
+ OpenCryptRandom()
+ *dem = AllocateMemory(128)
+ *alf = AllocateMemory(128)
   CryptRandomData(*dem,16)
-  For i = 0 To 15
-      Text$ + " " + RSet(Hex(PeekB(*dem+i), #PB_Byte), 2, "0")
-    Next i
+  CopyMemory(*dem,*alf,128)
+  Debug PeekS(*dem,128,#PB_UTF8)
+  
     
     Base64Encoder(*dem,16,*mem,128)
-    Debug PeekS(*mem)
+    Base64Decoder(*mem,128,*alf,16)
+    Debug Text$
+    Debug PeekS(*mem,128,#PB_UTF8)
+    checkalf$ = PeekS(*alf,128,#PB_UTF8)
+    checkdem$ = PeekS(*Dem,128,#PB_UTF8)
+    If checkalf$ = checkdem$
+      Debug "ENCODE OK."
+    Else
+      Debug "BAD ENCODE."
+      MessageRequester("Internal Error","Failed to Generate a secure varification key.")
+    EndIf
+    
+  EndProcedure
+  
+  Procedure GenHex(*in,*Out)
+    For i = 0 To 15
+      Text$ + " " + RSet(Hex(PeekB(*in+i), #PB_Byte), 2, "0")
+    Next i
+    *Out = AllocateMemory(150)
+    PokeS(*Out,Text$)
+  EndProcedure
+  
+    
+Procedure.i Decryptkey(*mem)
+  If Base64Decoder(*mem,128,*alf,16)
+    
   
 EndProcedure
-
   
+  
+EndModule
 
 ; IDE Options = PureBasic 5.50 (Windows - x64)
 ; CursorPosition = 1
