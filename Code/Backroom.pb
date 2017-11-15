@@ -21,27 +21,30 @@ OpenConsole("BackRoom 1.0")
 DeclareModule Ciphersuite
   Declare.i CreateNetkey(*mem)
   Declare.i Decryptkey(*mem)
+  Declare.i Genhex(*in)
 EndDeclareModule
 
 Module Ciphersuite
   
- Procedure.i CreateNetkey(*mem,*hex,*raw)
+ Procedure.i CreateNetkey(*mem)
  OpenCryptRandom()
  *dem = AllocateMemory(128)
  *alf = AllocateMemory(128)
   CryptRandomData(*dem,16)
   CopyMemory(*dem,*alf,128)
   Debug PeekS(*dem,128,#PB_UTF8)
-  
-    
+   *hex = Genhex(*dem)
+   Hex$ = peeks(*hex,150,#PB_Utf8)
     Base64Encoder(*dem,16,*mem,128)
     Base64Decoder(*mem,128,*alf,16)
-    Debug Text$
+    Debug Hex$
     Debug PeekS(*mem,128,#PB_UTF8)
     checkalf$ = PeekS(*alf,128,#PB_UTF8)
     checkdem$ = PeekS(*Dem,128,#PB_UTF8)
     If checkalf$ = checkdem$
       Debug "ENCODE OK."
+      ;Forming an address list...
+      Rawdata$ = str(
     Else
       Debug "BAD ENCODE."
       MessageRequester("Internal Error","Failed to Generate a secure varification key.")
@@ -49,12 +52,14 @@ Module Ciphersuite
     
   EndProcedure
   
-  Procedure GenHex(*in,*Out)
+  Procedure.i GenHex(*in)
     For i = 0 To 15
       Text$ + " " + RSet(Hex(PeekB(*in+i), #PB_Byte), 2, "0")
     Next i
     *Out = AllocateMemory(150)
     PokeS(*Out,Text$)
+    Freememory(*in)
+   Procedurereturn *out
   EndProcedure
   
     
