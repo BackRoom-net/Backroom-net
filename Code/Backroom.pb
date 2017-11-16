@@ -2,7 +2,6 @@
 ;However! Its time to annotate!!
 
 
-
  Declare.s CreateNetkey(*mem)
   Declare.i Decryptkey(*mem)
   Declare.i Genhex(*in)
@@ -94,9 +93,9 @@ Debug PeekS(*Alocmem,128,#PB_UTF8)
   EndProcedure
   
     
-Procedure.i Decryptkey(*mem)
+Procedure.i Decryptkey(*mem) ;Not working!!
   If Base64Decoder(*mem,128,*alf,16)
-    
+    ;Not working!!
   EndIf
   
 EndProcedure
@@ -105,8 +104,7 @@ EndProcedure
 
 
 ; IDE Options = PureBasic 5.50 (Windows - x64)
-; CursorPosition = 14
-; FirstLine = 4
-; Folding = -
+; CursorPosition = 3
+; Folding = 5
 ; EnableUnicode
 ; EnableXP
