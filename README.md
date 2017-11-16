@@ -15,7 +15,7 @@ Basically where I (Noisy) want to go with this project is to-
    I would love to see what other people have to say about the project and maybe even work with some people!
 
 
-Please request for Collaboration! 
+Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 # Purebasic
 
