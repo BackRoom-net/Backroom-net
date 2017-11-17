@@ -19,4 +19,4 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 # Purebasic
 
-This program is being developed under Purebasic 5.50!
+This program is being developed under Purebasic 5.60!
