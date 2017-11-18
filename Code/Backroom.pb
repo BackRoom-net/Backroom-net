@@ -1,5 +1,8 @@
-﻿;Code is really Incomplete... Just a jumbled mess.
-;However! Its time to annotate!!
+﻿;   Description: Main Program
+;        Author: Ruben Rodriguez
+;          Date: 11/13/17
+;            OS: Windows
+
 IncludeFile "Modul_NetworkData.pbi"
  Declare.s CreateNetkey(*mem)
  Declare.i Decryptkey(*mem)
@@ -130,7 +133,7 @@ Procedure.i AESEncodeHEX(*mem)
     
 
 ; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 21
+; CursorPosition = 4
 ; Folding = -
 ; EnableXP
 ; EnableUnicode
