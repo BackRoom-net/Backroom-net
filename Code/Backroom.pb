@@ -1,5 +1,6 @@
 ﻿;Code is really Incomplete... Just a jumbled mess.
 ;However! Its time to annotate!!
+IncludeFile "Modul_NetworkData.pbi"
  Declare.s CreateNetkey(*mem)
  Declare.i Decryptkey(*mem)
  Declare.i Genhex(*in)
@@ -8,27 +9,23 @@
  Global *Alocmem, *dem, memlen, Basekeydecode         ;Test for The encrypt key!
  
  *Alocmem = AllocateMemory(128)           ; Litterly nothing else works! ;This memory should always be set to 128 Bytes to avoid overflow.
+ *Network = AllocateMemory(5000)
  
  ; All our main Stuff right here.
  Hex$ = CreateNetkey(*Alocmem)            ; Will create a key inside the memory we specified.
  Base64key$ = PeekS(*Alocmem,128,#PB_UTF8)
  Basekeydecode = Decryptkey(*Alocmem)
- AESEncodeHEX(*Alocmem)
+ Debug PeekS(Basekeydecode,128,#PB_UTF8)
+ Debug AESEncodeHEX(*Alocmem)
+ 
+ UseModule NetworkData
+; Big improvements coming soon!! 
+
+ 
+ Input()
  
                                      
  
- 
- 
-;This is the next step.
-
-; If ReadFile(1,"ClientData.bin")
-;   OpenFile(1,"ClientData.bin")
-; ;   While Not Eof(1)
-; ;     
-; ;   Wend
-; Else
-;   MessageRequester("Network Connection")
-; EndIf
 
 
 
@@ -48,7 +45,7 @@
  
  ; Copy that over and Debug its Contents into the IDE Debug window.
   CopyMemory(*dem,*alf,128)
-  ;Debug PeekS(*dem,128,#PB_UTF8)
+  Debug PeekS(*dem,128,#PB_UTF8)
   ;
   
   ; after that we will generate the Hex value of that memory.
@@ -60,15 +57,17 @@
   
   ; Read that into a variable.
   Hex$ = PeekS(*hex)
-  ;Debug Hex$ ; Debug the value.
+  Debug Hex$ ; Debug the value.
   
     ; We will now input the *dem (Random Block) into a Base64 encoder.
-    Base64Encoder(*dem,16,*mem,128)
-    Base64Decoder(*mem,128,*alf,16)
+    Base$ = Base64Encoder(*dem,16)
+    PokeS(*mem,Base$)
+    Base64Decoder(Base$,*alf,16)
     ; This basically just encodes and decodes the random block.
     
     ; We will debug 
-    ;Debug PeekS(*mem,128,#PB_UTF8)
+    Debug PeekS(*mem,128,#PB_UTF8)
+    Debug PeekS(*dem,128,#PB_UTF8)
     ; The we will put the Encoded data and the decoded data into variables to check!
     checkalf$ = PeekS(*alf,128,#PB_UTF8)
     checkdem$ = PeekS(*Dem,128,#PB_UTF8)
@@ -100,9 +99,10 @@
   EndProcedure
      
   Procedure.i Decryptkey(*mem) 
-  *alf = AllocateMemory(16)
+    *alf = AllocateMemory(16)
+    Todecodfe$ = PeekS(*mem)
   If *mem
-    If Base64Decoder(*mem,128,*alf,16)
+    If Base64Decoder(Todecodfe$,*alf,16)
       ;Debug "Decode OK."
     EndIf
   EndIf
@@ -110,11 +110,11 @@
 EndProcedure
   
 Procedure.i AESEncodeHEX(*mem)
-  *Aes = AllocateMemory(64)   ;problems happen here...
+  *Aes = AllocateMemory(512)   ;problems happen here...
   If *mem
     If AESEncoder(*mem,*Aes,150,*Alocmem,256,Basekeydecode,#PB_Cipher_CBC)
       Debug "AES DATA--"
-      Debug PeekS(*Aes)
+      Debug PeekS(*Aes,150,#PB_UTF8)
       Debug "AES DATA--"
     Else
       MessageRequester("AES-Error","Hmm... AES Couldn't encode the Base key...")
@@ -124,13 +124,13 @@ Procedure.i AESEncodeHEX(*mem)
     MessageRequester("AES-Error","Hmm... AES Memory Block invalid.")
     End
   EndIf
+  ProcedureReturn *Aes
   EndProcedure
   ;---
     
 
-; IDE Options = PureBasic 5.50 (Windows - x64)
-; CursorPosition = 113
-; FirstLine = 6
-; Folding = 5
-; EnableUnicode
+; IDE Options = PureBasic 5.60 (Windows - x64)
+; CursorPosition = 21
+; Folding = -
 ; EnableXP
+; EnableUnicode
