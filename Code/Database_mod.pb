@@ -17,8 +17,12 @@ EndDeclareModule
 Module SQLDatabase
   Declare Logfinal(*Logmemory)
   Declare Logt(Subsystem$,Text$)
-  
-  Procedure initLogging(Setting,Directory$)
+  Structure DatabaseList
+    Path.s
+  EndStructure
+  NewMap Database.DatabaseList().i
+  ;------------------------------------
+Procedure initLogging(Setting,Directory$)
 
     If Setting
       If Directory$ = "" Or Directory$ = " "
@@ -51,9 +55,11 @@ Module SQLDatabase
           ProcedureReturn #True
         Case 2
           Logmode.i = 2 ;extended
+          Logt("InitLogging","Logging set to 2")
           ProcedureReturn #True
         Case 3
           Logmode.i = 3 ;Only on error
+          Logt("InitLogging","Logging set to error only.")
           ProcedureReturn #True
       EndSelect
     EndIf
@@ -63,41 +69,35 @@ Module SQLDatabase
   EndIf
   EndProcedure
   
-  Procedure Logt(Subsystem$,Text$)
-    Debug "Logt------"
+Procedure Logt(Subsystem$,Text$)
+    If logmode > 0
   *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
-  Debug PokeS(*logmemory,Subsystem$+": "+Text$)
-  Debug *logmemory
-  Debug "thread----"
+  PokeS(*logmemory,Subsystem$+": "+Text$)
   logtl = CreateThread(@Logfinal(),*logmemory)
-  WaitThread(logtl)
-  Debug PeekS(*logmemory)
+EndIf
+
 EndProcedure
 
 Procedure Logfinal(*logmemory)
   tofile$ = PeekS(*logmemory)
-  Debug tofile$
   
   
   Date$ = FormatDate("%yy.%mm.%dd", Date())
   Time$ = FormatDate("%hh:%ii:%ss", Date())
   
   LockMutex(Log)
-  Debug OpenFile(1,logdir+Date$+".log",#PB_File_Append)
-  Debug Logdir
+  OpenFile(1,logdir+Date$+".log",#PB_File_Append)
   WriteStringN(1,Time$+":"+tofile$)
   CloseFile(1)
   UnlockMutex(Log)
-  ReAllocateMemory(*logmemory,12)
-  PokeS(*Logmemory,"1")
 EndProcedure
-  
+;------------------------------------
+Procedure initdatabase(database,
   
   
 EndModule
 
 ; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 63
-; Folding = --
+; CursorPosition = 22
+; Folding = H-
 ; EnableXP
