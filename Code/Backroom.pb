@@ -3,7 +3,8 @@
 ;          Date: 11/13/17
 ;            OS: Windows
 
-IncludeFile "Modul_NetworkData.pbi"
+IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\Modul_NetworkData.pbi"
+IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\Database_mod.pb"
  Declare.s CreateNetkey(*mem)
  Declare.i Decryptkey(*mem)
  Declare.i Genhex(*in)
@@ -133,7 +134,8 @@ Procedure.i AESEncodeHEX(*mem)
     
 
 ; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 4
-; Folding = -
+; CursorPosition = 6
+; FirstLine = 1
+; Folding = w
 ; EnableXP
 ; EnableUnicode
