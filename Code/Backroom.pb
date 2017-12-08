@@ -12,7 +12,8 @@ IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\
  OpenConsole("BackRoom 1.0")
  Global *Alocmem, *dem, memlen, Basekeydecode         ;Test for The encrypt key!
  
- *Alocmem = AllocateMemory(128)           ; Litterly nothing else works! ;This memory should always be set to 128 Bytes to avoid overflow.
+ *Alocmem = AllocateMemory(128)           ; Litterly nothing else works! 
+                                          ;This memory should always be set to 128 Bytes to avoid overflow.
  *Network = AllocateMemory(5000)
  
  ; All our main Stuff right here.
@@ -23,6 +24,7 @@ IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\
  Debug AESEncodeHEX(*Alocmem)
  
  UseModule NetworkData
+ UseModule SQLDatabase
 ; Big improvements coming soon!! 
 
  
@@ -134,8 +136,7 @@ Procedure.i AESEncodeHEX(*mem)
     
 
 ; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 6
-; FirstLine = 1
+; CursorPosition = 26
 ; Folding = w
 ; EnableXP
 ; EnableUnicode
