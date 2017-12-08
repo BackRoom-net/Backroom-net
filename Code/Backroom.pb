@@ -1,7 +1,7 @@
 ﻿;   Description: Main Program
 ;        Author: Ruben Rodriguez
 ;          Date: 11/13/17
-;            OS: Windows
+;            OS: Windows/XP/Vista/7/10
 
 IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\Modul_NetworkData.pbi"
 IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\Database_mod.pb"
