@@ -4,7 +4,7 @@ UseModule SQLDatabase
 Input()
 SQLdatabase::Initlogging(1,"")
 Input()
-SQLdatabase::Initdatabase(1,"Main.sqlite")
+SQLdatabase::Initdatabase(1,":memory:")
 
 
 ; IDE Options = PureBasic 5.60 (Windows - x64)

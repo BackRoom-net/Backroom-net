@@ -90,14 +90,27 @@ Procedure Logfinal(*logmemory)
 EndProcedure
 ;------------------------------------
 Procedure.i initdatabase(database,Name$)
+ If Name$ = ":memory:"
+   If OpenDatabase(database,Name$, "", "")
+     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
+       Debug "Memory table created"
+    EndIf
+  Else
+    ProcedureReturn #False
+  EndIf
+  Else
   If CreateFile(0,Name$)
     CloseFile(0)
   EndIf 
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
     EndIf
+  Else
+    ProcedureReturn #False
   EndIf
-      
+EndIf
+
+ProcedureReturn #True
 EndProcedure
 
   
@@ -107,8 +120,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 41
-; Folding = P-
+; CursorPosition = 95
+; FirstLine = 42
+; Folding = u-
 ; EnableThread
 ; EnableXP
