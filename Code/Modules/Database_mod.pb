@@ -1,13 +1,15 @@
-﻿CompilerIf #PB_Compiler_Thread <> 1
-  CompilerError "Use Compiler option - Threadsafe!"
-CompilerEndIf
+﻿; CompilerIf #PB_Compiler_Thread <> 1
+;   CompilerError "Use Compiler option - Threadsafe!"
+; CompilerEndIf
 
 DeclareModule SQLDatabase
+  UseSQLiteDatabase()
   Global db = CreateMutex()
   Global Log = CreateMutex()
   Global Logmode.i
   Global Logdir.s
   Declare initLogging(Setting,Directory$)
+  Declare.i initdatabase(database,Name$)
  
 
 EndDeclareModule
@@ -17,10 +19,6 @@ EndDeclareModule
 Module SQLDatabase
   Declare Logfinal(*Logmemory)
   Declare Logt(Subsystem$,Text$)
-  Structure DatabaseList
-    Path.s
-  EndStructure
-  NewMap Database.DatabaseList().i
   ;------------------------------------
 Procedure initLogging(Setting,Directory$)
 
@@ -43,11 +41,7 @@ Procedure initLogging(Setting,Directory$)
         EndIf
       Else
         set:
-        If FileSize(Logdir+"Sqlog.log") = -1
-          CreateFile(1,Logdir+"Sqlog.log")
-        Else
-          Debug FileSize(Logdir+"Sqlog.log")
-        EndIf
+
       Select Setting
         Case 1
           Logmode.i = 1 ;general
@@ -74,30 +68,47 @@ Procedure Logt(Subsystem$,Text$)
   *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
   PokeS(*logmemory,Subsystem$+": "+Text$)
   logtl = CreateThread(@Logfinal(),*logmemory)
+   WaitThread(logtl)
+   Debug "Done"
+  ;Logfinal(*logmemory)
 EndIf
 
 EndProcedure
 
 Procedure Logfinal(*logmemory)
+  If logmode > 0
   tofile$ = PeekS(*logmemory)
-  
-  
   Date$ = FormatDate("%yy.%mm.%dd", Date())
   Time$ = FormatDate("%hh:%ii:%ss", Date())
-  
   LockMutex(Log)
   OpenFile(1,logdir+Date$+".log",#PB_File_Append)
   WriteStringN(1,Time$+":"+tofile$)
   CloseFile(1)
   UnlockMutex(Log)
+  FreeMemory(*logmemory)
+  EndIf
 EndProcedure
 ;------------------------------------
-Procedure initdatabase(database,
-  
+Procedure.i initdatabase(database,Name$)
+  If CreateFile(0,Name$)
+    CloseFile(0)
+  EndIf 
+  If OpenDatabase(database,Name$, "", "")
+    If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
+    EndIf
+  EndIf
+      
+EndProcedure
+
   
 EndModule
 
+
+
+
 ; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 22
-; Folding = H-
+; CursorPosition = 101
+; FirstLine = 41
+; Folding = P-
+; EnableThread
 ; EnableXP
