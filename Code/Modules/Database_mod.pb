@@ -4,17 +4,15 @@
 
 DeclareModule SQLDatabase
   UseSQLiteDatabase()
-  Global db = CreateMutex()
   Global Log = CreateMutex()
   Global Logmode.i
   Global Logdir.s
+  Global SQLAccess = CreateMutex()
   Declare initLogging(Setting,Directory$)
   Declare.i initdatabase(database,Name$)
  
 
 EndDeclareModule
-
-
 
 Module SQLDatabase
   Declare Logfinal(*Logmemory)
@@ -68,9 +66,6 @@ Procedure Logt(Subsystem$,Text$)
   *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
   PokeS(*logmemory,Subsystem$+": "+Text$)
   logtl = CreateThread(@Logfinal(),*logmemory)
-   WaitThread(logtl)
-   Debug "Done"
-  ;Logfinal(*logmemory)
 EndIf
 
 EndProcedure
@@ -113,15 +108,100 @@ EndIf
 ProcedureReturn #True
 EndProcedure
 
+EndModule
+
+DeclareModule SQFormat
+  Global Str$
+  Global SQLT = CreateMutex()
+  Declare.s SQFCreateTable(Str$,Name$)
+  Declare.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique)
+  Declare.s SQFOpen(Str$)
+  Declare.s SQFClose(Str$)
+  Declare.i SQLCommit(Database,Str$)
+EndDeclareModule
+
+Module SQFormat
+  Global Str$
+  Declare SqlDbUpdate(*DbMem)
+  
+  Procedure.s SQFCreateTable(Str$,Name$)
+    SQLForm$ = "CREATE TABLE "
+    Str$ = SQLForm$+"'"+Name$+"'"
+    ProcedureReturn Str$
+  EndProcedure
+  
+  Procedure.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique)
+    Select type
+      Case 1
+        SQT$ = "INTEGER"
+      Case 2
+        SQT$ = "TEXT"
+      Case 3
+        SQT$ = "BLOB"
+      Case 4
+        SQT$ = "REAL"
+      Case 5
+        SQT$ = "NUMERIC"
+    EndSelect
+    SQMatt$ = "'"+Name$+"' "+SQT$+" "
+    If Notnull = 1
+      SQMatt$ = SQMatt$+"NOT NULL "
+    EndIf  
+   If PK = 1 And AI = 1
+      SQmatt$ = SQMatt$+"PRIMARY KEY AUTOINCREMENT "
+    Else
+    If PK = 1
+      SQmatt$ = SQMatt$+"PRIMARY KEY "
+    ElseIf AI = 1
+      SQmatt$ = SQMatt$+"PRIMARY KEY AUTOINCREMENT "
+    EndIf
+  EndIf
+  Str$ = Str$+Chr(10)+SQmatt$
+  ProcedureReturn Str$  
+  EndProcedure
+  
+  Procedure.s SQFOpen(Str$)
+    Str$ = Str$+" ("
+    ProcedureReturn Str$
+  EndProcedure
+  
+  Procedure.s SQFClose(Str$)
+    Str$ = Str$+");"
+    ProcedureReturn Str$
+  EndProcedure
+  
+  Procedure.i SQLCommit(Database,Str$)
+    ByteLen = StringByteLength(Str$+"/*/-^#*"+Str(Database))
+    Str$ = Str$+"/*/-^#*"+Str(Database)
+    *DbMem = AllocateMemory(500)
+    PokeS(*DbMem,Str$)
+    Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
+    ProcedureReturn *DbMem
+  EndProcedure
+  
+  Procedure SQLDbUpdate(*DbMem)
+    Str$ = PeekS(*Dbmem)
+    Dbc$ = StringField(Str$,1,"/*/-^#*")
+    Db$ = StringField(Str$,2,"/*/-^#*")
+    LockMutex(SQLT)
+    stat = DatabaseUpdate(Val(Db$),Dbc$)
+    FreeMutex(SQLT)
+    FillMemory(*Dbmem,500)
+    PokeI(*DbMem,stat)
+  EndProcedure
   
 EndModule
 
 
 
 
-; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 95
-; FirstLine = 42
-; Folding = u-
+
+
+
+
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 187
+; FirstLine = 9
+; Folding = hj-
 ; EnableThread
 ; EnableXP
