@@ -176,18 +176,16 @@ Module SQFormat
     *DbMem = AllocateMemory(500)
     PokeS(*DbMem,Str$)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
-    ProcedureReturn *DbMem
   EndProcedure
   
   Procedure SQLDbUpdate(*DbMem)
+    LockMutex(SQLT)
     Str$ = PeekS(*Dbmem)
     Dbc$ = StringField(Str$,1,"/*/-^#*")
     Db$ = StringField(Str$,2,"/*/-^#*")
-    LockMutex(SQLT)
     stat = DatabaseUpdate(Val(Db$),Dbc$)
-    FreeMutex(SQLT)
-    FillMemory(*Dbmem,500)
-    PokeI(*DbMem,stat)
+    FreeMemory(*DbMem)
+    UnlockMutex(SQLT)
   EndProcedure
   
 EndModule
@@ -200,8 +198,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 187
-; FirstLine = 9
-; Folding = hj-
+; CursorPosition = 177
+; FirstLine = 12
+; Folding = CC-
 ; EnableThread
 ; EnableXP
