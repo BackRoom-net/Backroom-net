@@ -12,63 +12,107 @@
   Declare ProformaEraseInst(Instance$)
   Declare SpillProforma()
   Declare.i NextProformaTick()
+  Declare.i ProformaSpillResult(Instance$)
   Global NewMap Proforma.Proforma_Strc(5012)
 EndDeclareModule
 
 Module Proforma
   
   Procedure.i NextProformaTick()
-    While Proforma() 
+    ForEach Proforma()
       Debug Proforma() \Tick
       Tick = Proforma() \Tick
-      If NextMapElement(Proforma())
-      Else
-        Goto Noelement
+      If Tick > FinalTick
+        FinalTick = Tick
       EndIf
-    Wend
-    Noelement:
-    Debug "End Tick: "+Tick
-    Tick+1
-    Debug "Next Tick: "+Tick
-    ProcedureReturn Tick
+    Next
+    
+    Debug "End Tick: "+FinalTick
+    FinalTick+1
+    Debug "Next Tick: "+FinalTick
+    ProcedureReturn FinalTick
   
   EndProcedure
   
 Procedure ProformaS(Instance$)
-    
+  If Proforma(Instance$)
+    Time = ElapsedMilliseconds()
+    Proforma() \Start = Time
+    ProcedureReturn #True
+  Else
+    ProcedureReturn #False
+  EndIf
 EndProcedure
   
 Procedure ProformaE(Instance$)
-    
+  If proforma(Instance$)
+    ETime = ElapsedMilliseconds()
+    STime = Proforma(Instance$) \Start
+    TTime = ETime-STime
+    Proforma(Instance$) \Stop = Stime
+    Proforma(Instance$) \Sum = TTime
+    ProcedureReturn TTime
+  Else
+    ProcedureReturn #False
+  EndIf
 EndProcedure
     
 Procedure PromormaMakeInst(Instance$)
-  Proforma(Instance$) \tick = 0
   Tickplace = NextProformaTick()
   Proforma(Instance$) \tick = Tickplace
 EndProcedure
 
 Procedure ProformaEraseInst(Instance$)
-    
+  If Proforma(Instance$)
+    If DeleteMapElement(Proforma(),Instance$)
+      ProcedureReturn #False
+    Else
+      ProcedureReturn #True
+    EndIf
+  Else
+    ProcedureReturn #False
+  EndIf
 EndProcedure
 
 Procedure SpillProforma()
-    
+  ; I will make this part later
+  ;
+  ; This is just suppose to 
+  ; Dump the contents of Proforma
+  ; Into memory or something. 
+  ;
 EndProcedure
+
+Procedure.i ProformaSpillResult(Instance$)
+  If proforma(Instance$)
+     Result = Proforma(Instance$) \Sum
+    Else
+    ProcedureReturn #False
+  EndIf
+  ProcedureReturn Result
+EndProcedure
+
   
   
 EndModule
 
 OpenConsole()
-
+Input()
 UseModule proforma
 PromormaMakeInst("Start")
 PromormaMakeInst("Middle")
 PromormaMakeInst("End")
+
+ProformaS("End")
+ProformaEraseInst("Start")
+Debug ProformaE("End")
+Debug ProformaSpillResult("End")
+ProformaEraseInst("Middle")
+ProformaEraseInst("End")
 NextProformaTick()
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 62
-; FirstLine = 23
-; Folding = --
+; CursorPosition = 110
+; FirstLine = 7
+; Folding = D5
 ; EnableXP
