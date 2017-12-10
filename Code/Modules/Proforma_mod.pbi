@@ -8,7 +8,7 @@
   Global ProformaAccess = CreateMutex()
   Declare ProformaS(Instance$)
   Declare ProformaE(Instance$)
-  Declare PromormaMakeInst(Instance$)
+  Declare ProformaMakeInst(Instance$)
   Declare ProformaEraseInst(Instance$)
   Declare SpillProforma()
   Declare.i NextProformaTick()
@@ -57,7 +57,7 @@ Procedure ProformaE(Instance$)
   EndIf
 EndProcedure
     
-Procedure PromormaMakeInst(Instance$)
+Procedure ProformaMakeInst(Instance$)
   Tickplace = NextProformaTick()
   Proforma(Instance$) \tick = Tickplace
 EndProcedure
@@ -94,6 +94,6 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 93
-; Folding = D5
+; CursorPosition = 10
+; Folding = j5
 ; EnableXP
