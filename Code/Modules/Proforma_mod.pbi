@@ -92,27 +92,8 @@ Procedure.i ProformaSpillResult(Instance$)
   ProcedureReturn Result
 EndProcedure
 
-  
-  
 EndModule
-
-OpenConsole()
-Input()
-UseModule proforma
-PromormaMakeInst("Start")
-PromormaMakeInst("Middle")
-PromormaMakeInst("End")
-
-ProformaS("End")
-ProformaEraseInst("Start")
-Debug ProformaE("End")
-Debug ProformaSpillResult("End")
-ProformaEraseInst("Middle")
-ProformaEraseInst("End")
-NextProformaTick()
-
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 110
-; FirstLine = 7
+; CursorPosition = 93
 ; Folding = D5
 ; EnableXP
