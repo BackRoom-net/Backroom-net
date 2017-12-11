@@ -19,9 +19,10 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 # Purebasic
 
-This program is being developed under Purebasic 5.60!
+This program is being developed under PureBasic 5.61 (Windows - x64)
+Purebasic 5.60 Code has been fixed!!
 
-UPDATE:
+12/1/17: RESOLVED
 Purebasic 5.60 Is Not currently working correctly. Working on getting the newest version 5.62 because 
 Apparently 5.60 has a libary issue with Threaded applications. Basically, You wont be able to run a thread
 without Using:
