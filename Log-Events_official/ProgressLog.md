@@ -40,4 +40,28 @@
 * Edited some things in the Networking module to experiment with it.
 * the example files work with the module so compile it and check it out!
 
+# 11/19/17
+
+* Added a Third party module to handle network transactions
+
+# 11/20/17
+
+* Created a deticated Sqlite Database Access module
+
+# 11/23/17
+
+* Added features to the database access module!
+* +Logging feature was added
+* +Database Threaded access was added
+
+# 12/7/17
+
+* Database Module is slightly working now
+* Can make an SQL database now!
+* Changed required compiler includes to The Testing program.
+
+# WHY IS THIS A THING?!
+
+Actually, I don't need this. Why Am I keeping up with this...?
+
 
