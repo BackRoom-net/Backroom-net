@@ -10,7 +10,6 @@ DeclareModule SQLDatabase
   Global SQLAccess = CreateMutex()
   Declare initLogging(Setting,Directory$)
   Declare.i initdatabase(database,Name$)
- 
 
 EndDeclareModule
 
@@ -114,7 +113,7 @@ DeclareModule SQFormat
   Global Str$
   Global SQLT = CreateMutex()
   Declare.s SQFCreateTable(Str$,Name$)
-  Declare.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique)
+  Declare.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique,Comma)
   Declare.s SQFOpen(Str$)
   Declare.s SQFClose(Str$)
   Declare.i SQLCommit(Database,Str$)
@@ -123,14 +122,14 @@ EndDeclareModule
 Module SQFormat
   Global Str$
   Declare SqlDbUpdate(*DbMem)
-  
+  ;-------- Table Functions
   Procedure.s SQFCreateTable(Str$,Name$)
     SQLForm$ = "CREATE TABLE "
     Str$ = SQLForm$+"'"+Name$+"'"
     ProcedureReturn Str$
   EndProcedure
   
-  Procedure.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique)
+  Procedure.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique,Comma)
     Select type
       Case 1
         SQT$ = "INTEGER"
@@ -157,6 +156,9 @@ Module SQFormat
     EndIf
   EndIf
   Str$ = Str$+Chr(10)+SQmatt$
+  If comma = 1
+    Str$ = Str$ + ","
+  EndIf
   ProcedureReturn Str$  
   EndProcedure
   
@@ -166,7 +168,7 @@ Module SQFormat
   EndProcedure
   
   Procedure.s SQFClose(Str$)
-    Str$ = Str$+");"
+    Str$ = Str$+Chr(10)+");"
     ProcedureReturn Str$
   EndProcedure
   
@@ -176,8 +178,15 @@ Module SQFormat
     *DbMem = AllocateMemory(500)
     PokeS(*DbMem,Str$)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
+    ProcedureReturn Thread
+  EndProcedure
+  ;-------- Table Functions
+  ;-------- Input Functions
+  Procedure.i SQLInsert(Table$,Column_s$,Value_s$)
+    
   EndProcedure
   
+
   Procedure SQLDbUpdate(*DbMem)
     LockMutex(SQLT)
     Str$ = PeekS(*Dbmem)
@@ -190,6 +199,36 @@ Module SQFormat
   
 EndModule
 
+DeclareModule SQuery
+
+EndDeclareModule
+
+Module SQuery
+  
+  Procedure.s SQLQuerySelect(Database,Columns$,Table$,Column)
+    DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+";")
+    While NextDatabaseRow(0)
+        gotdat$ = GetDatabaseString(Database,Column)
+      Wend
+      ProcedureReturn gotdat$
+    EndProcedure
+    
+  
+    Procedure.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column)
+    DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+" WHERE "+WhereRow$+"="+WhereValue$+";")
+    While NextDatabaseRow(0)
+        gotdat$ = GetDatabaseString(Database,Column)
+      Wend
+      ProcedureReturn gotdat$
+  EndProcedure
+
+
+EndModule
+
+
+
+
+
 
 
 
@@ -198,8 +237,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 12
-; Folding = CC-
+; CursorPosition = 185
+; FirstLine = 18
+; Folding = AD7-
 ; EnableThread
 ; EnableXP
