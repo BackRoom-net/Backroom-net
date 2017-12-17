@@ -172,7 +172,7 @@ Module SQFormat
   Procedure.i SQLCommit(Database,Str$)
     ByteLen = StringByteLength(Str$+"/*/-^#*"+Str(Database))
     Str$ = Str$+"/*/-^#*"+Str(Database)
-    *DbMem = AllocateMemory(500)
+    *DbMem = AllocateMemory(ByteLen)
     PokeS(*DbMem,Str$)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
     Str$ = ""
@@ -229,73 +229,90 @@ Module SQuery
 
 EndModule
 
-
+;---------------
+;---------------
+;---------------
 
 
 
 DeclareModule FileUtil
   CreateDirectory("FileTmp")
-  Declare SpredFile(File$)
+  Declare SpredFile(File$,*AESKey,*IniVector)
 EndDeclareModule
 
 Module FileUtil
   UseModule SQLDatabase
   UseModule SQFormat
-  Procedure SpredFile(File$)
+  Procedure SpredFile(File$,*AESKey,*IniVector)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
+    UseZipPacker()
     Initdatabase(1,"FileTmp\Info.db")
     Command$ = SQFCreatetable(Command$,"Files")
     Command$ = SQFOpen(Command$)
     Command$ = SQFMakefield(Command$,"Part",1,1,0,0,0,1)
     Command$ = SQFmakefield(Command$,"FileName",2,1,0,0,0,1)
+    Command$ = SQFMakeField(Command$,"IsCompressed",1,1,0,0,0,1)
     Command$ = SQFmakeField(Command$,"Checksum",2,1,0,0,0,0)
     Command$ = SQFClose(Command$)
     CommThread = SQLCommit(1,Command$)
     Debug command$
     Debug CommThread
     
-    
-    
-    
-    
-    
+  
 Size.i = 1024*4000
 Debug Size.i
-;--------------
+; --------------
 OpenFile(0,File$)
 FileSize.i = Lof(0)
 Parts.d = Filesize.i/Size.i
-;---------------
+; ---------------
 Debug Size.i
 Debug Parts.d
 Debug Round(Parts.d,#PB_Round_Up)
 Parts = Round(Parts.d,#PB_Round_Up)
 Debug filesize.i
-;---------------
-*Split = AllocateMemory(Size.i)
+
+
 WaitThread(CommThread)
 redo:
 Repeat
+  *Split = AllocateMemory(Size.i)
   Actread = ReadData(0,*Split,Size.i)
   FileFinger$ = Fingerprint(*Split,Actread,#PB_Cipher_CRC32)
   CheckSum$ = Fingerprint(*Split,ActRead,#PB_Cipher_SHA3)
   If FileSize(FileFinger$) = -1
-  OpenFile(2,"FileTmp\"+FileFinger$)
-    WriteData(2,*Split,Actread)
+    *Encoded = AllocateMemory(Actread+32)
+    *Compressed = AllocateMemory(Actread+32)
+    OpenFile(2,"FileTmp\"+FileFinger$)
+    Compdata = CompressMemory(*Split,Actread+32,*Compressed,Actread+32,#PB_PackerPlugin_Zip,9)
+    If Compdata = 0
+      Compdata = AESEncoder(*Split,*Encoded,Actread,*AESKey,256,*IniVector)
+    Else
+      Compressed = 1
+     AESEncoder(*Compressed,*Encoded,Actread,*AESKey,256,*IniVector)
+   EndIf
+   
+    
+    WriteData(2,*Encoded,Compdata)
     Partcount = Partcount+1
     CloseFile(2)
+    Compdata = 0
   Else
     MessageRequester("Internal Error","CRC32 Data match. Internal error, Parts: "+Str(Partcount))
     End
   EndIf
+  Debug "Compressed: "+Compressed
   
-  Form$ = SQLInsert(Form$,"Files","Part,FileName,Checksum","'"+Str(Partcount)+"','"+FileFinger$+"','"+CheckSum$+"'",1)
+  Form$ = SQLInsert(Form$,"Files","Part,FileName,IsCompressed,Checksum","'"+Str(Partcount)+"','"+FileFinger$+"','"+Str(Compressed)+"','"+CheckSum$+"'",1)
+  Compressed = 0
   SQLCommit(1,Form$)
   Form$ = ""
-  
+  FreeMemory(*Split)
+  FreeMemory(*Compressed)
+  FreeMemory(*Encoded)
 Until Eof(0)
-FreeMemory(*Split)
+
 
     
     
@@ -309,7 +326,10 @@ FreeMemory(*Split)
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 282
-; FirstLine = 39
-; Folding = 99n-
+; CursorPosition = 304
+; FirstLine = 108
+; Folding = 9+n-
+; EnableThread
 ; EnableXP
+; Executable = ..\Testing modules\Filetest.exe
+; Warnings = Error
