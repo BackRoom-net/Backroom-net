@@ -113,12 +113,13 @@ DeclareModule SQFormat
   Declare.s SQFOpen(Str$)
   Declare.s SQFClose(Str$)
   Declare.i SQLCommit(Database,Str$)
+  Declare.s SQLInsert(Str$,Table$,Column_s$,Value_s$,Close)
 EndDeclareModule
 
 Module SQFormat
   Global Str$
-  Declare SqlDbUpdate(*DbMem)
-  
+  Declare SQLDbUpdate(*DbMem)
+  ;-------- Table Functions
   Procedure.s SQFCreateTable(Str$,Name$)
     SQLForm$ = "CREATE TABLE "
     Str$ = SQLForm$+"'"+Name$+"'"
@@ -174,6 +175,7 @@ Module SQFormat
     *DbMem = AllocateMemory(500)
     PokeS(*DbMem,Str$)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
+    Str$ = ""
     ProcedureReturn Thread
   EndProcedure
   
@@ -186,7 +188,45 @@ Module SQFormat
     FreeMemory(*DbMem)
     UnlockMutex(SQLT)
   EndProcedure
+  ;-------- Table Functions
+  ;-------- Input Functions
+  Procedure.s SQLInsert(Str$,Table$,Column_s$,Value_s$,Close)
+    Str$ = Str$+"INSERT INTO "+Table$+" ("+Column_s$+") VALUES ("+Value_s$+")"
+    If Close = 1
+      Str$ = Str$+";"
+    Else
+      Str$ = Str$+","+Chr(10)
+    EndIf
+    ProcedureReturn Str$
+  EndProcedure
   
+  
+EndModule
+
+DeclareModule SQuery
+
+EndDeclareModule
+
+Module SQuery
+  
+  Procedure.s SQLQuerySelect(Database,Columns$,Table$,Column)
+    DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+";")
+    While NextDatabaseRow(0)
+        gotdat$ = GetDatabaseString(Database,Column)
+      Wend
+      ProcedureReturn gotdat$
+    EndProcedure
+    
+  
+    Procedure.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column)
+    DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+" WHERE "+WhereRow$+"="+WhereValue$+";")
+    While NextDatabaseRow(0)
+        gotdat$ = GetDatabaseString(Database,Column)
+      Wend
+      ProcedureReturn gotdat$
+  EndProcedure
+
+
 EndModule
 
 
@@ -194,7 +234,7 @@ EndModule
 
 
 DeclareModule FileUtil
-  CreateDirectory("FileSpreadTmp")
+  CreateDirectory("FileTmp")
   Declare SpredFile(File$)
 EndDeclareModule
 
@@ -202,12 +242,14 @@ Module FileUtil
   UseModule SQLDatabase
   UseModule SQFormat
   Procedure SpredFile(File$)
-    
-    Initdatabase(1,"FileSpreadTmp\Info.db")
+    UseCRC32Fingerprint()
+    UseSHA3Fingerprint()
+    Initdatabase(1,"FileTmp\Info.db")
     Command$ = SQFCreatetable(Command$,"Files")
     Command$ = SQFOpen(Command$)
     Command$ = SQFMakefield(Command$,"Part",1,1,0,0,0,1)
-    Command$ = SQFmakefield(Command$,"FileName",2,1,0,0,0,0)
+    Command$ = SQFmakefield(Command$,"FileName",2,1,0,0,0,1)
+    Command$ = SQFmakeField(Command$,"Checksum",2,1,0,0,0,0)
     Command$ = SQFClose(Command$)
     CommThread = SQLCommit(1,Command$)
     Debug command$
@@ -235,22 +277,23 @@ Debug filesize.i
 WaitThread(CommThread)
 redo:
 Repeat
-  TmpFile$ = "FileSpreadTmp\"+Str(Random(9999999,0))
-  If FileSize(TmpFile$) <> -1
-    Goto redo
-  Else
- If OpenFile(2,TmpFile$)
-    Actread = ReadData(0,*Split,Size.i)
+  Actread = ReadData(0,*Split,Size.i)
+  FileFinger$ = Fingerprint(*Split,Actread,#PB_Cipher_CRC32)
+  CheckSum$ = Fingerprint(*Split,ActRead,#PB_Cipher_SHA3)
+  If FileSize(FileFinger$) = -1
+  OpenFile(2,"FileTmp\"+FileFinger$)
     WriteData(2,*Split,Actread)
     Partcount = Partcount+1
     CloseFile(2)
-    FillMemory(*Split,Size.i)
- Else
- MessageRequester("Error","Could not read data from file")
- End
-EndIf
-EndIf
-
+  Else
+    MessageRequester("Internal Error","CRC32 Data match. Internal error, Parts: "+Str(Partcount))
+    End
+  EndIf
+  
+  Form$ = SQLInsert(Form$,"Files","Part,FileName,Checksum","'"+Str(Partcount)+"','"+FileFinger$+"','"+CheckSum$+"'",1)
+  SQLCommit(1,Form$)
+  Form$ = ""
+  
 Until Eof(0)
 FreeMemory(*Split)
 
@@ -266,7 +309,7 @@ FreeMemory(*Split)
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 234
-; FirstLine = 21
-; Folding = 998
+; CursorPosition = 282
+; FirstLine = 39
+; Folding = 99n-
 ; EnableXP

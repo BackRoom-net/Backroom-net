@@ -1,15 +1,15 @@
 ﻿OpenConsole()
-IncludeFile "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\FileUtil_mod.pbi"
+IncludeFile "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\FileUtil_mod.pbi"
 UseModule FileUtil
-Input()
 File$ = OpenFileRequester("Please Choose a file","","*.*",0)
+Input()
 SpredFile(File$)
 Input()
 
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 1
 ; EnableThread
 ; EnableXP
 ; Executable = J:\Filetest.exe
