@@ -117,11 +117,12 @@ DeclareModule SQFormat
   Declare.s SQFOpen(Str$)
   Declare.s SQFClose(Str$)
   Declare.i SQLCommit(Database,Str$)
+  Declare.s SQLInsert(Str$,Table$,Column_s$,Value_s$,Close)
 EndDeclareModule
 
 Module SQFormat
   Global Str$
-  Declare SqlDbUpdate(*DbMem)
+  Declare SQLDbUpdate(*DbMem)
   ;-------- Table Functions
   Procedure.s SQFCreateTable(Str$,Name$)
     SQLForm$ = "CREATE TABLE "
@@ -178,15 +179,10 @@ Module SQFormat
     *DbMem = AllocateMemory(500)
     PokeS(*DbMem,Str$)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
+    Str$ = ""
     ProcedureReturn Thread
   EndProcedure
-  ;-------- Table Functions
-  ;-------- Input Functions
-  Procedure.i SQLInsert(Table$,Column_s$,Value_s$)
-    
-  EndProcedure
   
-
   Procedure SQLDbUpdate(*DbMem)
     LockMutex(SQLT)
     Str$ = PeekS(*Dbmem)
@@ -196,6 +192,18 @@ Module SQFormat
     FreeMemory(*DbMem)
     UnlockMutex(SQLT)
   EndProcedure
+  ;-------- Table Functions
+  ;-------- Input Functions
+  Procedure.s SQLInsert(Str$,Table$,Column_s$,Value_s$,Close)
+    Str$ = Str$+"INSERT INTO "+Table$+" ("+Column_s$+") VALUES ("+Value_s$+")"
+    If Close = 1
+      Str$ = Str$+";"
+    Else
+      Str$ = Str$+","+Chr(10)
+    EndIf
+    ProcedureReturn Str$
+  EndProcedure
+  
   
 EndModule
 
@@ -237,8 +245,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 185
-; FirstLine = 18
-; Folding = AD7-
+; CursorPosition = 124
+; FirstLine = 17
+; Folding = AD--
 ; EnableThread
 ; EnableXP
