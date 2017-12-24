@@ -176,7 +176,7 @@ Module SQFormat
   Procedure.i SQLCommit(Database,Str$)
     ByteLen = StringByteLength(Str$+"/*/-^#*"+Str(Database))
     Str$ = Str$+"/*/-^#*"+Str(Database)
-    *DbMem = AllocateMemory(500)
+    *DbMem = AllocateMemory(ByteLen)
     PokeS(*DbMem,Str$)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
     Str$ = ""
@@ -208,7 +208,8 @@ Module SQFormat
 EndModule
 
 DeclareModule SQuery
-
+  Declare.s SQLQuerySelect(Database,Columns$,Table$,Column)
+  Declare.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column)
 EndDeclareModule
 
 Module SQuery
@@ -245,8 +246,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 17
+; CursorPosition = 178
+; FirstLine = 25
 ; Folding = AD--
 ; EnableThread
 ; EnableXP

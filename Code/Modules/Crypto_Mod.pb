@@ -25,11 +25,11 @@ Module Cipher
   ;--
   Procedure GenerateKeySequence()
     ;Generation of Initial 16-Byte key
-    *Key = AllocateMemory(16)
+    *Key = AllocateMemory(17)
     Debug CryptRandomData(*Key,16)
     ; --------
     ;Generation of 28-byte Master key
-    *Master = AllocateMemory(28)
+    *Master = AllocateMemory(29)
     Debug CryptRandomData(*Key,28)
     ; --------
     ;Generation of Base64 key
@@ -73,6 +73,6 @@ EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
 ; CursorPosition = 35
-; FirstLine = 3
-; Folding = +
+; FirstLine = 27
+; Folding = -
 ; EnableXP

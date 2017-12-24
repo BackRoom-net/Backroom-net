@@ -1,4 +1,4 @@
-﻿DeclareModule SQLDatabase
+﻿DeclareModule SQLDatabaseFil_Util
   UseSQLiteDatabase()
   Global Log = CreateMutex()
   Global Logmode.i
@@ -9,7 +9,7 @@
 
 EndDeclareModule
 
-Module SQLDatabase
+Module SQLDatabaseFil_Util
   Declare Logfinal(*Logmemory)
   Declare Logt(Subsystem$,Text$)
   ;------------------------------------
@@ -105,7 +105,7 @@ EndProcedure
 
 EndModule
 
-DeclareModule SQFormat
+DeclareModule SQFormatFil_Util
   Global Str$
   Global SQLT = CreateMutex()
   Declare.s SQFCreateTable(Str$,Name$)
@@ -116,7 +116,7 @@ DeclareModule SQFormat
   Declare.s SQLInsert(Str$,Table$,Column_s$,Value_s$,Close)
 EndDeclareModule
 
-Module SQFormat
+Module SQFormatFil_Util
   Global Str$
   Declare SQLDbUpdate(*DbMem)
   ;-------- Table Functions
@@ -179,13 +179,13 @@ Module SQFormat
     ProcedureReturn Thread
   EndProcedure
   
-  Procedure SQLDbUpdate(*DbMem)
+  Procedure SQLDbUpdate(*Db)
     LockMutex(SQLT)
-    Str$ = PeekS(*Dbmem)
+    Str$ = PeekS(*Db)
     Dbc$ = StringField(Str$,1,"/*/-^#*")
     Db$ = StringField(Str$,2,"/*/-^#*")
     stat = DatabaseUpdate(Val(Db$),Dbc$)
-    FreeMemory(*DbMem)
+    FreeMemory(*Db)
     UnlockMutex(SQLT)
   EndProcedure
   ;-------- Table Functions
@@ -203,11 +203,11 @@ Module SQFormat
   
 EndModule
 
-DeclareModule SQuery
+DeclareModule SQueryFil_Util
 
 EndDeclareModule
 
-Module SQuery
+Module SQueryFil_Util
   
   Procedure.s SQLQuerySelect(Database,Columns$,Table$,Column)
     DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+";")
@@ -241,8 +241,8 @@ DeclareModule FileUtil
 EndDeclareModule
 
 Module FileUtil
-  UseModule SQLDatabase
-  UseModule SQFormat
+  UseModule SQLDatabaseFil_Util
+  UseModule SQFormatFil_Util
   Procedure SpredFile(File$,*AESKey,*IniVector)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
@@ -255,6 +255,7 @@ Module FileUtil
     Command$ = SQFMakeField(Command$,"IsCompressed",1,1,0,0,0,1)
     Command$ = SQFmakeField(Command$,"Checksum",2,1,0,0,0,0)
     Command$ = SQFClose(Command$)
+    Ahh = AllocateMemory(500)
     CommThread = SQLCommit(1,Command$)
     Debug command$
     Debug CommThread
@@ -311,11 +312,13 @@ Repeat
   FreeMemory(*Split)
   FreeMemory(*Compressed)
   FreeMemory(*Encoded)
+  
+  Done.d = Partcount/parts
+  FinalProgress.i = Done.d*100
+  Debug Str(FinalProgress)+"%"
 Until Eof(0)
+CloseDatabase(1)
 
-
-    
-    
   EndProcedure
   
   
@@ -326,10 +329,9 @@ Until Eof(0)
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 304
-; FirstLine = 108
-; Folding = 9+n-
+; CursorPosition = 247
+; FirstLine = 201
+; Folding = --n-
 ; EnableThread
 ; EnableXP
 ; Executable = ..\Testing modules\Filetest.exe
-; Warnings = Error
