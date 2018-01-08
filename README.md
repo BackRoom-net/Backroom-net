@@ -20,18 +20,4 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 # Purebasic
 
 This program is being developed under PureBasic 5.61 (Windows - x64)
-Purebasic 5.60 Code has been fixed!!
-
-12/1/17: RESOLVED
-
-Purebasic 5.60 Is Not currently working correctly. Working on getting the newest version 5.62 because 
-Apparently 5.60 has a libary issue with Threaded applications. Basically, You wont be able to run a thread
-without Using:
-```Purebasic
-Thread = Createthread(@Mythread,*SomeNumber)
-Debug WaitThread(Thread)
-debug Thread
-;Then the Thread will execute. but this takes too much time.
-```
-I really Want to run the thread independantly from the main thread
-because Logging to the disk takes too much time.
+Current compatibility with the program is limited to windows 7,8,8.1 and 10
