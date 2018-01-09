@@ -151,7 +151,7 @@ Procedure Main()
     UpdateWindow()
     
     NetworkData::BindLogging(#PB_Event_FirstCustomValue, #List)
-    ConnectionID = NetworkData::InitClient("192.168.0.4", 6037, @NewData())
+    ConnectionID = NetworkData::InitClient("192.168.0.56", 6037, @NewData())
     ;ConnectionID = NetworkData::InitClient("Michaels-Mac", 6037, @NewData())
     If Not ConnectionID
       Debug "Server not Found"
@@ -199,12 +199,14 @@ Procedure Main()
               NetworkData::SendInteger(ConnectionID, 103, count)
               
             Case #MenuSend4
-              filename = OpenFileRequester("Send File", "*.*", "", 0)
-              If filename
+              filename = OpenFileRequester("Send File", "*.*", "", 0,#PB_Requester_MultiSelection)
+              While filename
                 SendFileData\ConnectionID = ConnectionID
                 SendFileData\Filename = filename
-                CreateThread(@thSendFile(), SendFileData)
-              EndIf
+                sendthread = CreateThread(@thSendFile(), SendFileData)
+                filename = NextSelectedFileName()
+                WaitThread(sendthread)
+              Wend
               
           EndSelect
           
@@ -236,8 +238,9 @@ Procedure Main()
 EndProcedure : Main()
 
 End
-; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 182
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 153
+; FirstLine = 81
 ; Folding = w-
 ; EnableThread
 ; EnableXP

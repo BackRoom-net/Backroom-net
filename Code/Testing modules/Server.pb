@@ -132,8 +132,8 @@ Procedure Main()
     
     NetworkData::BindLogging(#PB_Event_FirstCustomValue, #List)
     ServerID = NetworkData::InitServer(6037, @NewData())
-    
-    NetworkData::SetDataFolder(GetHomeDirectory())
+    CreateDirectory("Data")
+    NetworkData::SetDataFolder("Data\")
     
     ; Main Loop
     Repeat
@@ -188,10 +188,10 @@ Procedure Main()
 EndProcedure : Main()
 
 End
-; IDE Options = PureBasic 5.60 (Windows - x64)
-; CursorPosition = 69
-; FirstLine = 33
-; Folding = h
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 135
+; FirstLine = 39
+; Folding = m
 ; EnableThread
 ; EnableXP
 ; Executable = S.exe
