@@ -74,14 +74,8 @@ Procedure ProformaEraseInst(Instance$)
   EndIf
 EndProcedure
 
-Procedure SpillProforma()
-  ; This part is under construction
-  ;
-  ; This is just suppose to 
-  ; Dump the contents of Proforma
-  ; Into memory or something. 
-  ;
-  If CreateXML(0)
+Procedure SpillProforma() ; This part is complete
+  If CreateXML(0)     
     InsertXMLMap(RootXMLNode(0), Proforma())
     FormatXML(0, #PB_XML_ReFormat)
     SaveXML(0,"Proforma_Mem_Dump.txt")
