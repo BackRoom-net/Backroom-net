@@ -1,13 +1,15 @@
 ﻿DeclareModule ConsInteract
-  
+  EnableGraphicalConsole(1)
   
   
 EndDeclareModule
-
+declare StatShow(Map ThreadMemAccess())
 
 Module ConsInteract
   
-  
+Procedure StatShow(Map ThreadMemAccess()) ;Yes, thats a map.
+  ;This in here will be where I Work my magic.
+EndProcedure
   
 EndDeclareModule
 
