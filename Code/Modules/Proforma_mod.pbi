@@ -70,9 +70,9 @@ EndProcedure
 Procedure ProformaEraseInst(Instance$)       
   If Proforma(Instance$)                     
     If DeleteMapElement(Proforma(),Instance$)
-      ProcedureReturn #False
-    Else
       ProcedureReturn #True
+    Else
+      ProcedureReturn #False
     EndIf
   Else
     ProcedureReturn #False
