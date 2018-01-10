@@ -1,7 +1,9 @@
 ﻿OpenConsole()
-IncludeFile "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\Database_mod.pb"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules"
+IncludeFile "Database_mod.pbi"
 UseModule SQLDatabase
 UseModule SQFormat
+UseModule SQuery
 Input()
 
 
@@ -19,10 +21,11 @@ Form$ = ""
 Form$ = SQLInsert(Form$,"test","String","'Data'",1)
 WaitThread(Thread)
 Thread = SQLCommit(1,Form$)
-
+Form$ = ""
 WaitThread(Thread)
+
 Input()
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 18
+; CursorPosition = 23
 ; EnableThread
 ; EnableXP
