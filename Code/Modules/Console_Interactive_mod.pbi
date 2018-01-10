@@ -1,9 +1,15 @@
 ﻿DeclareModule ConsInteract
   EnableGraphicalConsole(1)
-  
-  
+  declare StatShow(Map ThreadMemAccess())
+Struture Stat
+Precent.s
+Job.s
+extrainfo.s
+Code.i
+endstructure
+ Global map ThreadStat.stat
 EndDeclareModule
-declare StatShow(Map ThreadMemAccess())
+
 
 Module ConsInteract
   
