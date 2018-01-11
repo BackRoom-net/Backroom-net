@@ -1,23 +1,23 @@
 ﻿DeclareModule Cipher
-  Structure CipherSuite
+  Structure CipherSuite ; Structure...
     KeyMem.i
     MasterMem.i
-    Base64key.s
+    Base64key.s         ;Structure...
     Base64Master.s
     MasterCRC32.s
-    MasterMD5.s
-    MasterSHA1.s
-    MasterSHA2.s
-    MasterSHA3.s
-    AESMem.i
-  EndStructure
+    MasterMD5.s         ;God
+    MasterSHA1.s        ;I 
+    MasterSHA2.s        ;Love
+    MasterSHA3.s        ;Structures
+    AESMem.i            ;I'm so alone.
+  EndStructure          ;Message me if you get it.
   OpenCryptRandom()
   UseSHA1Fingerprint()
   UseSHA2Fingerprint()
   UseSHA3Fingerprint()
   UseMD5Fingerprint()
   UseCRC32Fingerprint()
-  Global NewMap EncryptStorage.CipherSuite()
+  Global NewMap EncryptStorage.CipherSuite()  ;The map where all of our Ciphers are stored.
   Declare GenerateKeySequence(ID$)
 EndDeclareModule
 
@@ -39,7 +39,7 @@ Module Cipher
     base64Master$ = Base64Encoder(*Master,28)
     ; --------
     ; --------
-    MasterCRC32$ = Fingerprint(*Master,28,#PB_Cipher_CRC32)
+    MasterCRC32$ = Fingerprint(*Master,28,#PB_Cipher_CRC32)   ;Lots of fingerprints...
     MasterMD5$ = Fingerprint(*Master,28,#PB_Cipher_MD5)
     MasterSHA1$ = Fingerprint(*Master,28,#PB_Cipher_SHA1)
     MasterSHA2$ = Fingerprint(*Master,28,#PB_Cipher_SHA2,512)
@@ -59,7 +59,7 @@ Module Cipher
     *Base64Key = AllocateMemory(24)
     PokeS(*Base64Key,Base64Key$)
     
-    If AESEncoder(*Master,*AESMem,28,*Base64Key,256,*Key)
+    If AESEncoder(*Master,*AESMem,28,*Base64Key,256,*Key)     ;After that whole mess we encript the Base64 Key.
       EncryptStorage() \AESMem = *AESMem      
       ProcedureReturn #True
     Else
