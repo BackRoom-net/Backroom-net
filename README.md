@@ -2,6 +2,8 @@
 
 Decentralized file sharing network similar to the Torrent Network.
 
+![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
+
 Basically where I (Noisy) want to go with this project is to-
 
 * Create a program where a Client can share files which will be Compressed and Encrypted all in one go.
@@ -19,5 +21,5 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 # Purebasic
 
-This program is being developed under PureBasic 5.61 (Windows - x64)
-Current compatibility with the program is limited to windows 7,8,8.1 and 10
+[!This program is being developed under PureBasic 5.61 (Windows - x64)
+Current compatibility with the program is limited to windows 7,8,8.1 and 10]
