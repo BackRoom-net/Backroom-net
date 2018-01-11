@@ -21,5 +21,5 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 # Purebasic
 
-[!This program is being developed under PureBasic 5.61 (Windows - x64)
-Current compatibility with the program is limited to windows 7,8,8.1 and 10]
+> This program is being developed under PureBasic 5.61 (Windows - x64)
+> Current compatibility with the program is limited to windows 7,8,8.1 and 10 
