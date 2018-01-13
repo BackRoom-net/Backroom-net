@@ -57,10 +57,9 @@ Global LogCount = 0
       ClearConsole()
       ConX = 1
       ConY = 1 
+      ConsoleColor(7,0)
       PrintN("Waiting On Job: "+Title$)
       Print("[")
-      ConsoleLocate(ConX,ConY)
-      ConsoleColor(2,0)
       While Progress.i <> 100
       ResetMap(ThreadMap())
     While NextMapElement(ThreadMap())
@@ -68,7 +67,7 @@ Global LogCount = 0
       If IsThread(ThreadCheck)
         ;Debug Str(ThreadCheck)+" Is Still Running!"
       Else
-        ;Debug Str(ThreadCheck)+" Just Finished!"
+        Debug Str(ThreadCheck)+" Just Finished!"
         DeleteMapElement(ThreadMap(),Str(ThreadCheck))
         LastThreadCount = LastThreadCount+1
         EndIf
@@ -87,16 +86,96 @@ Global LogCount = 0
         EndIf
       EndIf
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+      ConsoleColor(2,0)
+
+      Select Progress.i
+          
+          Case 5
+          ConsoleLocate(ConX,ConY)
+            Print("=")
+          
+        Case 10
+          ConsoleLocate(ConX,ConY)
+          Print("==")
+          
+          Case 15
+          ConsoleLocate(ConX,ConY)
+            Print("===")
+            
+          Case 20
+            ConsoleLocate(ConX,ConY)
+            Print("====")
+            
+            Case 25
+          ConsoleLocate(ConX,ConY)
+            Print("=====")
+            
+           Case 30
+            ConsoleLocate(ConX,ConY)
+            Print("======")
+            
+            Case 35
+          ConsoleLocate(ConX,ConY)
+            Print("=======")
+            
+            Case 40
+            ConsoleLocate(ConX,ConY)
+            Print("=========")
+            
+            Case 45
+          ConsoleLocate(ConX,ConY)
+            Print("==========")
+            
+            Case 50
+            ConsoleLocate(ConX,ConY)
+            Print("===========")
+            
+            Case 55
+          ConsoleLocate(ConX,ConY)
+            Print("============")
+            
+            Case 60
+            ConsoleLocate(ConX,ConY)
+            Print("=============")
+            
+            Case 65
+          ConsoleLocate(ConX,ConY)
+            Print("==============")
+            
+            Case 70
+            ConsoleLocate(ConX,ConY)
+            Print("===============")
+            
+            Case 75
+          ConsoleLocate(ConX,ConY)
+            Print("================")
+            
+            Case 80
+            ConsoleLocate(ConX,ConY)
+            Print("=================")
+            
+            Case 85
+          ConsoleLocate(ConX,ConY)
+            Print("==================")
+            
+            Case 90
+            ConsoleLocate(ConX,ConY)
+            Print("===================")
+            
+            Case 95
+          ConsoleLocate(ConX,ConY)
+            Print("====================")
+            
+            Case 100
+            ConsoleLocate(ConX,ConY)
+            Print("=====================")
+            ConsoleColor(7,0)
+            Print("]")
+            ConsoleColor(2,0)
+            Print(" OK")
+            ConsoleColor(7,0)
+        EndSelect
+        
       
       Wend
       
@@ -114,10 +193,9 @@ Global LogCount = 0
       AddThreadMember(Thread)
       Delay(10)
       count = count + 1
-    Until count = 10
+    Until count = 16
   
     Repeat 
-      Input()
       Prog = WaitThreadBranchGraphical("Calculation finish")
       Debug Prog
     Until Prog = 100
@@ -138,8 +216,8 @@ UseModule ThreadBranch
 SelfTest()
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 89
-; FirstLine = 58
-; Folding = --
+; CursorPosition = 195
+; FirstLine = 140
+; Folding = z-
 ; EnableThread
 ; EnableXP
