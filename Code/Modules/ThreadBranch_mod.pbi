@@ -1,4 +1,4 @@
-﻿DeclareModule ThreadBranch
+DeclareModule ThreadBranch
   Structure tl
     Thread.i 
   EndStructure
@@ -178,8 +178,7 @@ Global LogCount = 0
         
       
       Wend
-      
-      Input()
+      Delay(500)
       ClearConsole()
       EnableGraphicalConsole(0)
       ProcedureReturn Progress
@@ -196,7 +195,7 @@ Global LogCount = 0
     Until count = 16
   
     Repeat 
-      Prog = WaitThreadBranchGraphical("Calculation finish")
+      Prog = WaitThreadBranchGraphical("Waiting for self test...")
       Debug Prog
     Until Prog = 100
     Input()
@@ -214,6 +213,7 @@ EndModule
 
 UseModule ThreadBranch
 SelfTest()
+
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
 ; CursorPosition = 195
