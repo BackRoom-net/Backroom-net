@@ -208,25 +208,29 @@ Module SQFormat
 EndModule
 
 DeclareModule SQuery
-  Declare.s SQLQuerySelect(Database,Columns$,Table$,Column)
+  Declare.s SQLQuerySelect(Database,Columns$,Table$,Column, List Output.s())
   Declare.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column)
 EndDeclareModule
 
 Module SQuery
   
-  Procedure.s SQLQuerySelect(Database,Columns$,Table$,Column)
-    DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+";")
-    While NextDatabaseRow(0)
-        gotdat$ = GetDatabaseString(Database,Column)
+  Procedure.s SQLQuerySelect(Database,Columns$,Table$,Column, List Output.s())
+   Debug DatabaseQuery(Database,"SELECT "+Columns$+" FROM "+Table$+";")
+    While NextDatabaseRow(Database)
+      gotdat$ = GetDatabaseString(Database,Column)
+      AddElement(Output())
+      Output() = gotdat$
       Wend
       ProcedureReturn gotdat$
     EndProcedure
     
   
-    Procedure.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column)
-    DatabaseQuery(0,"SELECT "+Columns$+" FROM "+Table$+" WHERE "+WhereRow$+"="+WhereValue$+";")
-    While NextDatabaseRow(0)
-        gotdat$ = GetDatabaseString(Database,Column)
+    Procedure.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column, List Output.s())
+    DatabaseQuery(Database,"SELECT "+Columns$+" FROM "+Table$+" WHERE "+WhereRow$+"="+WhereValue$+";")
+    While NextDatabaseRow(Database)
+      gotdat$ = GetDatabaseString(Database,Column)
+      AddElement(Output())
+      Output() = gotdat$
       Wend
       ProcedureReturn gotdat$
   EndProcedure
@@ -246,8 +250,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 178
-; FirstLine = 25
-; Folding = AD--
+; CursorPosition = 230
+; FirstLine = 43
+; Folding = AC--
 ; EnableThread
 ; EnableXP
