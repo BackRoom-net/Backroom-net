@@ -4,7 +4,7 @@ DeclareModule ThreadBranch
   EndStructure
   Declare SelfTest()
   Declare WaitThreadBranch()
-  Declare WaitThreadBranchGraphical(Title$)
+  Declare WaitThreadBranchGraphical(Title$,EndDelay,WarningTime)
   Declare AddThreadMember(ThreadID)
   Global NewMap ThreadMap.tl()
 EndDeclareModule
@@ -52,7 +52,7 @@ Global LogCount = 0
       ProcedureReturn Progress.i
     EndProcedure
     
-    Procedure.i WaitThreadBranchGraphical(Title$)
+    Procedure.i WaitThreadBranchGraphical(Title$,EndDelay,WarningTime)
       EnableGraphicalConsole(1)
       ClearConsole()
       ConX = 1
@@ -61,6 +61,21 @@ Global LogCount = 0
       PrintN("Waiting On Job: "+Title$)
       Print("[")
       While Progress.i <> 100
+        Delay(1)
+        If WarningTime = CountingTime
+          ConsoleLocate(0,2)
+          ConsoleColor(12,0)
+          Print("Warning: Threads May be Unresponsive - Press Escape To Stop Job")
+          If Inkey() = Chr(27)
+            ClearConsole()
+            EnableGraphicalConsole(0)
+            ProcedureReturn #False
+          EndIf
+        Else
+          CountingTime = CountingTime+1
+        EndIf
+        
+ 
       ResetMap(ThreadMap())
     While NextMapElement(ThreadMap())
       ThreadCheck = ThreadMap() \Thread
@@ -178,7 +193,7 @@ Global LogCount = 0
         
       
       Wend
-      Delay(500)
+      Delay(EndDelay)
       ClearConsole()
       EnableGraphicalConsole(0)
       ProcedureReturn Progress
@@ -192,12 +207,11 @@ Global LogCount = 0
       AddThreadMember(Thread)
       Delay(10)
       count = count + 1
-    Until count = 16
+    Until count = 8
   
-    Repeat 
-      Prog = WaitThreadBranchGraphical("Waiting for self test...")
+ 
+      Prog = WaitThreadBranchGraphical("Waiting for self test...",1000,2000)
       Debug Prog
-    Until Prog = 100
     Input()
       
   EndProcedure
@@ -206,6 +220,7 @@ Global LogCount = 0
     Repeat
       Count = Count + 1
     Until Count = 2000000
+    Delay(Random(4000))
   EndProcedure
   
   
@@ -214,10 +229,3 @@ EndModule
 UseModule ThreadBranch
 SelfTest()
 
-
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 195
-; FirstLine = 140
-; Folding = z-
-; EnableThread
-; EnableXP
