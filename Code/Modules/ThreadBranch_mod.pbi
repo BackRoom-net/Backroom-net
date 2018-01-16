@@ -65,7 +65,7 @@ Global LogCount = 0
         If WarningTime = CountingTime
           ConsoleLocate(0,2)
           ConsoleColor(12,0)
-          Print("Warning: Threads My be Unresponsive - Press Escape To Stop Job")
+          Print("Warning: Threads May be Unresponsive - Press Escape To Stop Job")
           If Inkey() = Chr(27)
             ClearConsole()
             EnableGraphicalConsole(0)
