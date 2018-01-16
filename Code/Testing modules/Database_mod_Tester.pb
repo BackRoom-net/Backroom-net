@@ -4,7 +4,8 @@ IncludeFile "Database_mod.pbi"
 UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
-Input()
+Global NewList SQLTest.s()
+
 
 
 Initlogging(1,"")
@@ -19,15 +20,16 @@ Debug Form$
 Thread = SQLCommit(1,Form$)
 Form$ = ""
 Form$ = SQLInsert(Form$,"test","String","'Data'",1)
-Form$ = SQLInsert(Form$,"test","String","'Data2'",1)
-Form$ = SQLInsert(Form$,"test","String","'Data3'",1)
 WaitThread(Thread)
 Thread = SQLCommit(1,Form$)
 Form$ = ""
-WaitThread(Thread)
+Input()
+Debug SQLQuerySelect(1,"'String'","'test'",0,SQLTest())
+
+
 
 Input()
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 22
+; CursorPosition = 24
 ; EnableThread
 ; EnableXP
