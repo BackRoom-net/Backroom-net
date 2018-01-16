@@ -19,6 +19,8 @@ Debug Form$
 Thread = SQLCommit(1,Form$)
 Form$ = ""
 Form$ = SQLInsert(Form$,"test","String","'Data'",1)
+Form$ = SQLInsert(Form$,"test","String","'Data2'",1)
+Form$ = SQLInsert(Form$,"test","String","'Data3'",1)
 WaitThread(Thread)
 Thread = SQLCommit(1,Form$)
 Form$ = ""
@@ -26,6 +28,6 @@ WaitThread(Thread)
 
 Input()
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 23
+; CursorPosition = 22
 ; EnableThread
 ; EnableXP
