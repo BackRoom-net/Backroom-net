@@ -39,26 +39,26 @@ Module Proforma
   EndProcedure
   
 Procedure ProformaS(Instance$)               ;This Procedure Creates A new Proforma Instance By string.
-  If Proforma(Instance$)                    1;Checks if the instance Exists already
+  If Proforma(Instance$)                    ;1;Checks if the instance Exists already
     Time = ElapsedMilliseconds()             ;Checks the current time in milliseconds
     Proforma() \Start = Time                 ;Puts that into the memory map
     ProcedureReturn #True                    ;Returns True for sucessful operation.
   Else                                      
-    ProcedureReturn #False                  1;If Find it, Return false. It already exists.
+    ProcedureReturn #False                  ;1;If Find it, Return false. It already exists.
   EndIf
 EndProcedure
   
 Procedure ProformaE(Instance$)               ;This procedure Records the end of a profroma instance and 
                                              ;Sums the operation.
-  If proforma(Instance$)                    1;If we can find the open instance
+  If proforma(Instance$)                    ;1;If we can find the open instance
     ETime = ElapsedMilliseconds()            ;Set the end time to now
     STime = Proforma(Instance$) \Start       ;Retrive the Start Time
     TTime = ETime-STime                      ;Find the total Time it took
     Proforma(Instance$) \Stop = Stime        ;Enter the Stop Time into Memory
     Proforma(Instance$) \Sum = TTime         ;Enter the sum Time into Memory
     ProcedureReturn TTime                    ;Return the total time from the procedure.
-  Else                                      1; If we cant find it, there is data to use to find the total amount of time.
-    ProcedureReturn #False                  1; Duh..
+  Else                                      ;1; If we cant find it, there is data to use to find the total amount of time.
+    ProcedureReturn #False                  ;1; Duh..
   EndIf
 EndProcedure
     
@@ -68,14 +68,14 @@ Procedure ProformaMakeInst(Instance$)        ;This procedure creates a new Profo
 EndProcedure
 
 Procedure ProformaEraseInst(Instance$)       
-  If Proforma(Instance$)                     
-    If DeleteMapElement(Proforma(),Instance$)
-      ProcedureReturn #True
-    Else
-      ProcedureReturn #False
-    EndIf
+  If Proforma(Instance$)                     ;1;If we can find the instance
+    If DeleteMapElement(Proforma(),Instance$);2;Simply delete the instance from the memory map
+      ProcedureReturn #True                   ;Return Successful
+    Else                                     
+      ProcedureReturn #False                 ;2;We cant delete the element.
+    EndIf                                    ;2;Return false
   Else
-    ProcedureReturn #False
+    ProcedureReturn #False                   ;1;We cant find the element.
   EndIf
 EndProcedure
 
