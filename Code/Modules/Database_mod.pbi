@@ -1,9 +1,9 @@
-﻿; CompilerIf #PB_Compiler_Thread <> 1
-;   CompilerError "Use Compiler option - Threadsafe!"
-; CompilerEndIf
+ CompilerIf #PB_Compiler_Thread <> 1
+   CompilerError "Use Compiler option - Threadsafe!"
+ CompilerEndIf
 
-DeclareModule SQLDatabase
-  UseSQLiteDatabase()
+DeclareModule SQLDatabase  
+  UseSQLiteDatabase()                      ;If Called more then Two times causes Memory access Violation.
   Global Log = CreateMutex()
   Global Logmode.i
   Global Logdir.s
@@ -17,29 +17,29 @@ Module SQLDatabase
   Declare Logfinal(*Logmemory)
   Declare Logt(Subsystem$,Text$)
   ;------------------------------------
-Procedure initLogging(Setting,Directory$)
+Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
 
-    If Setting
-      If Directory$ = "" Or Directory$ = " "
-        Directory$ = GetCurrentDirectory()
-        rez.q = FileSize(Directory$)
-        If rez.q = -2
-          Logdir.s = Directory$
-          If setting 
-            Debug Directory$ 
+    If Setting                                ;Check Setting
+      If Directory$ = "" Or Directory$ = " "  ;If no Directory is specified
+        Directory$ = GetCurrentDirectory()    ;Get the current Directory.
+        rez.q = FileSize(Directory$)          ;Check if its not a file. (For Protection)
+        If rez.q = -2                         ;If its not a File,
+          Logdir.s = Directory$               ;Set the Log Dir.
+          If setting                          ;Check the Setting once again,
+            Debug Directory$                  ;Debug like everything.
             Debug Logdir
             Debug rez.q
             Goto set
           EndIf
         Else
-          MessageRequester("Error:Database_mod-Logging","Directory Bad.")
+          MessageRequester("Error:Database_mod-Logging","Directory Bad.") ;If the directory does not work for some reason, Error.
           ProcedureReturn #False
           End
         EndIf
       Else
         set:
 
-      Select Setting
+      Select Setting ;Select Setting
         Case 1
           Logmode.i = 1 ;general
           Logt("InitLogging","Logging set to 1")
@@ -60,8 +60,8 @@ Procedure initLogging(Setting,Directory$)
   EndIf
   EndProcedure
   
-Procedure Logt(Subsystem$,Text$)
-    If logmode > 0
+Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
+    If logmode > 0 ;If the Log setting is not Null.
   *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
   PokeS(*logmemory,Subsystem$+": "+Text$)
   logtl = CreateThread(@Logfinal(),*logmemory)
@@ -69,35 +69,40 @@ EndIf
 
 EndProcedure
 
-Procedure Logfinal(*logmemory)
+Procedure Logfinal(*logmemory) ;Thread for Logging
   If logmode > 0
-  tofile$ = PeekS(*logmemory)
-  Date$ = FormatDate("%yy.%mm.%dd", Date())
-  Time$ = FormatDate("%hh:%ii:%ss", Date())
-  LockMutex(Log)
-  OpenFile(1,logdir+Date$+".log",#PB_File_Append)
-  WriteStringN(1,Time$+":"+tofile$)
-  CloseFile(1)
+  tofile$ = PeekS(*logmemory) ; Get Data from Memory address passed to the thread.
+  Date$ = FormatDate("%yy.%mm.%dd", Date()) ;  Get Date.
+  Time$ = FormatDate("%hh:%ii:%ss", Date()) ; Get time.
+  LockMutex(Log)                            ; Lock the mutex
+  OpenFile(1,logdir+Date$+".log",#PB_File_Append) ; Open the Log file.
+  WriteStringN(1,Time$+":"+tofile$)               ; Write data and Date and formatted time/
+  CloseFile(1)   
   UnlockMutex(Log)
   FreeMemory(*logmemory)
   EndIf
 EndProcedure
 ;------------------------------------
-Procedure.i initdatabase(database,Name$)
- If Name$ = ":memory:"
-   If OpenDatabase(database,Name$, "", "")
-     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
-       Debug "Memory table created"
+Procedure.i initdatabase(database,Name$) ;Creates A database.
+ If Name$ = ":memory:"  ;Checks if the Application wants to make a database in memory for some odd reason.
+   If OpenDatabase(database,Name$, "", "") ;Just open the database.
+     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.
+       ;Debug "Memory table created"
+       Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
+       Else
+       Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
     EndIf
   Else
     ProcedureReturn #False
   EndIf
   Else
   If CreateFile(0,Name$)
+    Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
     CloseFile(0)
   EndIf 
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
+    Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
     EndIf
   Else
     ProcedureReturn #False
@@ -162,6 +167,13 @@ Module SQFormat
     Str$ = Str$ + ","
   EndIf
   ProcedureReturn Str$  
+  LogDebug$ = "SQL Formatted:"+Chr(32)
+  LogDebug$ = LogDebug$ + "Table Type:"+SQT$+Chr(32)
+  LogDebug$ = LogDebug$ + "Table Name:"+Name$+Chr(32)
+  LogDebug$ = LogDebug$ + "NotNull:"+Str(NotNull)+Chr(32)
+  LogDebug$ = LogDebug$ + "Primary Key:"+Str(PK)+Chr(32)
+  LogDebug$ = LogDebug$ + "Comma Added:"+Str(Comma)
+  Logt("Database_mod-SQLFormatter",LogDebug$)
   EndProcedure
   
   Procedure.s SQFOpen(Str$)
