@@ -8,18 +8,19 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
 IncludeFile "Modul_NetworkData.pbi"
 IncludeFile "Proforma_mod.pbi"
-IncludeFile "Console_Interactive_mod.pbi"
+;IncludeFile "Console_Interactive_mod.pbi"
+IncludeFile "ThreadBranch_mod.pbi"
 ;
 ;
 ;
-Declare Keyboard()
-
+Declare Keyboard(conplace)
+Declare InitializeDatabase()
 ;
 ;- Structures
 ;
@@ -133,8 +134,72 @@ Case 2
 Else
   ProcedureReturn #True
 EndIf
+EndSelect
 
 EndProcedure 
+
+Procedure InitializeDatabase()
+  CreateDirectory("Data")
+UseModule SQLDatabase
+UseModule SQFormat
+UseModule SQuery
+UseModule ThreadBranch
+Initlogging(1,"")
+Initdatabase(1,"Data\Main.db")
+CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
+CloseC1$ = SQFOpen(CloseC1$)
+CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,1)
+CloseC1$ = SQFMakeField(CloseC1$,"IP",2,1,0,0,1,1)
+CloseC1$ = SQFMakeField(CloseC1$,"Ping",1,1,0,0,0,0)          ;To be under "Close Clients" Ping < 15ms
+CloseC1$ = SQFclose(CloseC1$)
+Debug CloseC1$
+Input()
+CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")
+CloseC2$ = SQFOpen(CloseC2$)
+CloseC2$ = SQFMakeField(CloseC2$,"ClientNumber",1,1,1,1,1,1)
+CloseC2$ = SQFMakeField(CloseC2$,"IP",2,1,0,0,1,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Ping",1,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"HandShakeSuccessful",1,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"AESCatch",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"SHA1",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"SHA2",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"SHA3",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"MD5",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"CRC32",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Base64Master",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Base64Key",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"MasterKey",2,0,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Key",2,0,0,0,0,0)
+CloseC2$ = SQFclose(CloseC2$)
+Debug CloseC2$
+
+CloseC3$ = SQFCreateTable(CloseC3$,"SharedClients")
+CloseC3$ = SQFOpen(CloseC3$)
+CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,1,1)
+CloseC3$ = SQFMakeField(CloseC3$,"IP",2,1,0,0,1,1)
+CloseC3$ = SQFMakeField(CloseC3$,"Ping",1,1,0,0,0,0)
+CloseC3$ = SQFclose(CloseC3$)
+Debug CloseC3$
+
+CloseC4$ = SQFCreateTable(CloseC4$,"SharedClients")
+CloseC4$ = SQFOpen(CloseC4$)
+CloseC4$ = SQFMakeField(CloseC4$,"ClientNumber",1,1,1,1,1,1)
+CloseC4$ = SQFMakeField(CloseC4$,"IP",2,1,0,0,1,1)
+CloseC4$ = SQFMakeField(CloseC4$,"Ping",1,1,0,0,0,0)
+CloseC4$ = SQFclose(CloseC4$)
+Debug CloseC4$
+
+Thread1 = SQLCommit(1,CloseC1$)
+Thread2 = SQLCommit(1,CloseC2$)
+Thread3 = SQLCommit(1,CloseC3$)
+Thread4 = SQLCommit(1,CloseC4$)
+AddThreadMember(Thread1)
+AddThreadMember(Thread2)
+AddThreadMember(Thread3)
+AddThreadMember(Thread4)
+WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
+ProcedureReturn #True
+EndProcedure
 
 ;-------------
 ;- Program side
@@ -147,10 +212,20 @@ KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
 EnableGraphicalConsole(1)
 
+If InitializeDatabase()
+ Debug "1"
+EndIf
+
+
+
+
+
 Repeat
-  If Keyboard()
-  
-  
+  If Keyboard(conplace)
+    If msg$ = "esc"
+      Exit = 1
+    EndIf
+  EndIf
   
 Until Exit = 1
 
@@ -168,9 +243,10 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 143
-; FirstLine = 24
+; CursorPosition = 151
+; FirstLine = 63
 ; Folding = +
+; EnableThread
 ; EnableXP
 ; Executable = Test.exe
 ; EnableUnicode

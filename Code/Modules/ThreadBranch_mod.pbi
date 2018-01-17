@@ -210,9 +210,8 @@ Global LogCount = 0
     Until count = 8
   
  
-      Prog = WaitThreadBranchGraphical("Waiting for self test...",1000,2000)
+      Prog = WaitThreadBranchGraphical("Waiting for self test...",1000,4000)
       Debug Prog
-    Input()
       
   EndProcedure
   
@@ -229,3 +228,9 @@ EndModule
 UseModule ThreadBranch
 SelfTest()
 
+
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 212
+; FirstLine = 180
+; Folding = --
+; EnableXP

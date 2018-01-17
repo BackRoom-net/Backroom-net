@@ -25,7 +25,7 @@
 
 ;- Begin Declare Module
 
-CompilerIf #PB_Compiler_Thread = 1
+CompilerIf #PB_Compiler_Thread = 0
   CompilerError "Use Compileroption Threadsafe!"
 CompilerEndIf
 
@@ -1106,7 +1106,7 @@ EndModule
 ;-Example
 CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
-; IDE Options = PureBasic 5.60 (Windows - x64)
+; IDE Options = PureBasic 5.61 (Windows - x64)
 ; CursorPosition = 27
 ; FirstLine = 24
 ; Folding = -----

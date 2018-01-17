@@ -107,6 +107,7 @@ EndIf
 ProcedureReturn #True
 EndProcedure
 
+Procedure.i iniopendatabase(Database,Name$)
 EndModule
 
 DeclareModule SQFormat
@@ -178,19 +179,20 @@ Module SQFormat
     Str$ = Str$+"/*/-^#*"+Str(Database)
     *DbMem = AllocateMemory(ByteLen)
     PokeS(*DbMem,Str$)
+    Delay(1)
     Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
     Str$ = ""
     ProcedureReturn Thread
   EndProcedure
   
   Procedure SQLDbUpdate(*DbMem)
-    LockMutex(SQLT)
     Str$ = PeekS(*Dbmem)
     Dbc$ = StringField(Str$,1,"/*/-^#*")
     Db$ = StringField(Str$,2,"/*/-^#*")
+    LockMutex(SQLT)
     stat = DatabaseUpdate(Val(Db$),Dbc$)
-    FreeMemory(*DbMem)
     UnlockMutex(SQLT)
+    FreeMemory(*DbMem)
   EndProcedure
   ;-------- Table Functions
   ;-------- Input Functions
@@ -209,7 +211,7 @@ EndModule
 
 DeclareModule SQuery
   Declare.s SQLQuerySelect(Database,Columns$,Table$,Column, List Output.s())
-  Declare.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column)
+  Declare.s SQLQuerySelectWhere(Database,Columns$,Table$,WhereRow$,WhereValue$,Column, List Output.s())
 EndDeclareModule
 
 Module SQuery
@@ -250,8 +252,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 230
-; FirstLine = 43
-; Folding = AC--
+; CursorPosition = 109
+; Folding = DZG-
 ; EnableThread
 ; EnableXP
