@@ -1,4 +1,13 @@
-﻿DeclareModule Cipher
+﻿
+﻿;   Description: Encryption Module
+;        Author: Ruben Rodriguez
+;          Date: 11/13/17
+;            OS: Windows/XP/Vista/7/10
+;    Notes:
+;    Please Do not Distribute. - Do not Edit.
+;    Module is Crutial to User Security.
+
+DeclareModule Cipher
   Structure CipherSuite ; Structure...
     KeyMem.i
     MasterMem.i
