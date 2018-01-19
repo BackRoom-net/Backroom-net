@@ -113,6 +113,8 @@ ProcedureReturn #True
 EndProcedure
 
 Procedure.i iniopendatabase(Database,Name$)
+EndProcedure
+
 EndModule
 
 DeclareModule SQFormat
@@ -129,6 +131,8 @@ EndDeclareModule
 Module SQFormat
   Global Str$
   Declare SQLDbUpdate(*DbMem)
+   Declare Logfinal(*Logmemory)
+  Declare Logt(Subsystem$,Text$)
   ;-------- Table Functions
   Procedure.s SQFCreateTable(Str$,Name$)
     SQLForm$ = "CREATE TABLE "
@@ -218,6 +222,29 @@ Module SQFormat
     ProcedureReturn Str$
   EndProcedure
   
+ Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
+    If logmode > 0 ;If the Log setting is not Null.
+  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
+  PokeS(*logmemory,Subsystem$+": "+Text$)
+  logtl = CreateThread(@Logfinal(),*logmemory)
+EndIf
+
+EndProcedure
+
+Procedure Logfinal(*logmemory) ;Thread for Logging
+  If logmode > 0
+  tofile$ = PeekS(*logmemory) ; Get Data from Memory address passed to the thread.
+  Date$ = FormatDate("%yy.%mm.%dd", Date()) ;  Get Date.
+  Time$ = FormatDate("%hh:%ii:%ss", Date()) ; Get time.
+  LockMutex(Log)                            ; Lock the mutex
+  OpenFile(1,logdir$+Date$+".log",#PB_File_Append) ; Open the Log file.
+  WriteStringN(1,Time$+":"+tofile$)               ; Write data and Date and formatted time/
+  CloseFile(1)   
+  UnlockMutex(Log)
+  FreeMemory(*logmemory)
+  EndIf
+EndProcedure
+
   
 EndModule
 
@@ -264,7 +291,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 109
-; Folding = DZG-
+; CursorPosition = 239
+; FirstLine = 157
+; Folding = 4-G0
 ; EnableThread
 ; EnableXP

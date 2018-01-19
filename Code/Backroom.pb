@@ -8,7 +8,7 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\"
+IncludePath "C:\Intel\Programming\Backroom-net-master\Code\Modules"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -16,11 +16,14 @@ IncludeFile "Modul_NetworkData.pbi"
 IncludeFile "Proforma_mod.pbi"
 ;IncludeFile "Console_Interactive_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
+UseModule Proforma
+UseModule Cipher
 ;
 ;
 ;
 Declare Keyboard(conplace)
 Declare InitializeDatabase()
+Declare CleanShutDown()
 ;
 ;- Structures
 ;
@@ -36,10 +39,12 @@ Global msg$, conplace
 
 ;
 ;- Maps
+
 ; Map cap at 6mill
-
+ProformaMakeInst("Memory-Map-Ini")
+ProformaS("Memory-Map-Ini")
 Global NewMap Keys.s(6000000)
-
+ProformaE("Memory-Map-Ini")
 
 ;
 ;- Procedures
@@ -132,7 +137,7 @@ Case 2
     EndIf
   EndIf
 Else
-  ProcedureReturn #True
+  ProcedureReturn #False
 EndIf
 EndSelect
 
@@ -153,7 +158,6 @@ CloseC1$ = SQFMakeField(CloseC1$,"IP",2,1,0,0,1,1)
 CloseC1$ = SQFMakeField(CloseC1$,"Ping",1,1,0,0,0,0)          ;To be under "Close Clients" Ping < 15ms
 CloseC1$ = SQFclose(CloseC1$)
 Debug CloseC1$
-Input()
 CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")
 CloseC2$ = SQFOpen(CloseC2$)
 CloseC2$ = SQFMakeField(CloseC2$,"ClientNumber",1,1,1,1,1,1)
@@ -201,31 +205,48 @@ WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 ProcedureReturn #True
 EndProcedure
 
+Procedure CleanShutDown()
+  EnableGraphicalConsole(1)
+  UseModule Proforma
+  ClearConsole()
+  PrintN("Please Wait...")
+  SpillProforma()
+  ClearConsole()
+  PrintN("GoodBye.")
+  Delay(1500)
+  End
+EndProcedure
+
 ;-------------
 ;- Program side
 ;
-UseModule Proforma
 ; Make Proforma Instances
-ProformaMakeInst(Instance$)
+ProformaMakeInst("Database-Ini")
 ;
 KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
 EnableGraphicalConsole(1)
-
+ProformaS("Database-Ini")
 If InitializeDatabase()
  Debug "1"
 EndIf
+ProformaE("Database-Ini")
 
-
+ProformaMakeInst("Cipher-Gen")
+ProformaS("Cipher-Gen")
+GenerateKeySequence(ID$)
+ProformaE("Cipher-Gen")
 
 
 
 Repeat
-  If Keyboard(conplace)
+  If Keyboard(Conplace) <> 0
     If msg$ = "esc"
-      Exit = 1
+      MessageRequester("BackRoom-Beta-1.0.0","User Hit Escape Key. Please Wait for shutdown.")
+      CleanShutDown()
     EndIf
   EndIf
+  
   
 Until Exit = 1
 
@@ -243,10 +264,11 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 151
-; FirstLine = 63
-; Folding = +
+; CursorPosition = 208
+; FirstLine = 45
+; Folding = 9
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
+; CompileSourceDirectory
 ; EnableUnicode
