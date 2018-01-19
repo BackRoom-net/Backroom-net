@@ -2,6 +2,9 @@
 ;        Author: Ruben Rodriguez
 ;          Date: 8/25/17
 ;            OS: Windows/XP/Vista/7/10
+;    Notes:
+;    Code is Open. Feel Free to use it in your program 
+;    Without Licence. 
 
 OpenConsole()
 Global Dim Console.s(200)
