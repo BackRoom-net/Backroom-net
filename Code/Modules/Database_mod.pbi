@@ -120,6 +120,7 @@ EndModule
 DeclareModule SQFormat
   Global Str$
   Global SQLT = CreateMutex()
+  Global CommitMutex_Database = CreateMutex()
   Declare.s SQFCreateTable(Str$,Name$)
   Declare.s SQFMakeField(Str$,Name$,Type,Notnull,PK,AI,Unique,Comma)
   Declare.s SQFOpen(Str$)
@@ -129,10 +130,17 @@ DeclareModule SQFormat
 EndDeclareModule
 
 Module SQFormat
+  Structure Strcu
+    IntoDb.s
+    dbnumb.i
+  EndStructure
+  
   Global Str$
-  Declare SQLDbUpdate(*DbMem)
-   Declare Logfinal(*Logmemory)
+  Declare SQLDbUpdate(UdbNumb)
+  Declare Logfinal(*Logmemory)
   Declare Logt(Subsystem$,Text$)
+  Global NewMap CommitThread.Strcu()
+  
   ;-------- Table Functions
   Procedure.s SQFCreateTable(Str$,Name$)
     SQLForm$ = "CREATE TABLE "
@@ -191,24 +199,32 @@ Module SQFormat
   EndProcedure
   
   Procedure.i SQLCommit(Database,Str$)
-    ByteLen = StringByteLength(Str$+"/*/-^#*"+Str(Database))
-    Str$ = Str$+"/*/-^#*"+Str(Database)
-    *DbMem = AllocateMemory(ByteLen)
-    PokeS(*DbMem,Str$)
+    UdbNumb = Random(99999,0)
+    While FindMapElement(CommitThread(),Str(UdbNumb))
+      Delay(12)
+      UdbNumb = Random(99999,0)
+    Wend
+    LockMutex(CommitMutex_Database)
+    CommitThread(Str(UdbNumb))
+    CommitThread() \dbnumb = Database
+    CommitThread() \IntoDb = Str$
+    UnlockMutex(CommitMutex_Database)
     Delay(1)
-    Thread = CreateThread(@SQLDbUpdate(),*Dbmem)
+    Thread = CreateThread(@SQLDbUpdate(),UdbNumb)
     Str$ = ""
-    ProcedureReturn Thread
+      ProcedureReturn Thread
   EndProcedure
   
-  Procedure SQLDbUpdate(*DbMem)
-    Str$ = PeekS(*Dbmem)
-    Dbc$ = StringField(Str$,1,"/*/-^#*")
-    Db$ = StringField(Str$,2,"/*/-^#*")
+  Procedure SQLDbUpdate(UdbNumb)
+    LockMutex(CommitMutex_Database)
+    CommitThread(Str(UdbNumb))
+    Db = CommitThread() \dbnumb
+    Dbc$ = CommitThread() \IntoDb
+    DeleteMapElement(CommitThread(),Str(UdbNumb))
+    UnlockMutex(CommitMutex_Database)
     LockMutex(SQLT)
-    stat = DatabaseUpdate(Val(Db$),Dbc$)
+    stat = DatabaseUpdate(Db,Dbc$)
     UnlockMutex(SQLT)
-    FreeMemory(*DbMem)
   EndProcedure
   ;-------- Table Functions
   ;-------- Input Functions
@@ -291,8 +307,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 239
-; FirstLine = 142
-; Folding = 4-O0
+; CursorPosition = 226
+; FirstLine = 114
+; Folding = 4PO0
 ; EnableThread
 ; EnableXP

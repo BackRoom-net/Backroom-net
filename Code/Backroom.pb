@@ -8,7 +8,7 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Intel\Programming\Backroom-net-master\Code\Modules"
+IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -287,8 +287,7 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 218
-; FirstLine = 99
+; CursorPosition = 10
 ; Folding = 7
 ; EnableThread
 ; EnableXP

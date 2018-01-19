@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<map>
+  <element key="Database-Ini">
+    <Tick>2</Tick>
+    <Start>0</Start>
+    <Stop>0</Stop>
+    <Sum>4804</Sum>
+  </element>
+  <element key="Memory-Map-Ini">
+    <Tick>1</Tick>
+    <Start>0</Start>
+    <Stop>0</Stop>
+    <Sum>0</Sum>
+  </element>
+  <element key="Cipher-Gen">
+    <Tick>3</Tick>
+    <Start>4804</Start>
+    <Stop>4804</Stop>
+    <Sum>0</Sum>
+  </element>
+</map>
