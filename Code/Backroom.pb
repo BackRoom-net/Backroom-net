@@ -153,12 +153,10 @@ Initlogging(1,"")
 Initdatabase(1,"Data\Main.db")
 CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
 CloseC1$ = SQFOpen(CloseC1$)
-CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,1)
-CloseC1$ = SQFMakeField(CloseC1$,"IP",2,1,0,0,1,1)
-CloseC1$ = SQFMakeField(CloseC1$,"Ping",1,1,0,0,0,0)          ;To be under "Close Clients" Ping < 15ms
+CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,1)          ;To be under "Close Clients" Ping < 15ms
 CloseC1$ = SQFclose(CloseC1$)
 Debug CloseC1$
-CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")
+CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")                    ;All Clients
 CloseC2$ = SQFOpen(CloseC2$)
 CloseC2$ = SQFMakeField(CloseC2$,"ClientNumber",1,1,1,1,1,1)
 CloseC2$ = SQFMakeField(CloseC2$,"IP",2,1,0,0,1,1)
@@ -177,30 +175,55 @@ CloseC2$ = SQFMakeField(CloseC2$,"Key",2,0,0,0,0,0)
 CloseC2$ = SQFclose(CloseC2$)
 Debug CloseC2$
 
-CloseC3$ = SQFCreateTable(CloseC3$,"SharedClients")
-CloseC3$ = SQFOpen(CloseC3$)
+CloseC3$ = SQFCreateTable(CloseC3$,"SharedClients")                   ;Clients that have downloaded before
+CloseC3$ = SQFOpen(CloseC3$)                                          ; It puts them at priority Refresh rate
 CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,1,1)
 CloseC3$ = SQFMakeField(CloseC3$,"IP",2,1,0,0,1,1)
 CloseC3$ = SQFMakeField(CloseC3$,"Ping",1,1,0,0,0,0)
 CloseC3$ = SQFclose(CloseC3$)
 Debug CloseC3$
 
-CloseC4$ = SQFCreateTable(CloseC4$,"SharedClients")
+CloseC4$ = SQFCreateTable(CloseC4$,"ActiveRfrClients")                ;When Active Refresh Is required. (Ex. Every second or so.)
 CloseC4$ = SQFOpen(CloseC4$)
 CloseC4$ = SQFMakeField(CloseC4$,"ClientNumber",1,1,1,1,1,1)
-CloseC4$ = SQFMakeField(CloseC4$,"IP",2,1,0,0,1,1)
-CloseC4$ = SQFMakeField(CloseC4$,"Ping",1,1,0,0,0,0)
 CloseC4$ = SQFclose(CloseC4$)
 Debug CloseC4$
+
+CloseC5$ = SQFCreateTable(CloseC5$,"PackagesOnHost")
+CloseC5$ = SQFOpen(CloseC5$)
+CloseC5$ = SQFMakeField(CloseC5$,"PackageNumber",1,1,1,1,1,1)
+CloseC5$ = SQFMakeField(CloseC5$,"PackageHash",2,1,0,0,0,1)
+CloseC5$ = SQFMakeField(CloseC5$,"ChunksInPackage",1,1,0,0,0,1)
+CloseC5$ = SQFMakeField(CloseC5$,"InProgress",1,0,0,0,0,1)
+CloseC5$ = SQFMakeField(CloseC5$,"Progress",1,0,0,0,0,1)
+CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,1)
+CloseC5$ = SQFclose(CloseC5$)
+Debug CloseC5$
+
+CloseC6$ = SQFCreateTable(CloseC6$,"PackSummary")
+CloseC6$ = SQFOpen(CloseC6$)
+CloseC6$ = SQFMakeField(CloseC6$,"PackageNumber",1,1,0,0,0,1)
+CloseC6$ = SQFMakeField(CloseC6$,"Tags",2,1,0,0,0,1)
+CloseC6$ = SQFMakeField(CloseC6$,"SubTrees",2,0,0,0,0,1)
+CloseC6$ = SQFMakeField(CloseC6$,"Name",2,0,0,0,0,1)                ;Your name or user to display
+CloseC6$ = SQFclose(CloseC6$)
+Debug CloseC6$
+
+
+Input()
 
 Thread1 = SQLCommit(1,CloseC1$)
 Thread2 = SQLCommit(1,CloseC2$)
 Thread3 = SQLCommit(1,CloseC3$)
 Thread4 = SQLCommit(1,CloseC4$)
+Thread5 = SQLCommit(1,CloseC5$)
+Thread6 = SQLCommit(1,CloseC6$)
 AddThreadMember(Thread1)
 AddThreadMember(Thread2)
 AddThreadMember(Thread3)
 AddThreadMember(Thread4)
+AddThreadMember(Thread5)
+AddThreadMember(Thread6)
 WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 ProcedureReturn #True
 EndProcedure
@@ -264,9 +287,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 208
-; FirstLine = 45
-; Folding = 9
+; CursorPosition = 218
+; FirstLine = 99
+; Folding = 7
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
