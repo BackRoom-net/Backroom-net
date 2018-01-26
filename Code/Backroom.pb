@@ -23,6 +23,7 @@ UseModule Cipher
 ;
 Declare Keyboard(conplace)
 Declare InitializeDatabase()
+Declare DetectSystem()
 Declare CleanShutDown()
 ;
 ;- Structures
@@ -228,6 +229,12 @@ WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 ProcedureReturn #True
 EndProcedure
 
+Procedure DetectSystem()
+  MemoryStatus(#PB_System_TotalPhysical)
+  MemoryStatus(#PB_System_FreePhysical)
+EndProcedure
+
+
 Procedure CleanShutDown()
   EnableGraphicalConsole(1)
   UseModule Proforma
@@ -287,8 +294,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 10
-; Folding = 7
+; CursorPosition = 25
+; FirstLine = 39
+; Folding = 1
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
