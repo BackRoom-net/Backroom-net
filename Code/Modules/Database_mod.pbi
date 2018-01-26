@@ -95,11 +95,15 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
   Else
     ProcedureReturn #False
   EndIf
-  Else
+Else
+  If FileSize(Name$) = -1
   If CreateFile(0,Name$)
     Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
     CloseFile(0)
   EndIf 
+Else
+  Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
+EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
     Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
@@ -307,8 +311,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 226
-; FirstLine = 114
-; Folding = 4PO0
+; CursorPosition = 104
+; FirstLine = 82
+; Folding = -PO0
 ; EnableThread
 ; EnableXP

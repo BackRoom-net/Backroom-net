@@ -1,5 +1,5 @@
 ﻿
-﻿;   Description: Encryption Module
+;   Description: Encryption Module
 ;        Author: Ruben Rodriguez
 ;          Date: 11/13/17
 ;            OS: Windows/XP/Vista/7/10
@@ -82,7 +82,7 @@ Module Cipher
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 20
-; FirstLine = 6
+; CursorPosition = 1
 ; Folding = -
 ; EnableXP
+; CompileSourceDirectory
