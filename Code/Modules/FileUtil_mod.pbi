@@ -3,6 +3,7 @@
 DeclareModule FileUtil
   CreateDirectory("FileTmp")
   Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
+  Declare SpredDir(File$,*AESKey,*IniVector)
   Global FileSpreadMutex = CreateMutex()
   
   Structure part
@@ -105,7 +106,7 @@ filesindim = 0
         filename$ = DirectoryEntryName(0)
         file(filesindim) = path$+filename$
         filesindim = filesindim+1
-        ;PrintN("File: "+path$+filename$+" Size:"+Size$)
+        PrintN("File: "+path$+filename$+" Size:"+Size$)
         
       Else
         Type$ = "[Directory] "
@@ -115,13 +116,13 @@ filesindim = 0
           Goto enddir
         EndIf
         
-        ;PrintN("Directory: "+path$+dirname$+"\")
+        PrintN("Directory: "+path$+dirname$+"\")
         dirs(scanto) = path$+dirname$+"\"
         scanto = scanto + 1
         enddir:
       EndIf
       
-      ;Debug Type$ + DirectoryEntryName(0) + Size$
+      Debug Type$ + DirectoryEntryName(0) + Size$
     Wend
     FinishDirectory(0)
     scan = scan + 1
@@ -141,9 +142,8 @@ out:
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 28
-; Folding = 4
+; CursorPosition = 5
+; Folding = -
 ; EnableThread
 ; EnableXP
 ; Executable = ..\Testing modules\Filetest.exe

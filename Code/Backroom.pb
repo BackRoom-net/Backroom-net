@@ -24,6 +24,7 @@ UseModule Cipher
 Declare Keyboard(conplace)
 Declare InitializeDatabase()
 Declare DetectSystem()
+Declare CreatePrettystuff()
 Declare CleanShutDown()
 ;
 ;- Structures
@@ -230,8 +231,55 @@ ProcedureReturn #True
 EndProcedure
 
 Procedure DetectSystem()
-  MemoryStatus(#PB_System_TotalPhysical)
-  MemoryStatus(#PB_System_FreePhysical)
+  Total = MemoryStatus(#PB_System_TotalPhysical)
+  Current = MemoryStatus(#PB_System_FreePhysical)
+  Debug Total
+  Debug Current
+  Input()
+  If Total > 4200000000 ;anything above 4gb
+    SysSpecTotal = 1
+    ElseIf Total > 4100000000 ;4gb
+      SysSpecTotal = 2
+    ElseIf Total < 2000000000 ;below 2gb
+      SysSpecTotal = 0
+    EndIf
+    
+    If Current > 4200000000 ;anything above 4gb
+    SysSpecCurr = 1
+    ElseIf Current > 4100000000 ;4gb
+      SysSpecCurr = 2
+    ElseIf Current < 2000000000 ;below 2gb
+      SysSpecCurr = 0
+    ElseIf Current > 2000000000 ;Just above 2gb
+      SysSpecCurr = 3
+    EndIf
+    
+    Debug SysSpecTotal
+    Debug SysSpecCurr
+    If SysSpecTotal = 0
+      MessageRequester("System","System does not have Minimum Requeseted memory. Program will not run.",#PB_MessageRequester_Error)
+      End
+    EndIf
+    
+    If SysSpecCurr = 0
+      MessageRequester("System","System does not currently have enough memory to Run program. Try exiting some programs.",#PB_MessageRequester_Error)
+      End
+    EndIf
+    
+    If SysSpecCurr = 3
+    Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
+    If Result = #PB_MessageRequester_Yes
+    Else
+      End
+      EndIf
+    EndIf
+
+EndProcedure
+
+Procedure CreatePrettystuff()
+  LoadImage(1,"favicon.ico")
+  
+  
 EndProcedure
 
 
@@ -255,6 +303,7 @@ ProformaMakeInst("Database-Ini")
 ;
 KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
+DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
 If InitializeDatabase()
@@ -294,9 +343,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 39
-; Folding = 1
+; CursorPosition = 305
+; FirstLine = 107
+; Folding = k
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
