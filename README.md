@@ -23,3 +23,40 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 > This program is being developed under PureBasic 5.61 (Windows - x64)
 > Current compatibility with the program is limited to windows 7,8,8.1 and 10 
+
+# System Requirements
+
+This program will run on most modern computers (1-3 years old)
+
+_It is strict and **can** be annoying_
+
+* System **Minimum** Memory is 2gb!!
+  Nothing below this ammount will run! This is like this so 32-bit computers can still run this program.
+  
+* System reccomended specifications are:
+
+   **6Gb of ram**
+
+   **Four Core processor** - *this does not mean Hyperthreaded fake cores.*
+
+   **250Gb Hard disk space**
+
+   **35 Megabit internet speed** - *Reccomended 1000M NIC*
+   
+* System Minimum specifications are:
+
+   **4Gb of ram** - *Yes, this program can work with less but, you will be prompted if you would like to risk it. The program will      however **Not** Run if it is Below 2gb. So, In fact, the minimum is 2Gb.*
+
+   **Dual Core**
+
+   **25Gb Hard disk space**
+
+   **15 Megabit internet speed**
+
+* System Notes
+
+A 250Gb hard disk is reccomended just if you have it as a boot up drive, you will be encrypting files aswell so that puts a strain on the drive and storage. In the Minimum, You will not be able to really have windows and have very many packages being received or encrypted/decrypted. it would be dangerous to do with a minimal amount of space.
+For ram, Its going to be a ram hog (*Like Chrome*) and I will need to make many modifications to memory management quick.
+
+  
+
