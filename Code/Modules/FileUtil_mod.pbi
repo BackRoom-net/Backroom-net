@@ -106,7 +106,7 @@ filesindim = 0
         filename$ = DirectoryEntryName(0)
         file(filesindim) = path$+filename$
         filesindim = filesindim+1
-        PrintN("File: "+path$+filename$+" Size:"+Size$)
+        ;PrintN("File: "+path$+filename$+" Size:"+Size$)
         
       Else
         Type$ = "[Directory] "
@@ -116,7 +116,7 @@ filesindim = 0
           Goto enddir
         EndIf
         
-        PrintN("Directory: "+path$+dirname$+"\")
+        ;PrintN("Directory: "+path$+dirname$+"\")
         dirs(scanto) = path$+dirname$+"\"
         scanto = scanto + 1
         enddir:
@@ -137,12 +137,31 @@ filesindim = 0
   EndIf
 Wend
 out:
+
+ClearConsole()
+PrintN("Please wait while adding Files to combined file...")
+UseTARPacker()
+Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
+Debug CreatePack(1,filename$)
+While file(dimnumb)
+  dimnumb = dimnumb+1
+  Fileselect$ = file(dimnumb)
+  FileTarPath$ = RemoveString(Fileselect$,Base$)
+  FileTarPath$ = LTrim(FileTarPath$)
+  Debug FileTarPath$
+  AddPackFile(1,Fileselect$,FileTarPath$)
+Wend
+ClosePack(1)
+PrintN("Creating Encypted package...")
+Debug SpredFile(Filename$,*AESKey,*IniVector,*ProgressOut)
+
   EndProcedure
   
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 5
+; CursorPosition = 141
+; FirstLine = 99
 ; Folding = -
 ; EnableThread
 ; EnableXP
