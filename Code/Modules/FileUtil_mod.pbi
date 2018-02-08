@@ -2,6 +2,7 @@
 
 DeclareModule FileUtil
   CreateDirectory("FileTmp")
+  CreateDirectory("Package")
   Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
   Declare SpredDir(File$,*AESKey,*IniVector)
   Global FileSpreadMutex = CreateMutex()
@@ -32,6 +33,11 @@ FileSize.i = Lof(0)
 Parts.d = Filesize.i/Size.i
 ; ---------------
 Parts = Round(Parts.d,#PB_Round_Up)
+If parts = 0 
+  MessageRequester("Internal Error","Package does not meet size requirements.")
+  ProcedureReturn #False
+EndIf
+
 
 redo:
 Repeat
@@ -82,10 +88,13 @@ Repeat
       BeforeProgress = FinalProgress
     EndIf
     
-Until Eof(0)
+  Until Eof(0)
+  CloseFile(0)
+  ProcedureReturn #True
   EndProcedure
   
   Procedure SpredDir(File$,*AESKey,*IniVector)
+    Input()
     Global Dim dirs.s(98000)
 Global Dim file.s(980000)
 InitialPath$ = "C:\"   ; set initial path to display (could also be blank)
@@ -142,7 +151,7 @@ ClearConsole()
 PrintN("Please wait while adding Files to combined file...")
 UseTARPacker()
 Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
-Debug CreatePack(1,filename$)
+Debug CreatePack(1,"Package\"+filename$)
 While file(dimnumb)
   dimnumb = dimnumb+1
   Fileselect$ = file(dimnumb)
@@ -153,15 +162,23 @@ While file(dimnumb)
 Wend
 ClosePack(1)
 PrintN("Creating Encypted package...")
-Debug SpredFile(Filename$,*AESKey,*IniVector,*ProgressOut)
+If SpredFile("Package\"+Filename$,*AESKey,*IniVector,*ProgressOut)
+PrintN("Cleaning up...")
+DeleteFile("Package\"+Filename$)
+PrintN("Done.")
+ProcedureReturn #True
+Else
+  PrintN("Error, Spread File did not finish.")
+  ProcedureReturn #False
+EndIf
 
   EndProcedure
   
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 141
-; FirstLine = 99
+; CursorPosition = 164
+; FirstLine = 143
 ; Folding = -
 ; EnableThread
 ; EnableXP

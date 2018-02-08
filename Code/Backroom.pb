@@ -18,6 +18,7 @@ IncludeFile "Proforma_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
 UseModule Proforma
 UseModule Cipher
+UseModule FileUtil
 ;
 ;
 ;
@@ -130,7 +131,7 @@ Case 2
           msg$ = "esc"
           ProcedureReturn #True
         Else
-          keypressed$ = msg$
+          msg$ = keypressed$
           ProcedureReturn #True
       EndIf
       
@@ -212,7 +213,6 @@ CloseC6$ = SQFclose(CloseC6$)
 Debug CloseC6$
 
 
-Input()
 
 Thread1 = SQLCommit(1,CloseC1$)
 Thread2 = SQLCommit(1,CloseC2$)
@@ -313,9 +313,14 @@ ProformaE("Database-Ini")
 
 ProformaMakeInst("Cipher-Gen")
 ProformaS("Cipher-Gen")
-GenerateKeySequence(ID$)
+GenerateKeySequence("Main")
 ProformaE("Cipher-Gen")
+*KeyMem = EncryptStorage("Main") \keymem
 
+PrintN("Welcome to Backroom-Beta-1.0.0!")
+PrintN(" ")
+PrintN("Press 1 To create a new package")
+PrintN("Press escape to exit")
 
 
 Repeat
@@ -323,7 +328,13 @@ Repeat
     If msg$ = "esc"
       MessageRequester("BackRoom-Beta-1.0.0","User Hit Escape Key. Please Wait for shutdown.")
       CleanShutDown()
+    Else
+      Select msg$
+        Case "1"
+          SpredDir("null",EncryptStorage() \AESMem,*KeyMem)
+          EndSelect
     EndIf
+    
   EndIf
   
   
@@ -343,9 +354,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 305
-; FirstLine = 107
-; Folding = k
+; CursorPosition = 214
+; FirstLine = 109
+; Folding = i
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
