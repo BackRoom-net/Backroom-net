@@ -32,7 +32,12 @@ Filename$ = GetFilePart(File$)
 FileSize.i = Lof(0)
 Parts.d = Filesize.i/Size.i
 ; ---------------
+PrintN(Filename$)
+PrintN(Str(Parts.d))
 Parts = Round(Parts.d,#PB_Round_Up)
+PrintN(Str(parts))
+PrintN(Str(Filesize.i))
+PrintN(File$)
 If parts = 0 
   MessageRequester("Internal Error","Package does not meet size requirements.")
   ProcedureReturn #False
@@ -94,12 +99,17 @@ Repeat
   EndProcedure
   
   Procedure SpredDir(File$,*AESKey,*IniVector)
-    Input()
     Global Dim dirs.s(98000)
-Global Dim file.s(980000)
+    Global Dim file.s(980000)
+    CurrDir$ = GetCurrentDirectory()
 InitialPath$ = "C:\"   ; set initial path to display (could also be blank)
 Path$ = PathRequester("Create Package:", InitialPath$)
 Base$ = Path$
+If CurrDir$ = Base$
+  MessageRequester("Error","Current directory select not allowed.")
+  ProcedureReturn #False
+EndIf
+PrintN("Print: "+Base$)
 PrintN("Please wait while scanning directory...")
 dirs(0) = Path$
 scan = 0
@@ -160,6 +170,7 @@ While file(dimnumb)
   Debug FileTarPath$
   AddPackFile(1,Fileselect$,FileTarPath$)
 Wend
+PrintN(Str(dimnumb))
 ClosePack(1)
 PrintN("Creating Encypted package...")
 If SpredFile("Package\"+Filename$,*AESKey,*IniVector,*ProgressOut)
@@ -177,8 +188,8 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 164
-; FirstLine = 143
+; CursorPosition = 172
+; FirstLine = 135
 ; Folding = -
 ; EnableThread
 ; EnableXP

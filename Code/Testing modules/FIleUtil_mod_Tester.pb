@@ -6,7 +6,7 @@ UseModule Cipher
 
 GenerateKeySequence("Master")
 
-*KeyMem = EncryptStorage("Master") \keymem
+*KeyMem = EncryptStorage("Master") \master
 
 SpredDir(File$,EncryptStorage() \AESMem,*Keymem)
 

@@ -68,6 +68,9 @@ Module Cipher
     *Base64Key = AllocateMemory(24)
     PokeS(*Base64Key,Base64Key$)
     
+    
+    
+    
     If AESEncoder(*Master,*AESMem,28,*Base64Key,256,*Key)     ;After that whole mess we encript the Base64 Key.
       EncryptStorage() \AESMem = *AESMem      
       ProcedureReturn #True
@@ -82,7 +85,8 @@ Module Cipher
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 1
+; CursorPosition = 73
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; CompileSourceDirectory
