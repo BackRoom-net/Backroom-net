@@ -34,7 +34,7 @@ Module Cipher
   ;--
   Procedure GenerateKeySequence(ID$)
     ;Generation of Initial 16-Byte key
-    *Key = AllocateMemory(17)
+    *Key = AllocateMemory(32)
     Debug CryptRandomData(*Key,16)
     ; --------
     ;Generation of 28-byte Master key
@@ -65,7 +65,7 @@ Module Cipher
     EncryptStorage() \MasterSHA3 = MasterSHA3$
     
     *AESMem = AllocateMemory(32)
-    *Base64Key = AllocateMemory(24)
+    *Base64Key = AllocateMemory(StringByteLength(Base64Key$)+32)
     PokeS(*Base64Key,Base64Key$)
     
     
@@ -85,8 +85,8 @@ Module Cipher
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 73
-; FirstLine = 34
+; CursorPosition = 67
+; FirstLine = 43
 ; Folding = -
 ; EnableXP
 ; CompileSourceDirectory

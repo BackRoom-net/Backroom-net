@@ -62,7 +62,7 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
   
 Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
     If logmode > 0 ;If the Log setting is not Null.
-  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
+  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$)+16)
   PokeS(*logmemory,Subsystem$+": "+Text$)
   logtl = CreateThread(@Logfinal(),*logmemory)
 EndIf
@@ -88,9 +88,9 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
    If OpenDatabase(database,Name$, "", "") ;Just open the database.
      If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.
        ;Debug "Memory table created"
-       Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
+       ;Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
        Else
-       Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
+       ;Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
     EndIf
   Else
     ProcedureReturn #False
@@ -98,15 +98,15 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
 Else
   If FileSize(Name$) = -1
   If CreateFile(0,Name$)
-    Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
+    ;Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
     CloseFile(0)
   EndIf 
 Else
-  Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
+  ;Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
 EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
-    Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
+    ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
     EndIf
   Else
     ProcedureReturn #False
@@ -311,8 +311,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 104
-; FirstLine = 82
+; CursorPosition = 64
+; FirstLine = 50
 ; Folding = -PO0
 ; EnableThread
 ; EnableXP

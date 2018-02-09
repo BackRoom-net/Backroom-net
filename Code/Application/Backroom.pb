@@ -8,7 +8,7 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\"
+IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -152,14 +152,13 @@ UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
 UseModule ThreadBranch
-Input()
 Initlogging(1,"")
 Initdatabase(1,"Data\Main.db")
 CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
 CloseC1$ = SQFOpen(CloseC1$)
 CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,1)          ;To be under "Close Clients" Ping < 15ms
 CloseC1$ = SQFclose(CloseC1$)
-Debug CloseC1$
+
 CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")                    ;All Clients
 CloseC2$ = SQFOpen(CloseC2$)
 CloseC2$ = SQFMakeField(CloseC2$,"ClientNumber",1,1,1,1,1,1)
@@ -177,7 +176,7 @@ CloseC2$ = SQFMakeField(CloseC2$,"Base64Key",2,0,0,0,0,1)
 CloseC2$ = SQFMakeField(CloseC2$,"MasterKey",2,0,0,0,0,1)
 CloseC2$ = SQFMakeField(CloseC2$,"Key",2,0,0,0,0,0)
 CloseC2$ = SQFclose(CloseC2$)
-Debug CloseC2$
+
 
 CloseC3$ = SQFCreateTable(CloseC3$,"SharedClients")                   ;Clients that have downloaded before
 CloseC3$ = SQFOpen(CloseC3$)                                          ; It puts them at priority Refresh rate
@@ -185,13 +184,13 @@ CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,1,1)
 CloseC3$ = SQFMakeField(CloseC3$,"IP",2,1,0,0,1,1)
 CloseC3$ = SQFMakeField(CloseC3$,"Ping",1,1,0,0,0,0)
 CloseC3$ = SQFclose(CloseC3$)
-Debug CloseC3$
+
 
 CloseC4$ = SQFCreateTable(CloseC4$,"ActiveRfrClients")                ;When Active Refresh Is required. (Ex. Every second or so.)
 CloseC4$ = SQFOpen(CloseC4$)
 CloseC4$ = SQFMakeField(CloseC4$,"ClientNumber",1,1,1,1,1,1)
 CloseC4$ = SQFclose(CloseC4$)
-Debug CloseC4$
+
 
 CloseC5$ = SQFCreateTable(CloseC5$,"PackagesOnHost")
 CloseC5$ = SQFOpen(CloseC5$)
@@ -202,7 +201,7 @@ CloseC5$ = SQFMakeField(CloseC5$,"InProgress",1,0,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"Progress",1,0,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,1)
 CloseC5$ = SQFclose(CloseC5$)
-Debug CloseC5$
+
 
 CloseC6$ = SQFCreateTable(CloseC6$,"PackSummary")
 CloseC6$ = SQFOpen(CloseC6$)
@@ -211,7 +210,7 @@ CloseC6$ = SQFMakeField(CloseC6$,"Tags",2,1,0,0,0,1)
 CloseC6$ = SQFMakeField(CloseC6$,"SubTrees",2,0,0,0,0,1)
 CloseC6$ = SQFMakeField(CloseC6$,"Name",2,0,0,0,0,1)                ;Your name or user to display
 CloseC6$ = SQFclose(CloseC6$)
-Debug CloseC6$
+
 
 
 
@@ -318,13 +317,16 @@ ProformaE("Cipher-Gen")
 *KeyMem = EncryptStorage("Main") \keymem
 
 men:
+EnableGraphicalConsole(1)
+ClearConsole()
 PrintN("Welcome to Backroom-Beta-1.0.0!")
 PrintN(" ")
 PrintN("Press 1 To create a new package")
 PrintN("Press escape to exit")
 
 Repeat
-  If Keyboard(Conplace) <> 0
+  If Keyboard(conplace) <> 0
+    Debug conplace
     If msg$ = "esc"
       MessageRequester("BackRoom-Beta-1.0.0","User Hit Escape Key. Please Wait for shutdown.")
       CleanShutDown()
@@ -335,7 +337,6 @@ Repeat
           ClearConsole()
           Goto men
         EndSelect
-    
   EndIf
   
   
@@ -355,13 +356,14 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 317
-; FirstLine = 69
-; Folding = g
+; CursorPosition = 320
+; FirstLine = 169
+; Folding = h
 ; EnableThread
 ; EnableXP
 ; EnableOnError
 ; Executable = Test.exe
 ; CompileSourceDirectory
-; Warnings = Display
+; Warnings = Error
+; EnablePurifier
 ; EnableUnicode

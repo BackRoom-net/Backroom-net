@@ -99,6 +99,7 @@ Repeat
   EndProcedure
   
   Procedure SpredDir(File$,*AESKey,*IniVector)
+    ClearConsole()
     Global Dim dirs.s(98000)
     Global Dim file.s(980000)
     CurrDir$ = GetCurrentDirectory()
@@ -135,7 +136,7 @@ filesindim = 0
           Goto enddir
         EndIf
         
-        ;PrintN("Directory: "+path$+dirname$+"\")
+        PrintN("Directory: "+path$+dirname$+"\")
         dirs(scanto) = path$+dirname$+"\"
         scanto = scanto + 1
         enddir:
@@ -188,9 +189,12 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 135
+; CursorPosition = 101
+; FirstLine = 97
 ; Folding = -
 ; EnableThread
 ; EnableXP
+; EnableOnError
 ; Executable = ..\Testing modules\Filetest.exe
+; Debugger = Console
+; EnablePurifier
