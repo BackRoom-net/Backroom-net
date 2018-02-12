@@ -165,20 +165,20 @@ CloseC2$ = SQFMakeField(CloseC2$,"ClientNumber",1,1,1,1,1,1)
 CloseC2$ = SQFMakeField(CloseC2$,"IP",2,1,0,0,1,1)
 CloseC2$ = SQFMakeField(CloseC2$,"Ping",1,1,0,0,0,1)
 CloseC2$ = SQFMakeField(CloseC2$,"HandShakeSuccessful",1,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"AESCatch",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"SHA1",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"SHA2",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"SHA3",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"MD5",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"CRC32",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Base64Master",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Base64Key",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"MasterKey",2,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Key",2,0,0,0,0,0)
+CloseC2$ = SQFMakeField(CloseC2$,"AESCatch",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"SHA1",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"SHA2",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"SHA3",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"MD5",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"CRC32",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Base64Master",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Base64Key",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"MasterKey",2,1,0,0,0,1)
+CloseC2$ = SQFMakeField(CloseC2$,"Key",2,1,0,0,0,0)
 CloseC2$ = SQFclose(CloseC2$)
 
 
-CloseC3$ = SQFCreateTable(CloseC3$,"SharedClients")                   ;Clients that have downloaded before
+CloseC3$ = SQFCreateTable(CloseC3$,"FriendlyClients")                   ;Clients that we have downloaded from before
 CloseC3$ = SQFOpen(CloseC3$)                                          ; It puts them at priority Refresh rate
 CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,0,1)
 CloseC3$ = SQFMakeField(CloseC3$,"IP",2,1,0,0,1,1)
@@ -201,7 +201,7 @@ CloseC5$ = SQFMakeField(CloseC5$,"InProgress",1,0,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"Progress",1,0,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,0)
 CloseC5$ = SQFclose(CloseC5$)
-Debug CloseC5$
+
 
 CloseC6$ = SQFCreateTable(CloseC6$,"PackSummary")
 CloseC6$ = SQFOpen(CloseC6$)
@@ -211,7 +211,29 @@ CloseC6$ = SQFMakeField(CloseC6$,"SubTrees",2,0,0,0,0,1)
 CloseC6$ = SQFMakeField(CloseC6$,"Name",2,0,0,0,0,0)                ;Your name or user to display
 CloseC6$ = SQFclose(CloseC6$)
 
+CloseC7$ = SQFCreateTable(CloseC7$,"Downloadhistory")                   ;Clients that have downloaded before
+CloseC7$ = SQFOpen(CloseC7$)                                          ; It puts them at priority Refresh rate
+CloseC7$ = SQFMakeField(CloseC7$,"ClientNumber",1,1,1,1,0,1)
+CloseC7$ = SQFMakeField(CloseC7$,"IP",2,1,0,0,1,1)
+CloseC7$ = SQFMakeField(CloseC7$,"Ping",1,1,0,0,0,0)
+CloseC7$ = SQFclose(CloseC7$)
 
+CloseC8$ = SQFCreateTable(CloseC8$,"PackagesOnServer")
+CloseC8$ = SQFOpen(CloseC8$)
+CloseC8$ = SQFMakeField(CloseC8$,"PackageNumber",1,1,1,1,0,1)
+CloseC8$ = SQFMakeField(CloseC8$,"PackageHash",2,1,0,0,0,1)
+CloseC8$ = SQFMakeField(CloseC8$,"ChunksInPackage",1,1,0,0,0,1)
+CloseC8$ = SQFMakeField(CloseC8$,"InProgress",1,0,0,0,0,1)
+CloseC8$ = SQFMakeField(CloseC8$,"Progress",1,0,0,0,0,0)
+CloseC8$ = SQFclose(CloseC8$)
+
+CloseC9$ = SQFCreateTable(CloseC9$,"PackServerSummary")
+CloseC9$ = SQFOpen(CloseC9$)
+CloseC9$ = SQFMakeField(CloseC9$,"PackageNumber",1,1,0,0,0,1)
+CloseC9$ = SQFMakeField(CloseC9$,"Tags",2,1,0,0,0,1)
+CloseC9$ = SQFMakeField(CloseC9$,"SubTrees",2,0,0,0,0,1)
+CloseC9$ = SQFMakeField(CloseC9$,"Name",2,0,0,0,0,0)                ;Your name or user to display
+CloseC9$ = SQFclose(CloseC9$)
 
 
 Thread1 = SQLCommit(1,CloseC1$)
@@ -220,12 +242,18 @@ Thread3 = SQLCommit(1,CloseC3$)
 Thread4 = SQLCommit(1,CloseC4$)
 Thread5 = SQLCommit(1,CloseC5$)
 Thread6 = SQLCommit(1,CloseC6$)
+Thread7 = SQLCommit(1,CloseC7$)
+Thread8 = SQLCommit(1,CloseC8$)
+Thread9 = SQLCommit(1,CloseC9$)
 AddThreadMember(Thread1)
 AddThreadMember(Thread2)
 AddThreadMember(Thread3)
 AddThreadMember(Thread4)
 AddThreadMember(Thread5)
 AddThreadMember(Thread6)
+AddThreadMember(Thread7)
+AddThreadMember(Thread8)
+AddThreadMember(Thread9)
 WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 ProcedureReturn #True
 EndProcedure
@@ -302,7 +330,6 @@ ProformaMakeInst("Database-Ini")
 ;
 KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
-Input()
 DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
@@ -357,9 +384,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 190
-; FirstLine = 100
-; Folding = i
+; CursorPosition = 331
+; FirstLine = 45
+; Folding = g
 ; EnableThread
 ; EnableXP
 ; EnableUser
