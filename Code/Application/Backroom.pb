@@ -8,7 +8,7 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\"
+IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -156,7 +156,7 @@ Initlogging(1,"")
 Initdatabase(1,"Data\Main.db")
 CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
 CloseC1$ = SQFOpen(CloseC1$)
-CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,1)          ;To be under "Close Clients" Ping < 15ms
+CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,0)          ;To be under "Close Clients" Ping < 15ms
 CloseC1$ = SQFclose(CloseC1$)
 
 CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")                    ;All Clients
@@ -180,7 +180,7 @@ CloseC2$ = SQFclose(CloseC2$)
 
 CloseC3$ = SQFCreateTable(CloseC3$,"SharedClients")                   ;Clients that have downloaded before
 CloseC3$ = SQFOpen(CloseC3$)                                          ; It puts them at priority Refresh rate
-CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,1,1)
+CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,0,1)
 CloseC3$ = SQFMakeField(CloseC3$,"IP",2,1,0,0,1,1)
 CloseC3$ = SQFMakeField(CloseC3$,"Ping",1,1,0,0,0,0)
 CloseC3$ = SQFclose(CloseC3$)
@@ -188,27 +188,27 @@ CloseC3$ = SQFclose(CloseC3$)
 
 CloseC4$ = SQFCreateTable(CloseC4$,"ActiveRfrClients")                ;When Active Refresh Is required. (Ex. Every second or so.)
 CloseC4$ = SQFOpen(CloseC4$)
-CloseC4$ = SQFMakeField(CloseC4$,"ClientNumber",1,1,1,1,1,1)
+CloseC4$ = SQFMakeField(CloseC4$,"ClientNumber",1,1,1,1,0,0)
 CloseC4$ = SQFclose(CloseC4$)
 
 
 CloseC5$ = SQFCreateTable(CloseC5$,"PackagesOnHost")
 CloseC5$ = SQFOpen(CloseC5$)
-CloseC5$ = SQFMakeField(CloseC5$,"PackageNumber",1,1,1,1,1,1)
+CloseC5$ = SQFMakeField(CloseC5$,"PackageNumber",1,1,1,1,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"PackageHash",2,1,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"ChunksInPackage",1,1,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"InProgress",1,0,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"Progress",1,0,0,0,0,1)
-CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,1)
+CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,0)
 CloseC5$ = SQFclose(CloseC5$)
-
+Debug CloseC5$
 
 CloseC6$ = SQFCreateTable(CloseC6$,"PackSummary")
 CloseC6$ = SQFOpen(CloseC6$)
 CloseC6$ = SQFMakeField(CloseC6$,"PackageNumber",1,1,0,0,0,1)
 CloseC6$ = SQFMakeField(CloseC6$,"Tags",2,1,0,0,0,1)
 CloseC6$ = SQFMakeField(CloseC6$,"SubTrees",2,0,0,0,0,1)
-CloseC6$ = SQFMakeField(CloseC6$,"Name",2,0,0,0,0,1)                ;Your name or user to display
+CloseC6$ = SQFMakeField(CloseC6$,"Name",2,0,0,0,0,0)                ;Your name or user to display
 CloseC6$ = SQFclose(CloseC6$)
 
 
@@ -357,9 +357,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 10
-; FirstLine = 7
-; Folding = g
+; CursorPosition = 190
+; FirstLine = 100
+; Folding = i
 ; EnableThread
 ; EnableXP
 ; EnableUser

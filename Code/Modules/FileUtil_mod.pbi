@@ -41,8 +41,10 @@ Module FileUtil
   
   Procedure FileThreadWatcher()
     While NextMapElement(FileThreads())
-    
-    
+      Status$ = Filethreads() \Status
+      If Status$ = "Close"
+        DeleteMapElement(FileThreads())
+      EndIf
     Wend
     ResetMap(FileThreads())
   EndProcedure
@@ -220,9 +222,9 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 9
-; Folding = H-
+; CursorPosition = 46
+; FirstLine = 23
+; Folding = n-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
