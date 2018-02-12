@@ -58,7 +58,7 @@ Module FileUtil
     FileInfopass() \File = Path$
     FileInfopass() \Inivect = *IniVector
     thread = CreateThread(@SpredDirThread(),ProcessID)
-    
+    ProcedureReturn ProcessID
   EndProcedure
   
   Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
@@ -222,9 +222,9 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 46
-; FirstLine = 23
-; Folding = n-
+; CursorPosition = 59
+; FirstLine = 15
+; Folding = r-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
