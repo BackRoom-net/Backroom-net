@@ -7,6 +7,7 @@ DeclareModule FileUtil
   CreateDirectory("Package")
   Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
   Declare SpredDir(*AESKey,*IniVector)
+  Declare FileThreadWatcher()
   Global FileTarMutex = CreateMutex()
   Global FileZipMutex = CreateMutex()
   Global InfoPassMutex = CreateMutex()
@@ -30,13 +31,21 @@ DeclareModule FileUtil
   EndStructure
   
   Global NewMap FileInfopass.SprdDirPassInfo()
-  
+  Global NewMap FileThreads.ThrdJob()
   
   
 EndDeclareModule
 
 Module FileUtil
   Declare SpredDirThread(ProcessID)
+  
+  Procedure FileThreadWatcher()
+    While NextMapElement(FileThreads())
+    
+    
+    Wend
+    ResetMap(FileThreads())
+  EndProcedure
   
   
   Procedure SpredDir(*AESKey,*IniVector)
@@ -118,7 +127,7 @@ Repeat
   If BeforeProgress = FinalProgress.i
     
     Else
-      Debug Str(FinalProgress)+"%"
+      ;Debug Str(FinalProgress)+"%"
       BeforeProgress = FinalProgress
     EndIf
     
@@ -169,7 +178,7 @@ filesindim = 0
         enddir:
       EndIf
       
-      Debug Type$ + DirectoryEntryName(0) + Size$
+      ;Debug Type$ + DirectoryEntryName(0) + Size$
     Wend
     FinishDirectory(0)
     scan = scan + 1
@@ -210,10 +219,10 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 171
-; Folding = -
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 43
+; FirstLine = 9
+; Folding = H-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
