@@ -2,58 +2,87 @@
 
 DeclareModule FileUtil
   CreateDirectory("FileTmp")
+  CreateDirectory("FileTmp\InProgress")
+  CreateDirectory("FileTmp\Processing")
   CreateDirectory("Package")
   Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
-  Declare SpredDir(File$,*AESKey,*IniVector)
-  Global FileSpreadMutex = CreateMutex()
-  
+  Declare SpredDir(*AESKey,*IniVector)
+  Global FileTarMutex = CreateMutex()
+  Global FileZipMutex = CreateMutex()
+  Global InfoPassMutex = CreateMutex()
   Structure part
     Checksum.s
     filefinger.s
     Compressed.i
   EndStructure
   
+  Structure SprdDirPassInfo
+    File.s
+    aesmem.i
+    Inivect.i
+  EndStructure
+  
+  Structure ThrdJob
+    ID.s
+    Job.s
+    Status.s
+    Message.s
+  EndStructure
+  
+  Global NewMap FileInfopass.SprdDirPassInfo()
+  
   
   
 EndDeclareModule
 
 Module FileUtil
-
+  Declare SpredDirThread(ProcessID)
+  
+  
+  Procedure SpredDir(*AESKey,*IniVector)
+    InitialPath$ = "C:\"   ; set initial path to display (could also be blank)
+    Path$ = PathRequester("Create Package:", InitialPath$)
+    ProcessID = Random(99999)+Random(99999)
+    FileInfopass(Str(ProcessID)) \aesmem = *AESKey
+    FileInfopass() \File = Path$
+    FileInfopass() \Inivect = *IniVector
+    thread = CreateThread(@SpredDirThread(),ProcessID)
+    
+  EndProcedure
+  
   Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
     NewMap Files.part(2000000)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
     UseZipPacker()
- 
+    UniNumber = Random(1000)
+ Debug File$
 Size.i = 1024*4000
 ; --------------
-OpenFile(0,File$)
+OpenFile(UniNumber,File$)
 Filename$ = GetFilePart(File$)
-FileSize.i = Lof(0)
+CreateDirectory("FileTmp\Processing\"+Filename$)
+FileSize.i = Lof(UniNumber)
 Parts.d = Filesize.i/Size.i
 ; ---------------
-PrintN(Filename$)
-PrintN(Str(Parts.d))
 Parts = Round(Parts.d,#PB_Round_Up)
-PrintN(Str(parts))
-PrintN(Str(Filesize.i))
-PrintN(File$)
 If parts = 0 
   MessageRequester("Internal Error","Package does not meet size requirements.")
   ProcedureReturn #False
 EndIf
 
+CmpressFile = Random(1000)
 
 redo:
 Repeat
   *Split = AllocateMemory(Size.i)
-  Actread = ReadData(0,*Split,Size.i)
+  Actread = ReadData(UniNumber,*Split,Size.i)
   FileFinger$ = Fingerprint(*Split,Actread,#PB_Cipher_CRC32)
   CheckSum$ = Fingerprint(*Split,ActRead,#PB_Cipher_SHA3)
   If FileSize(FileFinger$) = -1
     *Encoded = AllocateMemory(Actread+32)
     *Compressed = AllocateMemory(Actread+32)
-    OpenFile(2,"FileTmp\"+FileFinger$)
+    OpenFile(CmpressFile,"FileTmp\Processing\"+Filename$+"\"+FileFinger$)
     Compdata = CompressMemory(*Split,Actread+32,*Compressed,Actread+32,#PB_PackerPlugin_Zip,9)
     If Compdata = 0
       Compdata = AESEncoder(*Split,*Encoded,Actread,*AESKey,256,*IniVector)
@@ -63,9 +92,9 @@ Repeat
    EndIf
    
     
-    WriteData(2,*Encoded,Compdata)
+    WriteData(CmpressFile,*Encoded,Compdata)
     Partcount = Partcount+1
-    CloseFile(2)
+    CloseFile(CmpressFile)
     Compdata = 0
   Else
     MessageRequester("Internal Error","CRC32 Data match. Internal error, Parts: "+Str(Partcount))
@@ -93,25 +122,25 @@ Repeat
       BeforeProgress = FinalProgress
     EndIf
     
-  Until Eof(0)
-  CloseFile(0)
+  Until Eof(UniNumber)
+  CloseFile(UniNumber)
   ProcedureReturn #True
   EndProcedure
   
-  Procedure SpredDir(File$,*AESKey,*IniVector)
-    ClearConsole()
-    Global Dim dirs.s(98000)
-    Global Dim file.s(980000)
+  Procedure SpredDirThread(ProcessID)
+    LockMutex(InfoPassMutex)
+    Path$ = FileInfopass(Str(ProcessID)) \File 
+    *AESKey = FileInfopass() \aesmem
+    *IniVector = FileInfopass() \Inivect
+    DeleteMapElement(FileInfopass(),Str(ProcessID))
+    UnlockMutex(InfoPassMutex)
+     Dim dirs.s(98000)
+     Dim file.s(980000)
     CurrDir$ = GetCurrentDirectory()
-InitialPath$ = "C:\"   ; set initial path to display (could also be blank)
-Path$ = PathRequester("Create Package:", InitialPath$)
 Base$ = Path$
 If CurrDir$ = Base$
   MessageRequester("Error","Current directory select not allowed.")
-  ProcedureReturn #False
 EndIf
-PrintN("Print: "+Base$)
-PrintN("Please wait while scanning directory...")
 dirs(0) = Path$
 scan = 0
 scanto = 1
@@ -126,7 +155,6 @@ filesindim = 0
         filename$ = DirectoryEntryName(0)
         file(filesindim) = path$+filename$
         filesindim = filesindim+1
-        ;PrintN("File: "+path$+filename$+" Size:"+Size$)
         
       Else
         Type$ = "[Directory] "
@@ -136,7 +164,6 @@ filesindim = 0
           Goto enddir
         EndIf
         
-        PrintN("Directory: "+path$+dirname$+"\")
         dirs(scanto) = path$+dirname$+"\"
         scanto = scanto + 1
         enddir:
@@ -147,7 +174,6 @@ filesindim = 0
     FinishDirectory(0)
     scan = scan + 1
   Else
-    PrintN("Error: Directory Can't be read :"+path$+dirname$+"\")
     scan = scan + 1
     path$ = dirs(scan)
   EndIf
@@ -158,29 +184,25 @@ filesindim = 0
 Wend
 out:
 
-ClearConsole()
-PrintN("Please wait while adding Files to combined file...")
 UseTARPacker()
 Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
-Debug CreatePack(1,"Package\"+filename$)
+UniNumber = Random(1000)
+CreatePack(UniNumber,"FileTmp\InProgress\"+Filename$)
 While file(dimnumb)
   dimnumb = dimnumb+1
   Fileselect$ = file(dimnumb)
   FileTarPath$ = RemoveString(Fileselect$,Base$)
   FileTarPath$ = LTrim(FileTarPath$)
-  Debug FileTarPath$
-  AddPackFile(1,Fileselect$,FileTarPath$)
+  ;LockMutex(FileTarMutex)
+  AddPackFile(UniNumber,Fileselect$,FileTarPath$)
+  ;UnlockMutex(FileTarMutex)
 Wend
-PrintN(Str(dimnumb))
-ClosePack(1)
-PrintN("Creating Encypted package...")
-If SpredFile("Package\"+Filename$,*AESKey,*IniVector,*ProgressOut)
-PrintN("Cleaning up...")
-DeleteFile("Package\"+Filename$)
-PrintN("Done.")
+ClosePack(UniNumber)
+
+If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut)
+;DeleteFile("FileTmp\InProgress\"+Filename$)
 ProcedureReturn #True
 Else
-  PrintN("Error, Spread File did not finish.")
   ProcedureReturn #False
 EndIf
 
@@ -188,9 +210,9 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 97
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 199
+; FirstLine = 171
 ; Folding = -
 ; EnableThread
 ; EnableXP

@@ -8,7 +8,7 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -302,6 +302,7 @@ ProformaMakeInst("Database-Ini")
 ;
 KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
+Input()
 DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
@@ -325,21 +326,21 @@ PrintN("Press 1 To create a new package")
 PrintN("Press escape to exit")
 
 Repeat
-  If Keyboard(conplace) <> 0
-    Debug conplace
-    If msg$ = "esc"
+  msg$ = Inkey()
+  If msg$ <> ""
+    If msg$ = Chr(27)
       MessageRequester("BackRoom-Beta-1.0.0","User Hit Escape Key. Please Wait for shutdown.")
       CleanShutDown()
     EndIf
-       Select msg$
-        Case "1"
-          SpredDir("null",EncryptStorage() \MasterMem, *keyMem)
+       If msg$ = Chr(49)
+          SpredDir(EncryptStorage() \MasterMem, *keyMem)
           ClearConsole()
           Goto men
-        EndSelect
+        EndIf
+        
   EndIf
   
-  
+  Delay(1)
 Until Exit = 1
 
 
@@ -355,15 +356,15 @@ Input()
 
 
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 320
-; FirstLine = 169
-; Folding = h
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 335
+; FirstLine = 91
+; Folding = g
 ; EnableThread
 ; EnableXP
+; EnableUser
 ; EnableOnError
 ; Executable = Test.exe
 ; CompileSourceDirectory
-; Warnings = Error
 ; EnablePurifier
 ; EnableUnicode
