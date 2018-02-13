@@ -11,6 +11,7 @@ DeclareModule FileUtil
   Global FileTarMutex = CreateMutex()
   Global FileZipMutex = CreateMutex()
   Global InfoPassMutex = CreateMutex()
+  Global ThreadStatMutex = CreateMutex()
   Structure part
     Checksum.s
     filefinger.s
@@ -40,6 +41,7 @@ Module FileUtil
   Declare SpredDirThread(ProcessID)
   
   Procedure FileThreadWatcher()
+    LockMutex(ThreadStatMutex)
     While NextMapElement(FileThreads())
       Status$ = Filethreads() \Status
       If Status$ = "Close"
@@ -47,6 +49,8 @@ Module FileUtil
       EndIf
     Wend
     ResetMap(FileThreads())
+    UnlockMutex(ThreadStatMutex)
+    Delay(120)
   EndProcedure
   
   
@@ -145,6 +149,13 @@ Repeat
     *IniVector = FileInfopass() \Inivect
     DeleteMapElement(FileInfopass(),Str(ProcessID))
     UnlockMutex(InfoPassMutex)
+    
+    LockMutex(ThreadStatMutex)
+    Filethreads(Str(ProcessID)) \ID = Str(ProcessID)
+    Filethreads() \Job = "Scanning Directory"
+    Filethreads() \Status = "Processing..."
+    Filethreads() \Message = ""
+    UnlockMutex(ThreadStatMutex)
      Dim dirs.s(98000)
      Dim file.s(980000)
     CurrDir$ = GetCurrentDirectory()
@@ -166,6 +177,10 @@ filesindim = 0
         filename$ = DirectoryEntryName(0)
         file(filesindim) = path$+filename$
         filesindim = filesindim+1
+        
+        LockMutex(ThreadStatMutex)
+        Filethreads() \Message = Filename$
+        UnlockMutex(ThreadStatMutex)
         
       Else
         Type$ = "[Directory] "
@@ -222,9 +237,9 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 59
-; FirstLine = 15
-; Folding = r-
+; CursorPosition = 179
+; FirstLine = 44
+; Folding = v-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
