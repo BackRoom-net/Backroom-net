@@ -7,7 +7,7 @@ DeclareModule FileUtil
   CreateDirectory("Package")
   Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
   Declare SpredDir(*AESKey,*IniVector)
-  Declare FileThreadWatcher()
+  Declare FileThreadWatcher(NullVar)
   Global FileTarMutex = CreateMutex()
   Global FileZipMutex = CreateMutex()
   Global InfoPassMutex = CreateMutex()
@@ -33,14 +33,15 @@ DeclareModule FileUtil
   
   Global NewMap FileInfopass.SprdDirPassInfo()
   Global NewMap FileThreads.ThrdJob()
-  
+  CreateThread(@FileThreadWatcher(),46)
   
 EndDeclareModule
 
 Module FileUtil
   Declare SpredDirThread(ProcessID)
   
-  Procedure FileThreadWatcher()
+  Procedure FileThreadWatcher(NullVar)
+    Begin:
     LockMutex(ThreadStatMutex)
     While NextMapElement(FileThreads())
       Status$ = Filethreads() \Status
@@ -50,7 +51,8 @@ Module FileUtil
     Wend
     ResetMap(FileThreads())
     UnlockMutex(ThreadStatMutex)
-    Delay(120)
+    Delay(800)
+    Goto begin
   EndProcedure
   
   
@@ -210,6 +212,13 @@ filesindim = 0
 Wend
 out:
 
+    LockMutex(ThreadStatMutex)
+    Filethreads(Str(ProcessID)) \ID = Str(ProcessID)
+    Filethreads() \Job = "Packing Tar..."
+    Filethreads() \Status = "Packing..."
+    Filethreads() \Message = ""
+    UnlockMutex(ThreadStatMutex)
+
 UseTARPacker()
 Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
 UniNumber = Random(1000)
@@ -219,16 +228,24 @@ While file(dimnumb)
   Fileselect$ = file(dimnumb)
   FileTarPath$ = RemoveString(Fileselect$,Base$)
   FileTarPath$ = LTrim(FileTarPath$)
-  ;LockMutex(FileTarMutex)
+  LockMutex(ThreadStatMutex)
+  Writestrmem$ = "Writing: "+FileTarPath$
+  Filethreads(Str(ProcessID)) \Message = Writestrmem$
+  UnlockMutex(ThreadStatMutex)
   AddPackFile(UniNumber,Fileselect$,FileTarPath$)
-  ;UnlockMutex(FileTarMutex)
 Wend
 ClosePack(UniNumber)
 
 If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut)
-;DeleteFile("FileTmp\InProgress\"+Filename$)
+  ;DeleteFile("FileTmp\InProgress\"+Filename$)
+  LockMutex(ThreadStatMutex)
+  Filethreads(Str(ProcessID)) \Status = "Close"
+  UnlockMutex(ThreadStatMutex)
 ProcedureReturn #True
 Else
+  LockMutex(ThreadStatMutex)
+  Filethreads(Str(ProcessID)) \Status = "Error."
+  UnlockMutex(ThreadStatMutex)
   ProcedureReturn #False
 EndIf
 
@@ -237,8 +254,8 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 179
-; FirstLine = 44
+; CursorPosition = 232
+; FirstLine = 129
 ; Folding = v-
 ; EnableThread
 ; EnableXP

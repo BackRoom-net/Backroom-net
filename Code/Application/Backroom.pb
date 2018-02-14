@@ -322,6 +322,33 @@ Procedure CleanShutDown()
   End
 EndProcedure
 
+Procedure ViewPackProcess()
+  EnableGraphicalConsole(1)
+  ClearConsole()
+  While Inkey() <> Chr(27)
+    ClearConsole()
+  LockMutex(ThreadStatMutex)
+    While NextMapElement(FileThreads())  
+    PrintN("Process: "+FileThreads() \ID)
+    PrintN("Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status)
+    PrintN("Info: "+FileThreads() \Message)
+    PrintN("")
+  Wend
+  ResetMap(FileThreads())
+  If NextMapElement(FileThreads())
+    ResetMap(FileThreads())
+  Else
+    PrintN("No Current Jobs Running.")
+    PrintN("Press Esc. to exit.")
+    UnlockMutex(ThreadStatMutex)
+  EndIf
+  UnlockMutex(ThreadStatMutex)
+  Delay(10)
+Wend
+
+EndProcedure
+
+
 ;-------------
 ;- Program side
 ;
@@ -350,6 +377,7 @@ ClearConsole()
 PrintN("Welcome to Backroom-Beta-1.0.0!")
 PrintN(" ")
 PrintN("Press 1 To create a new package")
+PrintN("Press 2 To view current packaging processes")
 PrintN("Press escape to exit")
 
 Repeat
@@ -362,6 +390,10 @@ Repeat
        If msg$ = Chr(49)
           SpredDir(EncryptStorage() \MasterMem, *keyMem)
           ClearConsole()
+          Goto men
+        EndIf
+        If msg$ = Chr(50)
+          ViewPackProcess()
           Goto men
         EndIf
         
@@ -384,9 +416,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 331
-; FirstLine = 45
-; Folding = g
+; CursorPosition = 345
+; FirstLine = 66
+; Folding = g-
 ; EnableThread
 ; EnableXP
 ; EnableUser
