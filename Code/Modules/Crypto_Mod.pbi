@@ -34,11 +34,11 @@ Module Cipher
   ;--
   Procedure GenerateKeySequence(ID$)
     ;Generation of Initial 16-Byte key
-    *Key = AllocateMemory(32)
+    *Key = AllocateMemory(32)           ; extra Bytes to avoid overflow from full memory
     Debug CryptRandomData(*Key,16)
     ; --------
     ;Generation of 28-byte Master key
-    *Master = AllocateMemory(29)
+    *Master = AllocateMemory(29)        ; extra one byte to avoid overflow
     Debug CryptRandomData(*Key,28)
     ; --------
     ;Generation of Base64 key
