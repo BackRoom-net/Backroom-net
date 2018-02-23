@@ -4,18 +4,19 @@
 
 DeclareModule SQLDatabase  
   UseSQLiteDatabase()                      ;If Called more then Two times causes Memory access Violation.
-  Global Log = CreateMutex()
   Global Logmode.i
   Global Logdir.s
   Global SQLAccess = CreateMutex()
   Declare initLogging(Setting,Directory$)
   Declare.i initdatabase(database,Name$)
+  
 
 EndDeclareModule
 
 Module SQLDatabase
   Declare Logfinal(*Logmemory)
   Declare Logt(Subsystem$,Text$)
+  Global Log = CreateMutex()
   ;------------------------------------
 Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
 
@@ -311,8 +312,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 50
-; Folding = -PO0
+; CursorPosition = 18
+; Folding = -CO6
 ; EnableThread
 ; EnableXP

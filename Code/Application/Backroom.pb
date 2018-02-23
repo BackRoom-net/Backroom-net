@@ -8,7 +8,9 @@
 ;
 ;- Declares
 ;
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
+Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
+
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -27,6 +29,8 @@ Declare InitializeDatabase()
 Declare DetectSystem()
 Declare CreatePrettystuff()
 Declare CleanShutDown()
+Declare Logt(Subsystem$,Text$)
+Declare Logfinal(*logmemory)
 ;
 ;- Structures
 ;
@@ -270,6 +274,8 @@ Procedure DetectSystem()
     ElseIf Total < 2000000000 ;below 2gb
       SysSpecTotal = 0
     EndIf
+    Tolog$ = Str(SysSpecTotal)+" Was returned when Reading memory total of: "+Str(Total)+" Bytes"
+    Logt("DetectSystem",Tolog$)
     
     If Current > 4200000000 ;anything above 4gb
     SysSpecCurr = 1
@@ -280,26 +286,46 @@ Procedure DetectSystem()
     ElseIf Current > 2000000000 ;Just above 2gb
       SysSpecCurr = 3
     EndIf
+    Tolog$ = Str(SysSpecTotal)+" Was returned when Reading memory current of: "+Str(Current)+" Bytes"
+    Logt("DetectSystem",Tolog$)
     
     Debug SysSpecTotal
     Debug SysSpecCurr
     If SysSpecTotal = 0
       MessageRequester("System","System does not have Minimum Requeseted memory. Program will not run.",#PB_MessageRequester_Error)
+          Tolog$ = "System failed reccomended system spec."
+           Logt("DetectSystem",Tolog$)
       End
     EndIf
     
     If SysSpecCurr = 0
       MessageRequester("System","System does not currently have enough memory to Run program. Try exiting some programs.",#PB_MessageRequester_Error)
+                Tolog$ = "System does not have enough free memory."
+           Logt("DetectSystem",Tolog$)
       End
     EndIf
     
     If SysSpecCurr = 3
-    Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
+      Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
+      Tolog$ = "System Low on memory."
+           Logt("DetectSystem",Tolog$)
     If Result = #PB_MessageRequester_Yes
     Else
       End
       EndIf
     EndIf
+    
+    Tolog$ = "---Beginning of system exploration---"+Chr(12)
+    Tolog$ = Tolog$+"CPU Name: "+CPUName()+Chr(12)
+    Tolog$ = ToLog$+"CPU Cores:"+Str(CountCPUs(#PB_System_CPUs))+Chr(12)
+    ToLog$ = "---End of system exploration---"
+    Logt("DetectSystem",Tolog$)
+    
+    
+    
+    
+    
+    
 
 EndProcedure
 
@@ -308,7 +334,6 @@ Procedure CreatePrettystuff()
   
   
 EndProcedure
-
 
 Procedure CleanShutDown()
   EnableGraphicalConsole(1)
@@ -343,11 +368,33 @@ Procedure ViewPackProcess()
     UnlockMutex(ThreadStatMutex)
   EndIf
   UnlockMutex(ThreadStatMutex)
-  Delay(10)
+  Delay(100)
 Wend
 
 EndProcedure
 
+Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
+    If logmode > 0 ;If the Log setting is not Null.
+  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$)+16)
+  PokeS(*logmemory,Subsystem$+": "+Text$)
+  logtl = CreateThread(@Logfinal(),*logmemory)
+EndIf
+
+EndProcedure
+
+Procedure Logfinal(*logmemory) ;Thread for Logging
+  If logmode > 0
+  tofile$ = PeekS(*logmemory) ; Get Data from Memory address passed to the thread.
+  Date$ = FormatDate("%yy.%mm.%dd", Date()) ;  Get Date.
+  Time$ = FormatDate("%hh:%ii:%ss", Date()) ; Get time.
+  LockMutex(Log)                            ; Lock the mutex
+  OpenFile(1,logdir+Date$+".log",#PB_File_Append) ; Open the Log file.
+  WriteStringN(1,Time$+":"+tofile$)               ; Write data and Date and formatted time/
+  CloseFile(1)   
+  UnlockMutex(Log)
+  FreeMemory(*logmemory)
+  EndIf
+EndProcedure
 
 ;-------------
 ;- Program side
@@ -416,9 +463,8 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 345
-; FirstLine = 66
-; Folding = g-
+; CursorPosition = 35
+; Folding = A9
 ; EnableThread
 ; EnableXP
 ; EnableUser
