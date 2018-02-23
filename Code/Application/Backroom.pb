@@ -348,6 +348,8 @@ Procedure CleanShutDown()
 EndProcedure
 
 Procedure ViewPackProcess()
+  
+  
   EnableGraphicalConsole(1)
   ClearConsole()
   While Inkey() <> Chr(27)
