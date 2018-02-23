@@ -10,7 +10,7 @@
 ;
 Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
 
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules\"
+IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -348,9 +348,11 @@ Procedure CleanShutDown()
 EndProcedure
 
 Procedure ViewPackProcess()
+  Input()
   ConX = 0
   ConY = 0
   Structure watc
+    posy.i
     Process.s
     job.s
     stat.s
@@ -363,7 +365,6 @@ Procedure ViewPackProcess()
   EnableGraphicalConsole(1)
   ClearConsole()
   While Inkey() <> Chr(27)
-    ClearConsole()
   LockMutex(ThreadStatMutex)
   While NextMapElement(FileThreads()) 
     ProcessID$ = FileThreads() \ID
@@ -381,18 +382,38 @@ Procedure ViewPackProcess()
     JobForm$ = "Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status
     InfoForm$ = "Info: "+FileThreads() \Message
     
+    
     If FindMapElement(Watcher(),ProcessID$)
       If Watcher() \Drawn = 1
-        If 
+       curpos.i = Watcher() \posy
+       
+       If MsgCurr$ <> Watcher() \msg
+         InfoFormLen = Len(MsgCurr$)
+         InfoPrvLen = Len(Watcher() \msg)
+         InfoPrvLen+6
+         InfoFormLen+6
+         Diff.i = InfoFormLen-InfoPrvLen
+         If Diff.i > 0
+           InfoFormLen = InfoformLen+Diff
+         EndIf
+         
+         Fill$ = Space(InfoFormLen)
+         ConsoleLocate(0,curpos+2)
+         Print(Fill$)
+         ConsoleLocate(0,curpos+2)
+         Print(InfoForm$)
+       EndIf
+       
         
-      Else
-        ConsoleLocate(ConX,ConY)
+     Else
+       ConsoleLocate(ConX,ConY)
+       watcher() \posy = ConY
         PrintN(ProcessForm$)
         PrintN(JobForm$)
         PrintN(InfoForm$)
+        watcher() \Drawn = 1
         ConY = ConY+4
       EndIf
-    EndIf
   Else
     Watcher(ProcessID$) \Drawn = 0
     Watcher() \Process = ProcessID$
@@ -404,8 +425,7 @@ Procedure ViewPackProcess()
     
       
           
-    
-    
+
     ;PrintN("Process: "+FileThreads() \ID)
     ;PrintN("Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status)
     ;PrintN("Info: "+FileThreads() \Message)
@@ -516,8 +536,8 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 425
-; FirstLine = 50
+; CursorPosition = 398
+; FirstLine = 78
 ; Folding = g9
 ; EnableThread
 ; EnableXP
