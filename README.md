@@ -13,7 +13,7 @@ Basically where I (Noisy) want to go with this project is to-
    So, If one client connects to one that is connected to lots more, a Public address link can be shared.
    That brings about the possibility of a huge sharing interconnected secure file sharing network!
 
-* Have a little fun. I'm not doing this project for no reason or to gain profit! I'm quite new to Github!
+* Have a little fun. I'm not doing this project for no reason, or to gain profit! I'm quite new to Github!
    I would love to see what other people have to say about the project and maybe even work with some people!
 
 
@@ -31,7 +31,7 @@ This program will run on most modern computers (1-3 years old)
 _It is strict and **can** be annoying_
 
 * System **Minimum** Memory is 2gb!!
-  Nothing below this ammount will run! This is like this so 32-bit computers can still run this program.
+  Nothing below this amount will run! This is like this so 32-bit computers can still run this program.
   
 * System reccomended specifications are:
 
@@ -41,7 +41,7 @@ _It is strict and **can** be annoying_
 
    **250Gb Hard disk space**
 
-   **35 Megabit internet speed** - *Reccomended 1000M NIC*
+   **35 Megabit internet speed** - *Recommended 1000M NIC*
    
 * System Minimum specifications are:
 
@@ -55,8 +55,8 @@ _It is strict and **can** be annoying_
 
 * System Notes
 
-A 250Gb hard disk is reccomended just if you have it as a boot up drive, you will be encrypting files aswell so that puts a strain on the drive and storage. In the Minimum, You will not be able to really have windows and have very many packages being received or encrypted/decrypted. it would be dangerous to do with a minimal amount of space.
-For ram, Its going to be a ram hog (*Like Chrome*) and I will need to make many modifications to memory management quick.
+A 250Gb hard disk is reccomended just if you have it as a boot up drive, you will be encrypting files as well so that puts a strain on the drive and storage. In the Minimum, You will not be able to really have windows and have very many packages being received or encrypted/decrypted. it would be dangerous to do with a minimal amount of space.
+For ram, it's going to be a ram hog (*Like Chrome*) and I will need to make many modifications to memory management quickly.
 
   
 
