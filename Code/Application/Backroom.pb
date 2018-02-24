@@ -388,16 +388,7 @@ Procedure ViewPackProcess()
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
-         InfoFormLen = Len(MsgCurr$)
-         InfoPrvLen = Len(Watcher() \msg)
-         InfoPrvLen+6
-         InfoFormLen+6
-         Diff.i = InfoFormLen-InfoPrvLen
-         If Diff.i > 0
-           InfoFormLen = InfoformLen+Diff
-         EndIf
-         
-         Fill$ = Space(InfoFormLen)
+         Fill$ = Space(80)
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
          ConsoleLocate(0,curpos+2)
@@ -435,6 +426,7 @@ Procedure ViewPackProcess()
   If NextMapElement(FileThreads())
     ResetMap(FileThreads())
   Else
+    ClearConsole()
     PrintN("No Current Jobs Running.")
     PrintN("Press Esc. to exit.")
     UnlockMutex(ThreadStatMutex)
