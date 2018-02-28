@@ -18,6 +18,7 @@ IncludeFile "Modul_NetworkData.pbi"
 IncludeFile "Proforma_mod.pbi"
 ;IncludeFile "Console_Interactive_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
+IncludeFile "Preferences.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
@@ -152,10 +153,21 @@ EndProcedure
 
 Procedure InitializeDatabase()
   CreateDirectory("Data")
+  
 UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
 UseModule ThreadBranch
+UseModule Prefs
+If PrefChk()
+  Debug "Preference file does exist."
+  ImprortPrefs()
+Else
+  Debug "Preference file does not exist."
+  InsertPrefi("SqlLogging",1)
+EndIf
+
+
 Initlogging(1,"")
 Initdatabase(1,"Data\Main.db")
 CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
@@ -338,9 +350,14 @@ EndProcedure
 Procedure CleanShutDown()
   EnableGraphicalConsole(1)
   UseModule Proforma
+  UseModule Prefs
   ClearConsole()
   PrintN("Please Wait...")
   SpillProforma()
+  If PrefChk()
+    DeleteFile("Data\Preferences.xml")
+  EndIf
+  PrefExport()
   ClearConsole()
   PrintN("GoodBye.")
   Delay(1500)
@@ -528,9 +545,9 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 78
-; Folding = g9
+; CursorPosition = 163
+; FirstLine = 48
+; Folding = S9
 ; EnableThread
 ; EnableXP
 ; EnableUser
