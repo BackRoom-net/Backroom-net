@@ -18,6 +18,7 @@ IncludeFile "Modul_NetworkData.pbi"
 IncludeFile "Proforma_mod.pbi"
 ;IncludeFile "Console_Interactive_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
+IncludeFile "Prefrences.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
@@ -222,7 +223,7 @@ CloseC7$ = SQFMakeField(CloseC7$,"IP",2,1,0,0,1,1)
 CloseC7$ = SQFMakeField(CloseC7$,"Ping",1,1,0,0,0,0)
 CloseC7$ = SQFclose(CloseC7$)
 
-CloseC8$ = SQFCreateTable(CloseC8$,"PackagesOnServer")
+CloseC8$ = SQFCreateTable(CloseC8$,"PackageOnServer")
 CloseC8$ = SQFOpen(CloseC8$)
 CloseC8$ = SQFMakeField(CloseC8$,"PackageNumber",1,1,1,1,0,1)
 CloseC8$ = SQFMakeField(CloseC8$,"PackageHash",2,1,0,0,0,1)
@@ -536,9 +537,8 @@ Input()
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 78
-; Folding = g9
+; CursorPosition = 20
+; Folding = A9
 ; EnableThread
 ; EnableXP
 ; EnableUser
