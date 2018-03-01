@@ -6,6 +6,7 @@
   Declare PrefExport()
   Declare ImprortPrefs()
   Declare PrefChk()
+  Declare PrefIsStr(Name$,Value$)
 EndDeclareModule
 
 Module Prefs
@@ -20,6 +21,10 @@ Module Prefs
     If FindMapElement(Prefs(),Name$)
       ProcedureReturn #False
     Else
+      If Value$ = ""
+        Prefs(Name$) \Name = Name$
+        Prefs(Name$) \Value = "Null"
+      Else
       Prefs(Name$) \Name = Name$
       Prefs(Name$) \Value = Value$
     EndIf
@@ -32,6 +37,7 @@ Module Prefs
     Else
       PrefS(Name$) \Name = Name$
       PrefS(Name$) \Number = Value
+      PrefS(Name$) \Value = "Null"
     EndIf
     ProcedureReturn #True
   EndProcedure
@@ -76,11 +82,22 @@ EndProcedure
   ProcedureReturn #False
 EndProcedure
 
-  
+Procedure.i PrefIsStr(Name$,Value$)
+  If FindMapElement(Prefs(),Name$)
+    If Prefs(Name$) \Value = "Null"
+      ProcedureReturn #False
+    Else
+      ProcedureReturn #True
+    EndIf
+  Else
+    ProcedureReturn #False
+  EndIf
+EndProcedure
+
+
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 11
-; Folding = v8
+; CursorPosition = 8
+; Folding = f5
 ; EnableXP
