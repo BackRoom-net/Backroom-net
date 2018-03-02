@@ -354,6 +354,7 @@ Procedure CleanShutDown()
   ClearConsole()
   PrintN("Please Wait...")
   SpillProforma()
+  If PrefChk()
     DeleteFile("Data\Preferences.xml")
   EndIf
   PrefExport()
