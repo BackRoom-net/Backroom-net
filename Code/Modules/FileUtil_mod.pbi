@@ -89,6 +89,10 @@ If parts = 0
 EndIf
 
 CmpressFile = Random(1000)
+LockMutex(ThreadStatMutex)
+Filethreads(Str(ProcessID)) \Job = "Encrypting..."
+Filethreads() \Status = "Starting up.."
+UnlockMutex(ThreadStatMutex)
 
 redo:
 Repeat
@@ -100,6 +104,11 @@ Repeat
     *Encoded = AllocateMemory(Actread+32)
     *Compressed = AllocateMemory(Actread+32)
     OpenFile(CmpressFile,"FileTmp\Processing\"+Filename$+"\"+FileFinger$)
+    ProcessingString$ = "FileTmp\Processing\"+Filename$+"\"+FileFinger$
+     LockMutex(ThreadStatMutex)
+     Filethreads(Str(ProcessID)) \Message = ProcessingString$
+     Filethreads() \Status = "Encrypting File: "+Str(parts)+"/"+Str(Partcount)
+     UnlockMutex(ThreadStatMutex)
     Compdata = CompressMemory(*Split,Actread+32,*Compressed,Actread+32,#PB_PackerPlugin_Zip,9)
     If Compdata = 0
       Compdata = AESEncoder(*Split,*Encoded,Actread,*AESKey,256,*IniVector)
@@ -181,7 +190,7 @@ filesindim = 0
         filesindim = filesindim+1
         
         LockMutex(ThreadStatMutex)
-        Filethreads() \Message = Filename$
+        Filethreads(Str(ProcessID)) \Message = Filename$
         UnlockMutex(ThreadStatMutex)
         
       Else
@@ -253,10 +262,10 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 129
-; Folding = v-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 192
+; FirstLine = 53
+; Folding = j-
 ; EnableThread
 ; EnableXP
 ; EnableOnError

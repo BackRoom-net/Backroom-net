@@ -10,7 +10,7 @@
 ;
 Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
 
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -388,11 +388,43 @@ Procedure ViewPackProcess()
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
-         Fill$ = Space(80)
+         Fill$ = Space(90)
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
          ConsoleLocate(0,curpos+2)
          Print(InfoForm$)
+       EndIf
+       
+       If StatCurr$ <> Watcher() \stat Or JobCurr$ <> Watcher() \job
+         Fill$ = Space(90)
+         ConsoleLocate(0,curpos+1)
+         Print(Fill$)
+         ConsoleLocate(0,curpos+1)
+         Print(JobForm$)
+       EndIf
+       
+       If ProcessID$ = ""
+         ResetMap(Watcher())
+         While NextMapElement(Watcher())
+           DeleteMapElement(Watcher())
+         Wend
+         ClearConsole()
+       Else
+        If FindMapElement(Watcher(),ProcessID$)
+         If Not FindMapElement(FileThreads(), ProcessID$)
+           DeleteMapElement(Watcher())
+           ResetMap(Watcher())
+           While NextMapElement(Watcher())
+             Posincon = Watcher() \posy
+             If Posincon <> 0
+               Watcher() \posy = Posincon-4
+               Watcher() \Drawn = 0
+             EndIf
+           Wend
+           ResetMap(Watcher())
+           ClearConsole()
+         EndIf
+       EndIf
        EndIf
        
         
@@ -427,6 +459,7 @@ Procedure ViewPackProcess()
     ResetMap(FileThreads())
   Else
     ClearConsole()
+    Delay(500)
     PrintN("No Current Jobs Running.")
     PrintN("Press Esc. to exit.")
     UnlockMutex(ThreadStatMutex)
@@ -527,9 +560,9 @@ Input()
 
 
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 398
-; FirstLine = 78
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 406
+; FirstLine = 96
 ; Folding = g9
 ; EnableThread
 ; EnableXP
