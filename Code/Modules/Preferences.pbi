@@ -29,6 +29,7 @@ Module Prefs
       Prefs(Name$) \Value = Value$
     EndIf
     ProcedureReturn #True
+    EndIf
   EndProcedure
   
   Procedure.i InsertPrefi(Name$,Value)
@@ -98,6 +99,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 8
+; CursorPosition = 29
+; FirstLine = 9
 ; Folding = f5
 ; EnableXP
