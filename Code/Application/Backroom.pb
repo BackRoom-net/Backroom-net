@@ -19,6 +19,7 @@ IncludeFile "Proforma_mod.pbi"
 ;IncludeFile "Console_Interactive_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
 IncludeFile "Prefrences.pbi"
+IncludeFile "Preferences.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
@@ -153,10 +154,22 @@ EndProcedure
 
 Procedure InitializeDatabase()
   CreateDirectory("Data")
+CreateDirectory("Data")
+  
 UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
 UseModule ThreadBranch
+UseModule Prefs
+If PrefChk()
+  Debug "Preference file does exist."
+  ImprortPrefs()
+Else
+  Debug "Preference file does not exist."
+  InsertPrefi("SqlLogging",1)
+EndIf
+
+
 Initlogging(1,"")
 Initdatabase(1,"Data\Main.db")
 CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
@@ -323,10 +336,6 @@ Procedure DetectSystem()
     Logt("DetectSystem",Tolog$)
     
     
-    
-    
-    
-    
 
 EndProcedure
 
@@ -339,9 +348,14 @@ EndProcedure
 Procedure CleanShutDown()
   EnableGraphicalConsole(1)
   UseModule Proforma
+  UseModule Prefs
   ClearConsole()
   PrintN("Please Wait...")
   SpillProforma()
+  If PrefChk()
+    DeleteFile("Data\Preferences.xml")
+  EndIf
+  PrefExport()
   ClearConsole()
   PrintN("GoodBye.")
   Delay(1500)
@@ -383,26 +397,49 @@ Procedure ViewPackProcess()
     JobForm$ = "Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status
     InfoForm$ = "Info: "+FileThreads() \Message
     
-    
     If FindMapElement(Watcher(),ProcessID$)
       If Watcher() \Drawn = 1
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
-         InfoFormLen = Len(MsgCurr$)
-         InfoPrvLen = Len(Watcher() \msg)
-         InfoPrvLen+6
-         InfoFormLen+6
-         Diff.i = InfoFormLen-InfoPrvLen
-         If Diff.i > 0
-           InfoFormLen = InfoformLen+Diff
-         EndIf
-         
          Fill$ = Space(InfoFormLen)
+         Fill$ = Space(90)
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
          ConsoleLocate(0,curpos+2)
          Print(InfoForm$)
+       EndIf
+       
+       If StatCurr$ <> Watcher() \stat Or JobCurr$ <> Watcher() \job
+         Fill$ = Space(90)
+         ConsoleLocate(0,curpos+1)
+         Print(Fill$)
+         ConsoleLocate(0,curpos+1)
+         Print(JobForm$)
+       EndIf
+       
+       If ProcessID$ = ""
+         ResetMap(Watcher())
+         While NextMapElement(Watcher())
+           DeleteMapElement(Watcher())
+         Wend
+         ClearConsole()
+       Else
+        If FindMapElement(Watcher(),ProcessID$)
+         If Not FindMapElement(FileThreads(), ProcessID$)
+           DeleteMapElement(Watcher())
+           ResetMap(Watcher())
+           While NextMapElement(Watcher())
+             Posincon = Watcher() \posy
+             If Posincon <> 0
+               Watcher() \posy = Posincon-4
+               Watcher() \Drawn = 0
+             EndIf
+           Wend
+           ResetMap(Watcher())
+           ClearConsole()
+         EndIf
+       EndIf
        EndIf
        
         
@@ -425,21 +462,18 @@ Procedure ViewPackProcess()
   
     
       
-          
-
-    ;PrintN("Process: "+FileThreads() \ID)
-    ;PrintN("Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status)
-    ;PrintN("Info: "+FileThreads() \Message)
-    ;PrintN("")
   Wend
   ResetMap(FileThreads())
   If NextMapElement(FileThreads())
     ResetMap(FileThreads())
   Else
+    Delay(500)
+    ClearConsole()
     PrintN("No Current Jobs Running.")
     PrintN("Press Esc. to exit.")
     UnlockMutex(ThreadStatMutex)
   EndIf
+  
   UnlockMutex(ThreadStatMutex)
   Delay(36)
 Wend
@@ -531,18 +565,11 @@ Until Exit = 1
 
 
 Input()
-
-
-
-
-
 ; IDE Options = PureBasic 5.61 (Windows - x64)
 ; CursorPosition = 20
 ; Folding = A9
 ; EnableThread
 ; EnableXP
-; EnableUser
-; EnableOnError
 ; Executable = Test.exe
 ; CompileSourceDirectory
 ; EnablePurifier

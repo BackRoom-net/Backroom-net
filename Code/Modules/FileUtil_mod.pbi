@@ -5,7 +5,7 @@ DeclareModule FileUtil
   CreateDirectory("FileTmp\InProgress")
   CreateDirectory("FileTmp\Processing")
   CreateDirectory("Package")
-  Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
+  Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
   Declare SpredDir(*AESKey,*IniVector)
   Declare FileThreadWatcher(NullVar)
   Global FileTarMutex = CreateMutex()
@@ -67,7 +67,7 @@ Module FileUtil
     ProcedureReturn ProcessID
   EndProcedure
   
-  Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
+  Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
     NewMap Files.part(2000000)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
@@ -89,6 +89,10 @@ If parts = 0
 EndIf
 
 CmpressFile = Random(1000)
+LockMutex(ThreadStatMutex)
+Filethreads(Str(ProcessID)) \Job = "Encrypting..."
+Filethreads() \Status = "Starting up.."
+UnlockMutex(ThreadStatMutex)
 
 redo:
 Repeat
@@ -100,6 +104,11 @@ Repeat
     *Encoded = AllocateMemory(Actread+32)
     *Compressed = AllocateMemory(Actread+32)
     OpenFile(CmpressFile,"FileTmp\Processing\"+Filename$+"\"+FileFinger$)
+    ProcessingString$ = "FileTmp\Processing\"+Filename$+"\"+FileFinger$
+     LockMutex(ThreadStatMutex)
+     Filethreads(Str(ProcessID)) \Message = ProcessingString$
+     Filethreads() \Status = "Encrypting File: "+Str(parts)+"/"+Str(Partcount)
+     UnlockMutex(ThreadStatMutex)
     Compdata = CompressMemory(*Split,Actread+32,*Compressed,Actread+32,#PB_PackerPlugin_Zip,9)
     If Compdata = 0
       Compdata = AESEncoder(*Split,*Encoded,Actread,*AESKey,256,*IniVector)
@@ -181,7 +190,7 @@ filesindim = 0
         filesindim = filesindim+1
         
         LockMutex(ThreadStatMutex)
-        Filethreads() \Message = Filename$
+        Filethreads(Str(ProcessID)) \Message = Filename$
         UnlockMutex(ThreadStatMutex)
         
       Else
@@ -236,8 +245,8 @@ While file(dimnumb)
 Wend
 ClosePack(UniNumber)
 
-If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut)
-  ;DeleteFile("FileTmp\InProgress\"+Filename$)
+If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut,ProcessID)
+  DeleteFile("FileTmp\InProgress\"+Filename$)
   LockMutex(ThreadStatMutex)
   Filethreads(Str(ProcessID)) \Status = "Close"
   UnlockMutex(ThreadStatMutex)
@@ -254,9 +263,8 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 232
-; FirstLine = 129
-; Folding = v-
+; CursorPosition = 248
+; Folding = D-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
