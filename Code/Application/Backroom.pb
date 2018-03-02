@@ -18,7 +18,6 @@ IncludeFile "Modul_NetworkData.pbi"
 IncludeFile "Proforma_mod.pbi"
 ;IncludeFile "Console_Interactive_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
-IncludeFile "Prefrences.pbi"
 IncludeFile "Preferences.pbi"
 UseModule Proforma
 UseModule Cipher
@@ -566,7 +565,8 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 20
+; CursorPosition = 19
+; FirstLine = 57
 ; Folding = A9
 ; EnableThread
 ; EnableXP
