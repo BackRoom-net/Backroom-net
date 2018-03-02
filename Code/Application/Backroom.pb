@@ -152,6 +152,7 @@ EndSelect
 EndProcedure 
 
 Procedure InitializeDatabase()
+  CreateDirectory("Data")
 CreateDirectory("Data")
   
 UseModule SQLDatabase
@@ -234,7 +235,7 @@ CloseC7$ = SQFMakeField(CloseC7$,"IP",2,1,0,0,1,1)
 CloseC7$ = SQFMakeField(CloseC7$,"Ping",1,1,0,0,0,0)
 CloseC7$ = SQFclose(CloseC7$)
 
-CloseC8$ = SQFCreateTable(CloseC8$,"PackagesOnServer")
+CloseC8$ = SQFCreateTable(CloseC8$,"PackageOnServer")
 CloseC8$ = SQFOpen(CloseC8$)
 CloseC8$ = SQFMakeField(CloseC8$,"PackageNumber",1,1,1,1,0,1)
 CloseC8$ = SQFMakeField(CloseC8$,"PackageHash",2,1,0,0,0,1)
@@ -400,6 +401,7 @@ Procedure ViewPackProcess()
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
+         Fill$ = Space(InfoFormLen)
          Fill$ = Space(90)
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
@@ -563,9 +565,9 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 466
-; FirstLine = 66
-; Folding = g9
+; CursorPosition = 19
+; FirstLine = 57
+; Folding = A9
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
