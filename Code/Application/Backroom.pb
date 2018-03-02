@@ -10,7 +10,7 @@
 ;
 Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
 
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\"
+IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -334,10 +334,6 @@ Procedure DetectSystem()
     Logt("DetectSystem",Tolog$)
     
     
-    
-    
-    
-    
 
 EndProcedure
 
@@ -398,7 +394,6 @@ Procedure ViewPackProcess()
     ProcessForm$ = "Process: "+FileThreads() \ID
     JobForm$ = "Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status
     InfoForm$ = "Info: "+FileThreads() \Message
-    
     
     If FindMapElement(Watcher(),ProcessID$)
       If Watcher() \Drawn = 1
@@ -464,23 +459,18 @@ Procedure ViewPackProcess()
   
     
       
-          
-
-    ;PrintN("Process: "+FileThreads() \ID)
-    ;PrintN("Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status)
-    ;PrintN("Info: "+FileThreads() \Message)
-    ;PrintN("")
   Wend
   ResetMap(FileThreads())
   If NextMapElement(FileThreads())
     ResetMap(FileThreads())
   Else
-    ClearConsole()
     Delay(500)
+    ClearConsole()
     PrintN("No Current Jobs Running.")
     PrintN("Press Esc. to exit.")
     UnlockMutex(ThreadStatMutex)
   EndIf
+  
   UnlockMutex(ThreadStatMutex)
   Delay(36)
 Wend
@@ -572,26 +562,12 @@ Until Exit = 1
 
 
 Input()
-
-
-
-
-
-<<<<<<< HEAD
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 406
-; FirstLine = 96
-; Folding = g9
-=======
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 154
-; FirstLine = 54
-; Folding = S9
->>>>>>> aabb711bdb94ad699786ff89772742703a6d6c4a
+; CursorPosition = 466
+; FirstLine = 66
+; Folding = g9
 ; EnableThread
 ; EnableXP
-; EnableUser
-; EnableOnError
 ; Executable = Test.exe
 ; CompileSourceDirectory
 ; EnablePurifier

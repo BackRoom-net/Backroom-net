@@ -5,7 +5,7 @@ DeclareModule FileUtil
   CreateDirectory("FileTmp\InProgress")
   CreateDirectory("FileTmp\Processing")
   CreateDirectory("Package")
-  Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
+  Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
   Declare SpredDir(*AESKey,*IniVector)
   Declare FileThreadWatcher(NullVar)
   Global FileTarMutex = CreateMutex()
@@ -67,7 +67,7 @@ Module FileUtil
     ProcedureReturn ProcessID
   EndProcedure
   
-  Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut)
+  Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
     NewMap Files.part(2000000)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
@@ -245,8 +245,8 @@ While file(dimnumb)
 Wend
 ClosePack(UniNumber)
 
-If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut)
-  ;DeleteFile("FileTmp\InProgress\"+Filename$)
+If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut,ProcessID)
+  DeleteFile("FileTmp\InProgress\"+Filename$)
   LockMutex(ThreadStatMutex)
   Filethreads(Str(ProcessID)) \Status = "Close"
   UnlockMutex(ThreadStatMutex)
@@ -262,10 +262,9 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 192
-; FirstLine = 53
-; Folding = j-
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 248
+; Folding = D-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
