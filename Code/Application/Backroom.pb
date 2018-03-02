@@ -152,6 +152,8 @@ EndProcedure
 
 Procedure InitializeDatabase()
   CreateDirectory("Data")
+CreateDirectory("Data")
+  
 UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
@@ -560,10 +562,17 @@ Input()
 
 
 
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 406
 ; FirstLine = 96
 ; Folding = g9
+=======
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 154
+; FirstLine = 54
+; Folding = S9
+>>>>>>> aabb711bdb94ad699786ff89772742703a6d6c4a
 ; EnableThread
 ; EnableXP
 ; EnableUser
