@@ -78,7 +78,7 @@ Size.i = 1024*4000
 ; --------------
 OpenFile(UniNumber,File$)
 Filename$ = GetFilePart(File$)
-CreateDirectory("FileTmp\Processing\"+Filename$)
+CreateDirectory("FileTmp\Processing\"+PackageName$)
 FileSize.i = Lof(UniNumber)
 Parts.d = Filesize.i/Size.i
 ; ---------------
@@ -94,6 +94,8 @@ Filethreads(Str(ProcessID)) \Job = "Encrypting..."
 Filethreads() \Status = "Starting up.."
 UnlockMutex(ThreadStatMutex)
 
+PackageName$ = Str(ProcessID)
+
 redo:
 Repeat
   *Split = AllocateMemory(Size.i)
@@ -103,8 +105,8 @@ Repeat
   If FileSize(FileFinger$) = -1
     *Encoded = AllocateMemory(Actread+32)
     *Compressed = AllocateMemory(Actread+32)
-    OpenFile(CmpressFile,"FileTmp\Processing\"+Filename$+"\"+FileFinger$)
-    ProcessingString$ = "FileTmp\Processing\"+Filename$+"\"+FileFinger$
+    OpenFile(CmpressFile,"FileTmp\Processing\"+PackageName$+"\"+FileFinger$)
+    ProcessingString$ = "FileTmp\Processing\"+PackageName$+"\"+FileFinger$
      LockMutex(ThreadStatMutex)
      Filethreads(Str(ProcessID)) \Message = ProcessingString$
      Filethreads() \Status = "Encrypting File: "+Str(parts)+"/"+Str(Partcount)
@@ -262,9 +264,10 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 248
-; Folding = D-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 80
+; FirstLine = 64
+; Folding = T-
 ; EnableThread
 ; EnableXP
 ; EnableOnError

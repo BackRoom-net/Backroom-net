@@ -10,7 +10,7 @@
 ;
 Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
 
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules\"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -51,7 +51,7 @@ Global msg$, conplace
 ; Map cap at 6mill
 ProformaMakeInst("Memory-Map-Ini")
 ProformaS("Memory-Map-Ini")
-Global NewMap Keys.s(6000000)
+Global NewMap Keys.s()
 ProformaE("Memory-Map-Ini")
 
 ;
@@ -361,7 +361,6 @@ Procedure CleanShutDown()
 EndProcedure
 
 Procedure ViewPackProcess()
-  Input()
   ConX = 0
   ConY = 0
   Structure watc
@@ -400,7 +399,7 @@ Procedure ViewPackProcess()
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
-         Fill$ = Space(90)
+         Fill$ = Space(150)
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
          ConsoleLocate(0,curpos+2)
@@ -562,9 +561,9 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 466
-; FirstLine = 66
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 362
+; FirstLine = 63
 ; Folding = g9
 ; EnableThread
 ; EnableXP
