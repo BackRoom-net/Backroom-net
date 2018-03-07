@@ -68,12 +68,20 @@ Module FileUtil
   EndProcedure
   
   Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
+    Structure plc
+      file.s
+      compressed.i
+      CheckSum.s
+    EndStructure
+    
+    NewMap compfile.plc()
     NewMap Files.part(2000000)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
     UseZipPacker()
     UniNumber = Random(1000)
- Debug File$
+    Debug File$
+    PackageName$ = Str(ProcessID)
 Size.i = 1024*4000
 ; --------------
 OpenFile(UniNumber,File$)
@@ -94,7 +102,7 @@ Filethreads(Str(ProcessID)) \Job = "Encrypting..."
 Filethreads() \Status = "Starting up.."
 UnlockMutex(ThreadStatMutex)
 
-PackageName$ = Str(ProcessID)
+
 
 redo:
 Repeat
@@ -119,10 +127,14 @@ Repeat
      AESEncoder(*Compressed,*Encoded,Actread,*AESKey,256,*IniVector)
    EndIf
    
-    
     WriteData(CmpressFile,*Encoded,Compdata)
     Partcount = Partcount+1
     CloseFile(CmpressFile)
+    
+    compfile(Str(Partcount)) \CheckSum = Checksum$
+    compfile() \compressed = Compdata
+    Compfile() \file = FileFinger$
+    
     Compdata = 0
   Else
     MessageRequester("Internal Error","CRC32 Data match. Internal error, Parts: "+Str(Partcount))
@@ -131,7 +143,7 @@ Repeat
   
   
   files(Str(Partcount)) \Checksum = CheckSum$
-  Files() \Compressed = Compressed
+  Files() \Compressed = Compdata
   Files() \filefinger = FileFinger$
   
 
@@ -152,6 +164,11 @@ Repeat
     
   Until Eof(UniNumber)
   CloseFile(UniNumber)
+  If CreateJSON(0)
+    InsertJSONMap(JSONValue(0), compfile())
+    SaveJSON(0,"FileTmp\Processing\"+PackageName$+"\Order.json", #PB_JSON_PrettyPrint)
+  EndIf
+ FreeMap(compfile())
   ProcedureReturn #True
   EndProcedure
   
@@ -264,9 +281,9 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 80
-; FirstLine = 64
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 145
+; FirstLine = 80
 ; Folding = T-
 ; EnableThread
 ; EnableXP
