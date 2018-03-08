@@ -14,10 +14,15 @@ DeclareModule SQLDatabase
 EndDeclareModule
 
 Module SQLDatabase
-  Declare Logfinal(*Logmemory)
-  Declare Logt(Subsystem$,Text$)
-  Global Log = CreateMutex()
   ;------------------------------------
+  Procedure GenLogadd(Unique$,type$,message$,from$)
+  LockMutex(Log)
+  Logging(Unique$) \from = from$
+  Logging() \message = message$
+  Logging() \type = type$
+  UnlockMutex(log)
+EndProcedure
+  
 Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
 
     If Setting                                ;Check Setting
@@ -34,6 +39,7 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
           EndIf
         Else
           MessageRequester("Error:Database_mod-Logging","Directory Bad.") ;If the directory does not work for some reason, Error.
+          GenLogadd("databasecrit","Error","Error opening directory: "+Directory$,"initlogging()")
           ProcedureReturn #False
           End
         EndIf
@@ -43,15 +49,15 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
       Select Setting ;Select Setting
         Case 1
           Logmode.i = 1 ;general
-          Logt("InitLogging","Logging set to 1")
+          
           ProcedureReturn #True
         Case 2
           Logmode.i = 2 ;extended
-          Logt("InitLogging","Logging set to 2")
+          
           ProcedureReturn #True
         Case 3
           Logmode.i = 3 ;Only on error
-          Logt("InitLogging","Logging set to error only.")
+          
           ProcedureReturn #True
       EndSelect
     EndIf
@@ -61,28 +67,7 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
   EndIf
   EndProcedure
   
-Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
-    If logmode > 0 ;If the Log setting is not Null.
-  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$)+16)
-  PokeS(*logmemory,Subsystem$+": "+Text$)
-  logtl = CreateThread(@Logfinal(),*logmemory)
-EndIf
 
-EndProcedure
-
-Procedure Logfinal(*logmemory) ;Thread for Logging
-  If logmode > 0
-  tofile$ = PeekS(*logmemory) ; Get Data from Memory address passed to the thread.
-  Date$ = FormatDate("%yy.%mm.%dd", Date()) ;  Get Date.
-  Time$ = FormatDate("%hh:%ii:%ss", Date()) ; Get time.
-  LockMutex(Log)                            ; Lock the mutex
-  OpenFile(1,logdir+Date$+".log",#PB_File_Append) ; Open the Log file.
-  WriteStringN(1,Time$+":"+tofile$)               ; Write data and Date and formatted time/
-  CloseFile(1)   
-  UnlockMutex(Log)
-  FreeMemory(*logmemory)
-  EndIf
-EndProcedure
 ;------------------------------------
 Procedure.i initdatabase(database,Name$) ;Creates A database.
  If Name$ = ":memory:"  ;Checks if the Application wants to make a database in memory for some odd reason.
@@ -90,8 +75,10 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
      If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.
        ;Debug "Memory table created"
        ;Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
+       GenLogadd("databaseddm","Info","Opened Database Successfully: "+Name$,"initdatabase()")
        Else
-       ;Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
+         ;Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
+         GenLogadd("databaseddmer","Info","Opened Database Successfully: "+Name$,"initdatabase()")
     EndIf
   Else
     ProcedureReturn #False
@@ -100,14 +87,17 @@ Else
   If FileSize(Name$) = -1
   If CreateFile(0,Name$)
     ;Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
+    GenLogadd("database34","Info","Created Database File: "+Name$,"initdatabase()")
     CloseFile(0)
   EndIf 
 Else
   ;Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
+  GenLogadd("database35","Info","Found Database File: "+Name$,"initdatabase()")
 EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
-    ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
+      ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
+      GenLogadd("database35","Info","Opened Database File: "+Name$,"initdatabase()")
     EndIf
   Else
     ProcedureReturn #False
@@ -312,7 +302,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 18
-; Folding = -CO6
+; CursorPosition = 41
+; Folding = 9HH7
 ; EnableThread
 ; EnableXP
