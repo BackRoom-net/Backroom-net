@@ -1,4 +1,5 @@
-﻿;   Description: Main Program
+﻿EnableExplicit
+;   Description: Main Program
 ;        Author: Ruben Rodriguez
 ;          Date: 11/13/17
 ;            OS: Windows/XP/Vista/7/10
@@ -8,9 +9,9 @@
 ;
 ;- Declares
 ;
-Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
+  
 
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 IncludeFile "Crypto_mod.pbi"
 IncludeFile "Database_mod.pbi"
 IncludeFile "FileUtil_mod.pbi"
@@ -19,6 +20,7 @@ IncludeFile "Proforma_mod.pbi"
 ;IncludeFile "Console_Interactive_mod.pbi"
 IncludeFile "ThreadBranch_mod.pbi"
 IncludeFile "Preferences.pbi"
+IncludeFile "logging.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
@@ -34,25 +36,21 @@ Declare CleanShutDown()
 ;- Structures
 ;
 
-Structure maplog
-  type.s
-  message.s
-  from.s
-EndStructure
+
 
 ;
 ;- Variables
 ;
 Global KeyboardMode.i
 Global msg$, conplace
-Global log = CreateMutex()
+
 ;
 ;- Maps
 
 ProformaMakeInst("Memory-Map-Ini")
 ProformaS("Memory-Map-Ini")
 Global NewMap Keys.s()
-Global NewMap Logging.maplog()
+
 ProformaE("Memory-Map-Ini")
 
 ;
@@ -60,43 +58,6 @@ ProformaE("Memory-Map-Ini")
 ;
 ;------------
 
-Procedure Loggingthread()
-  Date$ = FormatDate("%yy.%mm.%dd", Date())
-  If OpenFile(1,Date$+".log",#PB_File_Append)
-    CloseFile(1)
-    main:
-    LockMutex(log)
-    While NextMapElement(Logging())
-      OpenFile(1,Date$+".log",#PB_File_Append)
-      Type$ = Logging() \type
-      message$ = Logging() \message
-      Moddule$ = Logging() \from
-  Date$ = FormatDate("%yy.%mm.%dd", Date()) 
-  Time$ = FormatDate("%hh:%ii:%ss", Date()) 
-  WriteStringN(1,Time$+": "+Moddule$+">"+Type$+": "+message$)               
-  CloseFile(1) 
-  DeleteMapElement(Logging())
-Wend
-ResetMap(Logging())
-UnlockMutex(log)
-Delay(500)
-Goto main
-Else
-  MessageRequester("Internal Error","Could not read Log file. Please check if other applications are using it. Logging will be resumed as soon as the File is freed.")
-  Repeat 
-    Status = OpenFile(1,Date$+".log",#PB_File_Append)
-    Delay(500)
-  Until Status = #True
-EndIf
-EndProcedure
-
-Procedure GenLogadd(Unique$,type$,message$,from$)
-  LockMutex(Log)
-  Logging(Unique$) \from = from$
-  Logging() \message = message$
-  Logging() \type = type$
-  UnlockMutex(log)
-EndProcedure
 
   
 Procedure.i keyboard(conplace)
@@ -192,8 +153,8 @@ EndSelect
 EndProcedure 
 
 Procedure Initialize()
-  CreateThread(@Loggingthread(),0)
-  GenLogadd("Init56","Info","Beginning of log----","Initialize()")
+  
+  logging::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
   
 CreateDirectory("Data")
 UseModule SQLDatabase
@@ -580,10 +541,8 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 373
-; FirstLine = 119
-; Folding = R9
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; Folding = C-
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe

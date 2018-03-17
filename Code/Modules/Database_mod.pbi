@@ -1,4 +1,5 @@
- CompilerIf #PB_Compiler_Thread <> 1
+EnableExplicit
+CompilerIf #PB_Compiler_Thread <> 1
    CompilerError "Use Compiler option - Threadsafe!"
  CompilerEndIf
 
@@ -15,13 +16,7 @@ EndDeclareModule
 
 Module SQLDatabase
   ;------------------------------------
-  Procedure GenLogadd(Unique$,type$,message$,from$)
-  LockMutex(Log)
-  Logging(Unique$) \from = from$
-  Logging() \message = message$
-  Logging() \type = type$
-  UnlockMutex(log)
-EndProcedure
+
   
 Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
 
@@ -39,7 +34,7 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
           EndIf
         Else
           MessageRequester("Error:Database_mod-Logging","Directory Bad.") ;If the directory does not work for some reason, Error.
-          GenLogadd("databasecrit","Error","Error opening directory: "+Directory$,"initlogging()")
+          log::GenLogadd("databasecrit","Error","Error opening directory: "+Directory$,"initlogging()")
           ProcedureReturn #False
           End
         EndIf
@@ -75,10 +70,10 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
      If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.
        ;Debug "Memory table created"
        ;Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
-       GenLogadd("databaseddm","Info","Opened Database Successfully: "+Name$,"initdatabase()")
+       log::GenLogadd("databaseddm","Info","Opened Database Successfully: "+Name$,"initdatabase()")
        Else
          ;Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
-         GenLogadd("databaseddmer","Info","Opened Database Successfully: "+Name$,"initdatabase()")
+         log::GenLogadd("databaseddmer","Info","Opened Database Successfully: "+Name$,"initdatabase()")
     EndIf
   Else
     ProcedureReturn #False
@@ -87,17 +82,17 @@ Else
   If FileSize(Name$) = -1
   If CreateFile(0,Name$)
     ;Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
-    GenLogadd("database34","Info","Created Database File: "+Name$,"initdatabase()")
+    log::GenLogadd("database34","Info","Created Database File: "+Name$,"initdatabase()")
     CloseFile(0)
   EndIf 
 Else
   ;Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
-  GenLogadd("database35","Info","Found Database File: "+Name$,"initdatabase()")
+  ;GenLogadd("database35","Info","Found Database File: "+Name$,"initdatabase()")
 EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
       ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
-      GenLogadd("database35","Info","Opened Database File: "+Name$,"initdatabase()")
+      log::GenLogadd("database35","Info","Opened Database File: "+Name$,"initdatabase()")
     EndIf
   Else
     ProcedureReturn #False
@@ -301,8 +296,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 41
-; Folding = 9HH7
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 93
+; Folding = 0jD0
 ; EnableThread
 ; EnableXP
