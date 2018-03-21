@@ -1,6 +1,6 @@
 ﻿EnableExplicit
 
-DeclareModule log
+DeclareModule Log
   Structure maplog
   type.s
   message.s
@@ -15,7 +15,7 @@ EndStructure
 EndDeclareModule
 
 
-Module log
+Module Log
   
 Procedure GenLogadd(Unique$,type$,message$,from$)
   LockMutex(Log)
@@ -62,6 +62,6 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 17
-; Folding = 4
+; CursorPosition = 2
+; Folding = -
 ; EnableXP

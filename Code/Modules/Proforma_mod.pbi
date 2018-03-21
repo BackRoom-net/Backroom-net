@@ -1,5 +1,5 @@
 ; If your Using this in threads, Remember to make a seperet mutex to avoid memory access violations!!
-
+EnableExplicit
 DeclareModule Proforma
   Structure Proforma_Strc                    ;declare the structure for the Proforma memory map
     Tick.i
@@ -97,7 +97,7 @@ Procedure.i ProformaSpillResult(Instance$)
 EndProcedure
 
 EndModule
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 10
-; Folding = j5
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 94
+; Folding = D5
 ; EnableXP

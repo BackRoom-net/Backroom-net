@@ -1,4 +1,6 @@
-﻿DeclareModule Prefs
+﻿EnableExplicit
+
+DeclareModule Prefs
   Declare.i InsertPrefS(Name$,Value$)
   Declare.i InsertPrefi(Name$,Value)
   Declare.s retPrefS(Name$)
@@ -15,8 +17,7 @@ Module Prefs
     Value.s
     Number.i
   EndStructure
-   Global NewMap Prefs.Prefs()
-   
+  Global NewMap Prefs.Prefs()
   Procedure.i InsertPrefS(Name$,Value$)
     If FindMapElement(Prefs(),Name$)
       ProcedureReturn #False
@@ -57,33 +58,42 @@ Module Prefs
       StrRet = PrefS(Name$) \Number
       ProcedureReturn StrRet
     Else
-      ProcedureReturn False
+      ProcedureReturn #False
     EndIf
    EndProcedure
    
-  Procedure PrefExport()
+   Procedure PrefExport()
+     Proforma::ProformaMakeInst("XMLPrefSave")
+  Proforma::ProformaS("XMLPrefSave")
    If CreateXML(0)     
     InsertXMLMap(RootXMLNode(0), Prefs())
     FormatXML(0, #PB_XML_ReFormat)
     SaveXML(0,"Data\Preferences.xml")
   EndIf
+  Proforma::ProformaE("XMLPrefSave")  
 EndProcedure
 
-  Procedure ImprortPrefs()
-  If fileSize("Data\Preferences.xml") <> -1
-     openfile(45,"Data\Preferences.xml")
-     TrueBytes = Filesize("Data\Preferences.xml")
+Procedure ImprortPrefs()
+  Proforma::ProformaMakeInst("XMLPrefLoad")
+  Proforma::ProformaS("XMLPrefLoad")  
+  If FileSize("Data\Preferences.xml") <> -1
+     OpenFile(45,"Data\Preferences.xml")
+     TrueBytes = FileSize("Data\Preferences.xml")
      *Tempmem = AllocateMemory(TrueBytes)
      ReadData(45,*Tempmem,TrueBytes)
-     Closefile(45)
+     CloseFile(45)
      If CatchXML(1,*Tempmem,TrueBytes)
-    InsertXMLMap(RootXMLNode(),Prefs())
+    InsertXMLMap(RootXMLNode(1),Prefs())
     FreeXML(1)
-    else
-    messagerequester(;Enter data later.)
-    endif
-    
+    Else
+      MessageRequester("XML Pref Manager","Error when Reading XML Memory.",#PB_MessageRequester_Error)
+      End
+    EndIf
+  Else
+    Log::Genlogadd("XMLMgr1","Info","New XML Preferences file will be created.","ImportPrefs()")
+  EndIf
   
+  Proforma::ProformaE("XMLPrefLoad")  
   ;Old method
   ;LoadXML(2,"Data\Preferences.xml")
   ;ExtractXMLMap(MainXMLNode(0), Prefs())
@@ -113,8 +123,8 @@ EndProcedure
 
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 29
-; FirstLine = 9
-; Folding = f5
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 72
+; FirstLine = 21
+; Folding = Dz
 ; EnableXP

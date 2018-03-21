@@ -34,7 +34,7 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
           EndIf
         Else
           MessageRequester("Error:Database_mod-Logging","Directory Bad.") ;If the directory does not work for some reason, Error.
-          log::GenLogadd("databasecrit","Error","Error opening directory: "+Directory$,"initlogging()")
+          Log::GenLogadd("databasecrit","Error","Error opening directory: "+Directory$,"initlogging()")
           ProcedureReturn #False
           End
         EndIf
@@ -297,7 +297,8 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 93
+; CursorPosition = 36
+; FirstLine = 27
 ; Folding = 0jD0
 ; EnableThread
 ; EnableXP
