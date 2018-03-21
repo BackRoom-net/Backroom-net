@@ -70,9 +70,24 @@ Module Prefs
 EndProcedure
 
   Procedure ImprortPrefs()
-  LoadXML(2,"Data\Preferences.xml")
-  ExtractXMLMap(MainXMLNode(0), Prefs())
-  FreeXML(2)
+  If fileSize("Data\Preferences.xml") <> -1
+     openfile(45,"Data\Preferences.xml")
+     TrueBytes = Filesize("Data\Preferences.xml")
+     *Tempmem = AllocateMemory(TrueBytes)
+     ReadData(45,*Tempmem,TrueBytes)
+     Closefile(45)
+     If CatchXML(1,*Tempmem,TrueBytes)
+    InsertXMLMap(RootXMLNode(),Prefs())
+    FreeXML(1)
+    else
+    messagerequester(;Enter data later.)
+    endif
+    
+  
+  ;Old method
+  ;LoadXML(2,"Data\Preferences.xml")
+  ;ExtractXMLMap(MainXMLNode(0), Prefs())
+  ;FreeXML(2)
 EndProcedure
 
   Procedure PrefChk()
