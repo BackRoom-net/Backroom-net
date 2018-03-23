@@ -70,10 +70,10 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
      If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.
        ;Debug "Memory table created"
        ;Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
-       log::GenLogadd("databaseddm","Info","Opened Database Successfully: "+Name$,"initdatabase()")
+       log::GenLogadd("databaseddm","Info","Opened Database Successfully: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
        Else
          ;Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
-         log::GenLogadd("databaseddmer","Info","Opened Database Successfully: "+Name$,"initdatabase()")
+         log::GenLogadd("databaseddmer","Info","Opened Database Successfully: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
     EndIf
   Else
     ProcedureReturn #False
@@ -82,7 +82,7 @@ Else
   If FileSize(Name$) = -1
   If CreateFile(0,Name$)
     ;Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
-    log::GenLogadd("database34","Info","Created Database File: "+Name$,"initdatabase()")
+    log::GenLogadd("database34","Info","Created Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
     CloseFile(0)
   EndIf 
 Else
@@ -92,7 +92,7 @@ EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
       ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
-      log::GenLogadd("database35","Info","Opened Database File: "+Name$,"initdatabase()")
+      log::GenLogadd("database35","Info","Opened Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
     EndIf
   Else
     ProcedureReturn #False
@@ -215,6 +215,7 @@ Module SQFormat
     LockMutex(SQLT)
     stat = DatabaseUpdate(Db,Dbc$)
     UnlockMutex(SQLT)
+    Log::GenLogadd(Str(UdbNumb),"THREAD","Got status of: "+Str(stat)+" when proforming action: "+Dbc$+" To database:"+Str(Db),"SQLDbUpdate()")
   EndProcedure
   ;-------- Table Functions
   ;-------- Input Functions
@@ -296,9 +297,9 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 36
-; FirstLine = 27
-; Folding = 0jD0
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 227
+; FirstLine = 144
+; Folding = 04H0
 ; EnableThread
 ; EnableXP

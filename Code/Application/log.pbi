@@ -21,6 +21,7 @@ EndStructure
   Global Log = CreateMutex()
   Global Unique$, type$, message$, from$
   Global threadnumberlogging
+    Global LogThread = CreateMutex()
   
   Procedure GenLogadd(Unique$,type$,message$,from$)
 ;   If Prefs::retPrefI("LogThreadSync") 
@@ -42,11 +43,11 @@ EndStructure
   Logging(Unique$) \from = from$
   Logging() \message = message$
   Logging() \type = type$
-  UnlockMutex(log)
   If IsThread(threadnumberlogging)
   Else
     threadnumberlogging = CreateThread(@Loggingthread(),0)
   EndIf
+  UnlockMutex(log)
 ; ElseIf Sync = 1
 ;   NonThreadLogging(Unique$,type$,message$,from$)
 ; EndIf
@@ -55,10 +56,10 @@ EndProcedure
 
 Procedure Loggingthread()
   Date$ = FormatDate("%yy.%mm.%dd", Date())
+  LockMutex(Log)
   If OpenFile(1,Date$+".log",#PB_File_Append)
     CloseFile(1)
     main:
-    LockMutex(log)
     While NextMapElement(Logging())
       OpenFile(1,Date$+".log",#PB_File_Append)
       Type$ = Logging() \type
@@ -66,12 +67,18 @@ Procedure Loggingthread()
       Moddule$ = Logging() \from
   Date$ = FormatDate("%yy.%mm.%dd", Date()) 
   Time$ = FormatDate("%hh:%ii:%ss", Date()) 
+  If Type$ = "THREAD"
+    OpenFile(2,Date$+"_Thread"+".log",#PB_File_Append)
+    WriteStringN(2,Time$+": "+Moddule$+">"+Type$+": "+message$)  
+    CloseFile(2)
+    Else
   WriteStringN(1,Time$+": "+Moddule$+">"+Type$+": "+message$)               
-  CloseFile(1) 
+EndIf
+CloseFile(1)
   DeleteMapElement(Logging())
 Wend
 ResetMap(Logging())
-UnlockMutex(log)
+UnlockMutex(Log)
 Delay(500)
 Goto main
 Else
@@ -146,7 +153,8 @@ EndProcedure
     ProcedureReturn
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 7
-; Folding = H+
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 74
+; FirstLine = 39
+; Folding = P+
 ; EnableXP
