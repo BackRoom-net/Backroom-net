@@ -8,37 +8,35 @@
 ;
 ;- Declares
 ;
-Global Log = CreateMutex() ; must be called up here so Log mutex is enabled. 
+  
 
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules\"
-IncludeFile "Crypto_mod.pbi"
-IncludeFile "Database_mod.pbi"
-IncludeFile "FileUtil_mod.pbi"
-IncludeFile "Modul_NetworkData.pbi"
-IncludeFile "Proforma_mod.pbi"
-;IncludeFile "Console_Interactive_mod.pbi"
-IncludeFile "ThreadBranch_mod.pbi"
-IncludeFile "Preferences.pbi"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+XIncludeFile "Proforma_mod.pbi"
+XIncludeFile "ThreadBranch_mod.pbi"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
+XIncludeFile "log.pbi"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+XIncludeFile "Database_mod.pbi"
+XIncludeFile "Preferences.pbi"
+XIncludeFile "Crypto_mod.pbi"
+XIncludeFile "FileUtil_mod.pbi"
+XIncludeFile "Modul_NetworkData.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
 ;
 ;
 ;
-Declare Keyboard(conplace)
-Declare InitializeDatabase()
+Declare Initialize()
 Declare DetectSystem()
 Declare CreatePrettystuff()
 Declare CleanShutDown()
-Declare Logt(Subsystem$,Text$)
-Declare Logfinal(*logmemory)
 ;
 ;- Structures
 ;
 
 
-;; No structures Rn... =(  
-  
+
 ;
 ;- Variables
 ;
@@ -48,10 +46,11 @@ Global msg$, conplace
 ;
 ;- Maps
 
-; Map cap at 6mill
 ProformaMakeInst("Memory-Map-Ini")
 ProformaS("Memory-Map-Ini")
 Global NewMap Keys.s(6000000)
+Global NewMap Keys.s()
+
 ProformaE("Memory-Map-Ini")
 
 ;
@@ -63,11 +62,17 @@ Procedure.i keyboard(conplace)
   ;//InKey() is used to check for keyboard presses
   ;//and should be used in a loop.
   ;//in other words, use the procedure in a loop.
+
   
   ;// Output mode 1 for regular output to msg$ or 2 for Key string output to msg$
+
+DisableExplicit
+Procedure Initialize()
   
   KeyPressed$ = Inkey()
+  Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
   
+<<<<<<< HEAD
   Select KeyboardMode.i
       Case 1
   If KeyPressed$ <> ""      ;// This If is used to check if no key was pressed
@@ -153,8 +158,9 @@ EndProcedure
 
 Procedure InitializeDatabase()
   CreateDirectory("Data")
+=======
+>>>>>>> master
 CreateDirectory("Data")
-  
 UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
@@ -289,6 +295,7 @@ Procedure DetectSystem()
     EndIf
     Tolog$ = Str(SysSpecTotal)+" Was returned when Reading memory total of: "+Str(Total)+" Bytes"
     Logt("DetectSystem",Tolog$)
+    Log::GenLogadd("Detectinf1","Info",Tolog$,"DetectSystem()")
     
     If Current > 4200000000 ;anything above 4gb
     SysSpecCurr = 1
@@ -301,6 +308,7 @@ Procedure DetectSystem()
     EndIf
     Tolog$ = Str(SysSpecTotal)+" Was returned when Reading memory current of: "+Str(Current)+" Bytes"
     Logt("DetectSystem",Tolog$)
+    Log::GenLogadd("DetectInf","Info",Tolog$,"DetectSystem()")
     
     Debug SysSpecTotal
     Debug SysSpecCurr
@@ -308,6 +316,7 @@ Procedure DetectSystem()
       MessageRequester("System","System does not have Minimum Requeseted memory. Program will not run.",#PB_MessageRequester_Error)
           Tolog$ = "System failed reccomended system spec."
            Logt("DetectSystem",Tolog$)
+          Log::GenLogadd("Detect0","Error",Tolog$,"DetectSystem()")
       End
     EndIf
     
@@ -315,6 +324,7 @@ Procedure DetectSystem()
       MessageRequester("System","System does not currently have enough memory to Run program. Try exiting some programs.",#PB_MessageRequester_Error)
                 Tolog$ = "System does not have enough free memory."
            Logt("DetectSystem",Tolog$)
+           Log::GenLogadd("Detect1","Error",Tolog$,"DetectSystem()")
       End
     EndIf
     
@@ -322,6 +332,7 @@ Procedure DetectSystem()
       Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
       Tolog$ = "System Low on memory."
            Logt("DetectSystem",Tolog$)
+          Log::GenLogadd("Detect3","Warning",Tolog$,"DetectSystem()")
     If Result = #PB_MessageRequester_Yes
     Else
       End
@@ -333,6 +344,11 @@ Procedure DetectSystem()
     Tolog$ = ToLog$+"CPU Cores:"+Str(CountCPUs(#PB_System_CPUs))+Chr(12)
     ToLog$ = "---End of system exploration---"
     Logt("DetectSystem",Tolog$)
+    Tolog$ = "---Beginning of system exploration---"+Chr(13)
+    Tolog$ = Tolog$+"CPU Name: "+CPUName()+Chr(13)
+    Tolog$ = ToLog$+"CPU Cores:"+Str(CountCPUs(#PB_System_CPUs))+Chr(13)
+    ToLog$ = ToLog$+"---End of system exploration---"
+    Log::GenLogadd("Detect0","Info",Tolog$,"DetectSystem()")
     
     
 
@@ -362,7 +378,6 @@ Procedure CleanShutDown()
 EndProcedure
 
 Procedure ViewPackProcess()
-  Input()
   ConX = 0
   ConY = 0
   Structure watc
@@ -401,8 +416,12 @@ Procedure ViewPackProcess()
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
+<<<<<<< HEAD
          Fill$ = Space(InfoFormLen)
          Fill$ = Space(90)
+=======
+         Fill$ = Space(150)
+>>>>>>> master
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
          ConsoleLocate(0,curpos+2)
@@ -480,29 +499,6 @@ Wend
 EndProcedure
 
 
-Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
-    If logmode > 0 ;If the Log setting is not Null.
-  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$)+16)
-  PokeS(*logmemory,Subsystem$+": "+Text$)
-  logtl = CreateThread(@Logfinal(),*logmemory)
-EndIf
-
-EndProcedure
-
-Procedure Logfinal(*logmemory) ;Thread for Logging
-  If logmode > 0
-  tofile$ = PeekS(*logmemory) ; Get Data from Memory address passed to the thread.
-  Date$ = FormatDate("%yy.%mm.%dd", Date()) ;  Get Date.
-  Time$ = FormatDate("%hh:%ii:%ss", Date()) ; Get time.
-  LockMutex(Log)                            ; Lock the mutex
-  OpenFile(1,logdir+Date$+".log",#PB_File_Append) ; Open the Log file.
-  WriteStringN(1,Time$+":"+tofile$)               ; Write data and Date and formatted time/
-  CloseFile(1)   
-  UnlockMutex(Log)
-  FreeMemory(*logmemory)
-  EndIf
-EndProcedure
-
 ;-------------
 ;- Program side
 ;
@@ -515,6 +511,7 @@ DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
 If InitializeDatabase()
+If Initialize()
  Debug "1"
 EndIf
 ProformaE("Database-Ini")
@@ -564,13 +561,21 @@ Until Exit = 1
 
 
 Input()
+<<<<<<< HEAD
 ; IDE Options = PureBasic 5.61 (Windows - x64)
 ; CursorPosition = 19
 ; FirstLine = 57
 ; Folding = A9
+=======
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 22
+; Folding = h
+>>>>>>> master
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
+; DisableDebugger
 ; CompileSourceDirectory
+; Warnings = Ignore
 ; EnablePurifier
 ; EnableUnicode

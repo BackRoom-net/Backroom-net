@@ -68,17 +68,25 @@ Module FileUtil
   EndProcedure
   
   Procedure SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
+    Structure plc
+      file.s
+      compressed.i
+      CheckSum.s
+    EndStructure
+    
+    NewMap compfile.plc()
     NewMap Files.part(2000000)
     UseCRC32Fingerprint()
     UseSHA3Fingerprint()
     UseZipPacker()
     UniNumber = Random(1000)
- Debug File$
+    Debug File$
+    PackageName$ = Str(ProcessID)
 Size.i = 1024*4000
 ; --------------
 OpenFile(UniNumber,File$)
 Filename$ = GetFilePart(File$)
-CreateDirectory("FileTmp\Processing\"+Filename$)
+CreateDirectory("FileTmp\Processing\"+PackageName$)
 FileSize.i = Lof(UniNumber)
 Parts.d = Filesize.i/Size.i
 ; ---------------
@@ -94,6 +102,8 @@ Filethreads(Str(ProcessID)) \Job = "Encrypting..."
 Filethreads() \Status = "Starting up.."
 UnlockMutex(ThreadStatMutex)
 
+
+
 redo:
 Repeat
   *Split = AllocateMemory(Size.i)
@@ -103,8 +113,8 @@ Repeat
   If FileSize(FileFinger$) = -1
     *Encoded = AllocateMemory(Actread+32)
     *Compressed = AllocateMemory(Actread+32)
-    OpenFile(CmpressFile,"FileTmp\Processing\"+Filename$+"\"+FileFinger$)
-    ProcessingString$ = "FileTmp\Processing\"+Filename$+"\"+FileFinger$
+    OpenFile(CmpressFile,"FileTmp\Processing\"+PackageName$+"\"+FileFinger$)
+    ProcessingString$ = "FileTmp\Processing\"+PackageName$+"\"+FileFinger$
      LockMutex(ThreadStatMutex)
      Filethreads(Str(ProcessID)) \Message = ProcessingString$
      Filethreads() \Status = "Encrypting File: "+Str(parts)+"/"+Str(Partcount)
@@ -117,10 +127,14 @@ Repeat
      AESEncoder(*Compressed,*Encoded,Actread,*AESKey,256,*IniVector)
    EndIf
    
-    
     WriteData(CmpressFile,*Encoded,Compdata)
     Partcount = Partcount+1
     CloseFile(CmpressFile)
+    
+    compfile(Str(Partcount)) \CheckSum = Checksum$
+    compfile() \compressed = Compdata
+    Compfile() \file = FileFinger$
+    
     Compdata = 0
   Else
     MessageRequester("Internal Error","CRC32 Data match. Internal error, Parts: "+Str(Partcount))
@@ -129,7 +143,7 @@ Repeat
   
   
   files(Str(Partcount)) \Checksum = CheckSum$
-  Files() \Compressed = Compressed
+  Files() \Compressed = Compdata
   Files() \filefinger = FileFinger$
   
 
@@ -150,6 +164,11 @@ Repeat
     
   Until Eof(UniNumber)
   CloseFile(UniNumber)
+  If CreateJSON(0)
+    InsertJSONMap(JSONValue(0), compfile())
+    SaveJSON(0,"FileTmp\Processing\"+PackageName$+"\Order.json", #PB_JSON_PrettyPrint)
+  EndIf
+ FreeMap(compfile())
   ProcedureReturn #True
   EndProcedure
   
@@ -263,8 +282,9 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 248
-; Folding = D-
+; CursorPosition = 145
+; FirstLine = 80
+; Folding = T-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
