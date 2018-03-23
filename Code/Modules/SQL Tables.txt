@@ -1,0 +1,10 @@
+CloseClients - Maps the clients that have a low Ping so that they are communicated to more
+               often.
+KnownClients - Biggest list, these are all of the clients that this server knows.
+FrendlyClients - The clients that we have done business with before.
+ActiveRfrClients - These are high priority keep up clients that need to be communicated with constantly.
+                   Usually going to be clients that we are currently in connection with or downloading from.
+PackageOnHost - This is the list of all pacakges that are on the other computers.
+PackageSummary - Linked to the local host package number, this displays the information of the off host package.
+PackageOnServer - this is a list just like for off host servers but local.
+PackageServerSummary - This is basically the same as Package summary.

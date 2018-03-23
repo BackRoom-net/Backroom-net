@@ -48,6 +48,7 @@ Global msg$, conplace
 
 ProformaMakeInst("Memory-Map-Ini")
 ProformaS("Memory-Map-Ini")
+Global NewMap Keys.s(6000000)
 Global NewMap Keys.s()
 
 ProformaE("Memory-Map-Ini")
@@ -57,14 +58,108 @@ ProformaE("Memory-Map-Ini")
 ;
 ;------------
 
+Procedure.i keyboard(conplace)
+  ;//InKey() is used to check for keyboard presses
+  ;//and should be used in a loop.
+  ;//in other words, use the procedure in a loop.
 
   
+  ;// Output mode 1 for regular output to msg$ or 2 for Key string output to msg$
 
 DisableExplicit
 Procedure Initialize()
   
+  KeyPressed$ = Inkey()
   Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
   
+<<<<<<< HEAD
+  Select KeyboardMode.i
+      Case 1
+  If KeyPressed$ <> ""      ;// This If is used to check if no key was pressed
+    If KeyPressed$ = Chr(13)   ;// Right here is to check if enter was pressed
+      ConsoleLocate(0,conplace)
+      PrintN(msg$+Chr(13))     ;// If so it will print the current message
+      msg$ = ""                ;// Erase from the variable
+      conplace = conplace + 1  ;// and manually set the console position
+    Else
+      If KeyPressed$ = Chr(8)     ;// Here is the if the backspace was pressed
+        lent = Len(msg$)           ;//Get the lenght of the message
+        msg$ = Left(msg$,lent - 1) ;//Removes the deleted letter from msg$
+        ConsoleLocate(0,conplace)
+        tover = 0                 ;//safe guard to make sure variable is reset.
+        over$ = ""                ;//another safe guard.
+        If lent > 0              ;// if the lenghth of msg$ is over 0 go to next step.
+        Repeat             ;//next step makes padding of null to cover message to print new message.
+          over$ = over$+" " ;//adds padding to over$ to go over the message.
+          tover = tover + 1 ;//counts  the ammount of padding needed to cover the message space
+        Until tover = lent ;// until the whole place in the console is covered
+        Print(over$)         ;// print the padding over the message.
+        ConsoleLocate(0,conplace) ;// reset write head so its ready to write again.
+        Print(msg$+Chr(0))       ;// print the modified msg$ with one less letter
+        Debug msg$
+        Debug over$
+      EndIf                 ;//self explainatory. 
+      
+    Else                    ;// if any other event is needed, its costom and added below.
+                              ;//Costom events------
+      msg$ = msg$+KeyPressed$
+      If msg$ = "!rp"
+        Debug "in rp mode"
+        ConsoleLocate(0,conplace)
+        Print("   ")
+        msg$ = ""
+      EndIf
+                             ;//-------------------
+                             ;//end of costom events//
+      ConsoleLocate(0,conplace) ;// reset console position just incase
+      
+      Print(msg$)            ;// if the events above where not true but there was a key press, it will be printed in now.
+      
+      
+    EndIf   ;//end of backspace event
+  EndIf     ;//end of enter keypress event
+EndIf       ;//end of key press check
+Delay(1)
+If KeyPressed$ = Chr(27) ;// if the escape key was pressed, 
+  result = 27
+Else
+  result = 1
+EndIf
+ProcedureReturn(result)
+
+Case 2
+  If KeyPressed$ <> ""
+    If KeyPressed$ = Chr(13)
+      msg$ = "enter"
+      ProcedureReturn #True
+      Else
+      If KeyPressed$ = Chr(8)
+        msg$ = "bspace"
+        ProcedureReturn #True
+      Else
+        If KeyPressed$ = Chr(27)
+          msg$ = "esc"
+          ProcedureReturn #True
+        Else
+          msg$ = keypressed$
+          ProcedureReturn #True
+      EndIf
+      
+    
+    
+    EndIf
+  EndIf
+Else
+  ProcedureReturn #False
+EndIf
+EndSelect
+
+EndProcedure 
+
+Procedure InitializeDatabase()
+  CreateDirectory("Data")
+=======
+>>>>>>> master
 CreateDirectory("Data")
 UseModule SQLDatabase
 UseModule SQFormat
@@ -146,7 +241,7 @@ CloseC7$ = SQFMakeField(CloseC7$,"IP",2,1,0,0,1,1)
 CloseC7$ = SQFMakeField(CloseC7$,"Ping",1,1,0,0,0,0)
 CloseC7$ = SQFclose(CloseC7$)
 
-CloseC8$ = SQFCreateTable(CloseC8$,"PackagesOnServer")
+CloseC8$ = SQFCreateTable(CloseC8$,"PackageOnServer")
 CloseC8$ = SQFOpen(CloseC8$)
 CloseC8$ = SQFMakeField(CloseC8$,"PackageNumber",1,1,1,1,0,1)
 CloseC8$ = SQFMakeField(CloseC8$,"PackageHash",2,1,0,0,0,1)
@@ -199,6 +294,7 @@ Procedure DetectSystem()
       SysSpecTotal = 0
     EndIf
     Tolog$ = Str(SysSpecTotal)+" Was returned when Reading memory total of: "+Str(Total)+" Bytes"
+    Logt("DetectSystem",Tolog$)
     Log::GenLogadd("Detectinf1","Info",Tolog$,"DetectSystem()")
     
     If Current > 4200000000 ;anything above 4gb
@@ -211,6 +307,7 @@ Procedure DetectSystem()
       SysSpecCurr = 3
     EndIf
     Tolog$ = Str(SysSpecTotal)+" Was returned when Reading memory current of: "+Str(Current)+" Bytes"
+    Logt("DetectSystem",Tolog$)
     Log::GenLogadd("DetectInf","Info",Tolog$,"DetectSystem()")
     
     Debug SysSpecTotal
@@ -218,6 +315,7 @@ Procedure DetectSystem()
     If SysSpecTotal = 0
       MessageRequester("System","System does not have Minimum Requeseted memory. Program will not run.",#PB_MessageRequester_Error)
           Tolog$ = "System failed reccomended system spec."
+           Logt("DetectSystem",Tolog$)
           Log::GenLogadd("Detect0","Error",Tolog$,"DetectSystem()")
       End
     EndIf
@@ -225,6 +323,7 @@ Procedure DetectSystem()
     If SysSpecCurr = 0
       MessageRequester("System","System does not currently have enough memory to Run program. Try exiting some programs.",#PB_MessageRequester_Error)
                 Tolog$ = "System does not have enough free memory."
+           Logt("DetectSystem",Tolog$)
            Log::GenLogadd("Detect1","Error",Tolog$,"DetectSystem()")
       End
     EndIf
@@ -232,6 +331,7 @@ Procedure DetectSystem()
     If SysSpecCurr = 3
       Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
       Tolog$ = "System Low on memory."
+           Logt("DetectSystem",Tolog$)
           Log::GenLogadd("Detect3","Warning",Tolog$,"DetectSystem()")
     If Result = #PB_MessageRequester_Yes
     Else
@@ -239,6 +339,11 @@ Procedure DetectSystem()
       EndIf
     EndIf
     
+    Tolog$ = "---Beginning of system exploration---"+Chr(12)
+    Tolog$ = Tolog$+"CPU Name: "+CPUName()+Chr(12)
+    Tolog$ = ToLog$+"CPU Cores:"+Str(CountCPUs(#PB_System_CPUs))+Chr(12)
+    ToLog$ = "---End of system exploration---"
+    Logt("DetectSystem",Tolog$)
     Tolog$ = "---Beginning of system exploration---"+Chr(13)
     Tolog$ = Tolog$+"CPU Name: "+CPUName()+Chr(13)
     Tolog$ = ToLog$+"CPU Cores:"+Str(CountCPUs(#PB_System_CPUs))+Chr(13)
@@ -311,7 +416,12 @@ Procedure ViewPackProcess()
        curpos.i = Watcher() \posy
        
        If MsgCurr$ <> Watcher() \msg
+<<<<<<< HEAD
+         Fill$ = Space(InfoFormLen)
+         Fill$ = Space(90)
+=======
          Fill$ = Space(150)
+>>>>>>> master
          ConsoleLocate(0,curpos+2)
          Print(Fill$)
          ConsoleLocate(0,curpos+2)
@@ -400,6 +510,7 @@ OpenConsole("BackRoom-Net")
 DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
+If InitializeDatabase()
 If Initialize()
  Debug "1"
 EndIf
@@ -450,9 +561,16 @@ Until Exit = 1
 
 
 Input()
+<<<<<<< HEAD
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 19
+; FirstLine = 57
+; Folding = A9
+=======
 ; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 22
 ; Folding = h
+>>>>>>> master
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
