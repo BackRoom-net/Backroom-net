@@ -93,7 +93,7 @@ Parts.d = Filesize.i/Size.i
 Message$ = "New Package process: "+Str(UniNumber)+Chr(12)
 Message$ = Message$+"File to encrypt: "+File$+Chr(12)
 Message$ = Message$+"File Parts calculated: "+Str(Round(Parts.d,#PB_Round_Up))
-Log::GenLogadd(Str(UniNumber),Message$)
+Log::GenLogadd(Str(UniNumber),"THREAD",Message$,"SpreadFile()")
 Proforma::ProformaMakeinst("FileUtil_"+Str(UniNumber))
 Proforma::ProformaS("FileUtil_"+Str(UniNumber))
 ; ---------------
@@ -293,7 +293,7 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 181
+; CursorPosition = 180
 ; FirstLine = 116
 ; Folding = T-
 ; EnableThread
