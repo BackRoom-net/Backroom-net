@@ -89,6 +89,13 @@ Filename$ = GetFilePart(File$)
 CreateDirectory("FileTmp\Processing\"+PackageName$)
 FileSize.i = Lof(UniNumber)
 Parts.d = Filesize.i/Size.i
+; --------------
+Message$ = "New Package process: "+Str(UniNumber)+Chr(12)
+Message$ = Message$+"File to encrypt: "+File$+Chr(12)
+Message$ = Message$+"File Parts calculated: "+Str(Round(Parts.d,#PB_Round_Up))
+Log::GenLogadd(Str(UniNumber),Message$)
+Proforma::ProformaMakeinst("FileUtil_"+Str(UniNumber))
+Proforma::ProformaS("FileUtil_"+Str(UniNumber))
 ; ---------------
 Parts = Round(Parts.d,#PB_Round_Up)
 If parts = 0 
@@ -168,7 +175,11 @@ Repeat
     InsertJSONMap(JSONValue(0), compfile())
     SaveJSON(0,"FileTmp\Processing\"+PackageName$+"\Order.json", #PB_JSON_PrettyPrint)
   EndIf
- FreeMap(compfile())
+  FreeMap(compfile())
+  Proforma::ProformaE("FileUtil_"+Str(UniNumber))
+  ms.i = Proforma::ProformaSpillResult("FileUtil_"+Str(UniNumber))
+  GenLogadd(Str(UniNumber),"File Process "+Str(Uninumber)+" Finished after "+Str(ms)+" ms")
+  Proforma::ProformaEraseInst("FileUtil_"+Str(UniNumber))
   ProcedureReturn #True
   EndProcedure
   
@@ -282,8 +293,8 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 145
-; FirstLine = 80
+; CursorPosition = 181
+; FirstLine = 116
 ; Folding = T-
 ; EnableThread
 ; EnableXP
