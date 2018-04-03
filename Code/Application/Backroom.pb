@@ -10,12 +10,12 @@
 ;
   
 
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
 XIncludeFile "ThreadBranch_mod.pbi"
-IncludePath "C:\Intel\Git\Backroom-net\Code\Application"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
-IncludePath "C:\Intel\Git\Backroom-net\Code\Modules"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Database_mod.pbi"
 XIncludeFile "Preferences.pbi"
 XIncludeFile "Crypto_mod.pbi"
@@ -424,7 +424,7 @@ Repeat
   msg$ = Inkey()
   If msg$ <> ""
     If msg$ = Chr(27)
-      MessageRequester("BackRoom-Beta-1.0.0","User Hit Escape Key. Please Wait for shutdown.")
+      MessageRequester("BackRoom-Alpha-0.0.1","User Hit Escape Key. Please Wait for shutdown.")
       CleanShutDown()
     EndIf
        If msg$ = Chr(49)
@@ -450,14 +450,14 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 12
-; Folding = h
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 426
+; FirstLine = 97
+; Folding = g
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
-; DisableDebugger
 ; CompileSourceDirectory
-; Warnings = Ignore
+; Warnings = Display
 ; EnablePurifier
 ; EnableUnicode
