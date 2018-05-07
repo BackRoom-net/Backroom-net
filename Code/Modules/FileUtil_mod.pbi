@@ -57,9 +57,63 @@ Module FileUtil
   
   
   Procedure SpredDir(*AESKey,*IniVector)
+    EnableGraphicalConsole(1)
+    PrintN("(Use < And > To move through items. Press enter to change value.)")
+    Delay(1500)
+    cony = 1
+    RotoPos = 0
+    max = 1
+    ConsoleLocate(0,cony)
+    Repeat
+    key$ = Inkey()
+    If key$ <> ""
+      If key$ = ","
+        If Rotopos <> 0
+          Rotopos = Rotopos-1
+        EndIf
+      EndIf
+      
+      If key$ = "."
+        If Rotopos <> max
+          Rotopos = Rotopos+1
+        EndIf
+      EndIf
+      
+      If Asc(Key$) = 13
+      ClearConsole()  
+      Select RotoPos
+          
+        Case 0
+          Print("New Value:")
+          New$ = Input()
+          Prefs::InsertPrefS("LastPckName",New$,1)
+          
+        Case 1
+          ClearConsole()
+          Break
+      EndSelect
+      
+      EndIf
+      
+    Select RotoPos
+        
+      Case 0
+        ClearConsole()
+        Print("Name:"+Prefs::retPrefS("LastPckName"))
+        
+      Case 1
+        ClearConsole()
+        Print("Continue")
+    EndSelect
+  Else
+    Delay(90)
+  EndIf
+    Until Close = 1  
+      
     InitialPath$ = "C:\"   ; set initial path to display (could also be blank)
     Path$ = PathRequester("Create Package:", InitialPath$)
     ProcessID = Random(99999)+Random(99999)
+    Debug ProcessID
     FileInfopass(Str(ProcessID)) \aesmem = *AESKey
     FileInfopass() \File = Path$
     FileInfopass() \Inivect = *IniVector
@@ -89,14 +143,23 @@ Filename$ = GetFilePart(File$)
 CreateDirectory("FileTmp\Processing\"+PackageName$)
 FileSize.i = Lof(UniNumber)
 Parts.d = Filesize.i/Size.i
+
+
 ; --------------
-Message$ = "New Package process: "+Str(UniNumber)+Chr(12)
-Message$ = Message$+"File to encrypt: "+File$+Chr(12)
+
+
+Message$ = "New Package process: "+Str(UniNumber)+Chr(10)
+Message$ = Message$+"File to encrypt: "+File$+Chr(10)
 Message$ = Message$+"File Parts calculated: "+Str(Round(Parts.d,#PB_Round_Up))
+Debug Message$
 Log::GenLogadd(Str(UniNumber),"THREAD",Message$,"SpreadFile()")
 Proforma::ProformaMakeinst("FileUtil_"+Str(UniNumber))
 Proforma::ProformaS("FileUtil_"+Str(UniNumber))
+
+
 ; ---------------
+
+
 Parts = Round(Parts.d,#PB_Round_Up)
 If parts = 0 
   MessageRequester("Internal Error","Package does not meet size requirements.")
@@ -178,7 +241,7 @@ Repeat
   FreeMap(compfile())
   Proforma::ProformaE("FileUtil_"+Str(UniNumber))
   ms.i = Proforma::ProformaSpillResult("FileUtil_"+Str(UniNumber))
-  GenLogadd(Str(UniNumber),"File Process "+Str(Uninumber)+" Finished after "+Str(ms)+" ms")
+  Log::GenLogadd(Str(UniNumber),"THREAD","File Process "+Str(Uninumber)+" Finished after "+Str(ms)+" ms","SpreadFile()")
   Proforma::ProformaEraseInst("FileUtil_"+Str(UniNumber))
   ProcedureReturn #True
   EndProcedure
@@ -219,10 +282,6 @@ filesindim = 0
         file(filesindim) = path$+filename$
         filesindim = filesindim+1
         
-        LockMutex(ThreadStatMutex)
-        Filethreads(Str(ProcessID)) \Message = Filename$
-        UnlockMutex(ThreadStatMutex)
-        
       Else
         Type$ = "[Directory] "
         Size$ = "" ; A directory doesn't have a size
@@ -230,6 +289,9 @@ filesindim = 0
         If dirname$ = "." Or dirname$ = ".."
           Goto enddir
         EndIf
+        LockMutex(ThreadStatMutex)
+        Filethreads(Str(ProcessID)) \Message = Filename$
+        UnlockMutex(ThreadStatMutex)
         
         dirs(scanto) = path$+dirname$+"\"
         scanto = scanto + 1
@@ -262,6 +324,8 @@ UseTARPacker()
 Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
 UniNumber = Random(1000)
 CreatePack(UniNumber,"FileTmp\InProgress\"+Filename$)
+CreateDirectory("FileTmp\Processing\"+Str(ProcessID))
+OpenFile(45,"FileTmp\InProgress\TarDef."+Filename$)
 While file(dimnumb)
   dimnumb = dimnumb+1
   Fileselect$ = file(dimnumb)
@@ -272,18 +336,26 @@ While file(dimnumb)
   Filethreads(Str(ProcessID)) \Message = Writestrmem$
   UnlockMutex(ThreadStatMutex)
   AddPackFile(UniNumber,Fileselect$,FileTarPath$)
+  WriteStringN(45,FileTarPath$)
 Wend
 ClosePack(UniNumber)
+CloseFile(45)
+tardp = Random(9999,1)
+CreatePack(tardp,"FileTmp\Processing\"+Str(ProcessID)+"\defdir.packed")
+AddPackFile(tardp,"FileTmp\InProgress\TarDef."+Filename$,"Fs.dat")
+ClosePack(tardp)
 
 If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut,ProcessID)
   DeleteFile("FileTmp\InProgress\"+Filename$)
   LockMutex(ThreadStatMutex)
   Filethreads(Str(ProcessID)) \Status = "Close"
+  FreeArray(file())
+  FreeArray(file())
   UnlockMutex(ThreadStatMutex)
 ProcedureReturn #True
 Else
   LockMutex(ThreadStatMutex)
-  Filethreads(Str(ProcessID)) \Status = "Error."
+  Filethreads(Str(ProcessID)) \Status = "Logged Fatal Error"
   UnlockMutex(ThreadStatMutex)
   ProcedureReturn #False
 EndIf
@@ -292,10 +364,10 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 116
-; Folding = T-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 345
+; FirstLine = 214
+; Folding = y-
 ; EnableThread
 ; EnableXP
 ; EnableOnError

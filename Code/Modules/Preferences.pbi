@@ -1,7 +1,7 @@
 ﻿EnableExplicit
 
 DeclareModule Prefs
-  Declare.i InsertPrefS(Name$,Value$)
+  Declare.i InsertPrefS(Name$,Value$,Replace)
   Declare.i InsertPrefi(Name$,Value)
   Declare.s retPrefS(Name$)
   Declare.i retPrefI(Name$)
@@ -18,9 +18,20 @@ Module Prefs
     Number.i
   EndStructure
   Global NewMap Prefs.Prefs()
-  Procedure.i InsertPrefS(Name$,Value$)
+  Procedure.i InsertPrefS(Name$,Value$,Replace)
     If FindMapElement(Prefs(),Name$)
-      ProcedureReturn #False
+      If Replace = 1
+          If Value$ = ""
+        Prefs(Name$) \Name = Name$
+        Prefs(Name$) \Value = "Null"
+      Else
+      Prefs(Name$) \Name = Name$
+      Prefs(Name$) \Value = Value$
+    EndIf
+    ProcedureReturn #True
+      Else
+        ProcedureReturn #False
+      EndIf
     Else
       If Value$ = ""
         Prefs(Name$) \Name = Name$
@@ -67,37 +78,25 @@ Module Prefs
   Proforma::ProformaS("XMLPrefSave")
    If CreateXML(0)     
     InsertXMLMap(RootXMLNode(0), Prefs())
-    FormatXML(0, #PB_XML_ReFormat)
-    SaveXML(0,"Data\Preferences.xml")
+    Debug SaveXML(0,"Data\Preferences.xml")
   EndIf
   Proforma::ProformaE("XMLPrefSave")  
 EndProcedure
 
 Procedure ImprortPrefs()
+  Debug "--Start Import of Preferences--"
   Proforma::ProformaMakeInst("XMLPrefLoad")
   Proforma::ProformaS("XMLPrefLoad")  
   If FileSize("Data\Preferences.xml") <> -1
-     OpenFile(45,"Data\Preferences.xml")
-     TrueBytes = FileSize("Data\Preferences.xml")
-     *Tempmem = AllocateMemory(TrueBytes)
-     ReadData(45,*Tempmem,TrueBytes)
-     CloseFile(45)
-     If CatchXML(1,*Tempmem,TrueBytes)
-    InsertXMLMap(RootXMLNode(1),Prefs())
+    OpenFile(1,"Data\Preferences.xml")
+    xml$ = ReadString(1)
+    ParseXML(1,xml$)
+    ExtractXMLMap(MainXMLNode(1),Prefs())
     FreeXML(1)
-    Else
-      MessageRequester("XML Pref Manager","Error when Reading XML Memory.",#PB_MessageRequester_Error)
-      End
-    EndIf
-  Else
-    Log::Genlogadd("XMLMgr1","Info","New XML Preferences file will be created.","ImportPrefs()")
   EndIf
   
   Proforma::ProformaE("XMLPrefLoad")  
-  ;Old method
-  ;LoadXML(2,"Data\Preferences.xml")
-  ;ExtractXMLMap(MainXMLNode(0), Prefs())
-  ;FreeXML(2)
+
 EndProcedure
 
   Procedure PrefChk()
@@ -124,7 +123,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 72
-; FirstLine = 21
+; CursorPosition = 93
+; FirstLine = 22
 ; Folding = Dz
 ; EnableXP

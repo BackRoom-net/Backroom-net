@@ -225,12 +225,11 @@ Global LogCount = 0
   
 EndModule
 
-UseModule ThreadBranch
-SelfTest()
+;UseModule ThreadBranch
+;SelfTest()
 
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 212
-; FirstLine = 180
-; Folding = --
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 227
+; Folding = f-
 ; EnableXP

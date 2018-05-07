@@ -1,3 +1,11 @@
+;   Description: Performance Recording
+;         Title: Proforma
+;        Author: Ruben Rodriguez
+;          Date: 11/13/17
+;            OS: Windows/XP/Vista/7/10
+;     Finalized: 5/6/18
+
+
 ; If your Using this in threads, Remember to make a seperet mutex to avoid memory access violations!!
 EnableExplicit
 DeclareModule Proforma
@@ -98,6 +106,6 @@ EndProcedure
 
 EndModule
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 94
-; Folding = D5
+; CursorPosition = 5
+; Folding = -9
 ; EnableXP

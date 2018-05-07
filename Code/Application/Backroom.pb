@@ -3,12 +3,12 @@
 ;          Date: 11/13/17
 ;            OS: Windows/XP/Vista/7/10
 
-; Code is currently being reworked!! I will get back to you!!!
+
 
 ;
 ;- Declares
 ;
-  
+ 
 
 IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
@@ -63,7 +63,7 @@ ProformaE("Memory-Map-Ini")
 DisableExplicit
 Procedure Initialize()
   
-  Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
+Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
   
 CreateDirectory("Data")
 UseModule SQLDatabase
@@ -71,17 +71,26 @@ UseModule SQFormat
 UseModule SQuery
 UseModule ThreadBranch
 UseModule Prefs
-If PrefChk()
-  Debug "Preference file does exist."
-  ImprortPrefs()
+UseModule NetworkData
+ImprortPrefs()
+
+Input()
+
+Mainserver = InitServer(4455)
+If Mainserver
+  log::GenLogadd("MainServer","Info","Main Node server ID = "+Mainserver,"Initialize()")
 Else
-  Debug "Preference file does not exist."
-  InsertPrefi("SqlLogging",1)
+  Text$ = "Could not create a Main Node server. Check your firewall settings and restart the program."
+  MessageRequester("Network Error",Text$,#PB_MessageRequester_Error)
 EndIf
 
 
 Initlogging(1,"")
-Initdatabase(1,"Data\Main.db")
+
+If Initdatabase(1,"Data\Main.db") = 3
+  PrintN("Database opened Successfully. Skipping Initialization.")
+  Delay(500)
+Else
 CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
 CloseC1$ = SQFOpen(CloseC1$)
 CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,0)          ;To be under "Close Clients" Ping < 15ms
@@ -125,8 +134,6 @@ CloseC5$ = SQFOpen(CloseC5$)
 CloseC5$ = SQFMakeField(CloseC5$,"PackageNumber",1,1,1,1,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"PackageHash",2,1,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"ChunksInPackage",1,1,0,0,0,1)
-CloseC5$ = SQFMakeField(CloseC5$,"InProgress",1,0,0,0,0,1)
-CloseC5$ = SQFMakeField(CloseC5$,"Progress",1,0,0,0,0,1)
 CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,0)
 CloseC5$ = SQFclose(CloseC5$)
 
@@ -184,6 +191,8 @@ AddThreadMember(Thread8)
 AddThreadMember(Thread9)
 WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 ProcedureReturn #True
+EndIf
+
 EndProcedure
 
 Procedure DetectSystem()
@@ -388,6 +397,23 @@ Wend
 
 EndProcedure
 
+Procedure ConnectToNode()
+  ClearConsole()
+  PrintN("Enter a Valid IP address of the node you Wish to connect too.")
+  PrintN("(Please note that Discovering other Nodes may take some time)")
+  PrintN("IP:")
+  ValidIP$ = Input()
+  UseModule NetworkData
+  ConnectedClient = InitClient(ValidIP$, 4455,0,20)
+  If ConnectedClient 
+    PrintN("The Node you have specified has connected.")
+    Delay(1000)
+  Else
+    PrintN("Error when Connecting to Node.")
+  EndIf
+EndProcedure
+
+
 
 ;-------------
 ;- Program side
@@ -418,6 +444,8 @@ PrintN("Welcome to Backroom-Beta-1.0.0!")
 PrintN(" ")
 PrintN("Press 1 To create a new package")
 PrintN("Press 2 To view current packaging processes")
+PrintN("Press 3 To view current connections")
+PrintN("Press 4 To connect to a new node")
 PrintN("Press escape to exit")
 
 Repeat
@@ -436,6 +464,10 @@ Repeat
           ViewPackProcess()
           Goto men
         EndIf
+        If msg$ = Chr(52)
+          ConnectToNode()
+          Goto men
+        EndIf
         
   EndIf
   
@@ -451,12 +483,11 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 426
-; FirstLine = 97
-; Folding = g
+; CursorPosition = 5
+; Folding = h-
 ; EnableThread
 ; EnableXP
-; Executable = Test.exe
+; Executable = C:\Users\Ruben\Desktop\BackRoom-Net\Test.exe
 ; CompileSourceDirectory
 ; Warnings = Display
 ; EnablePurifier

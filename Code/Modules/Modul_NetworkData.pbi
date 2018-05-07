@@ -221,12 +221,13 @@ Module NetworkData
 
   Procedure Logging(Info.s)
     Protected text.s, *mem
-    If LoggingEvent
-      text = FormatDate("[%YYYY-%MM-%DD %HH:%II:%SS] ", Date()) + Info
-      *mem = AllocateMemory(StringByteLength(text) + SizeOf(character))
-      PokeS(*mem, text)
-      PostEvent(LoggingEvent, 0, LoggingGadget, 0, *mem)
-    EndIf
+    ;If LoggingEvent
+      text = Info
+      Log::Genlogadd(Str(LoggingEvent),"NODE_NETWORK",Info,"Null")
+      ;*mem = AllocateMemory(StringByteLength(text) + SizeOf(character))
+      ;PokeS(*mem, text)
+      ;PostEvent(LoggingEvent, 0, LoggingGadget, 0, *mem)
+   ; EndIf
   EndProcedure
 
   ; -----------------------------------------------------------------------------------
@@ -1106,9 +1107,9 @@ EndModule
 ;-Example
 CompilerIf #PB_Compiler_IsMainFile
 CompilerEndIf
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 27
-; FirstLine = 24
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 229
+; FirstLine = 221
 ; Folding = -----
 ; EnableThread
 ; EnableXP

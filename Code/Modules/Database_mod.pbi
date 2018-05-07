@@ -84,15 +84,24 @@ Else
     ;Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
     log::GenLogadd("database34","Info","Created Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
     CloseFile(0)
+    If OpenDatabase(database,Name$, "", "")
+      If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
+        log::GenLogadd("database35","Info","Opened Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
+      EndIf
+    Else
+      ProcedureReturn #False
+    EndIf
+    ProcedureReturn #True
   EndIf 
 Else
   ;Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
-  ;GenLogadd("database35","Info","Found Database File: "+Name$,"initdatabase()")
+  Log::GenLogadd("database35","Info","Found Database File: "+Name$,"initdatabase()")
 EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
       ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
       log::GenLogadd("database35","Info","Opened Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
+      ProcedureReturn 3
     EndIf
   Else
     ProcedureReturn #False
@@ -297,9 +306,9 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 227
-; FirstLine = 144
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 92
+; FirstLine = 65
 ; Folding = 04H0
 ; EnableThread
 ; EnableXP
