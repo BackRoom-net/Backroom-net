@@ -65,7 +65,7 @@ Procedure ProformaE(Instance$)               ;This procedure Records the end of 
     Proforma(Instance$) \Stop = Stime        ;Enter the Stop Time into Memory
     Proforma(Instance$) \Sum = TTime         ;Enter the sum Time into Memory
     ProcedureReturn TTime                    ;Return the total time from the procedure.
-  Else                                      ;1; If we cant find it, there is data to use to find the total amount of time.
+  Else                                      ;1; If we cant find it, there is no data to use to find the total amount of time.
     ProcedureReturn #False                  ;1; Duh..
   EndIf
 EndProcedure
