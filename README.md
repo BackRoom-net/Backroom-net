@@ -72,10 +72,12 @@ _It is strict and **can** be annoying_
 
    **15 Megabit internet speed**
 
-* System Notes
+# Further Development Ideas
 
-A 250Gb hard disk is reccomended just if you have it as a boot up drive, you will be encrypting files as well so that puts a strain on the drive and storage. In the Minimum, You will not be able to really have windows and have very many packages being received or encrypted/decrypted. it would be dangerous to do with a minimal amount of space.
-For ram, it's going to be a ram hog (*Like Chrome*) and I will need to make many modifications to memory management quickly.
+Of course there will be Node address sharing which is when a new Node joins a group through an active connection, then the Host Node shares all of its addresses to this joining node.
 
+In addition, there will be a command line extention to the program. I'm not quite sure what exactly It will do yet, But it will be nice for developers to have. Might be good for checking Current Node Status and other Nodes to see what their Uplink/DownLink statistics are.
+
+I'm also open to Ideas. Its not like anyone is watching this project anyways.
   
 
