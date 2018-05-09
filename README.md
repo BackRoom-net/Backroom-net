@@ -19,9 +19,24 @@ Basically where I (Noisy) want to go with this project is to-
 
 Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
+# New Features
+
+> Program is currently in The developmet Alpha stage and Is **Not** working.
+
+* Nodes can connect currently across local networks for testing a debugging.
+* The database Actually works now for storing Node addresses and such. (They currently aren't encrypted - Alpha)
+* Added A "ReceivedFiles" Directory that is for files currently being received.
+* Working on getting a firm Network handshake between Nodes.
+
+## Most Important New Features
+* Application is about 20% Faster.
+* New Logging system has higher Detail for debugging.
+* Node system has been employed.
+
+
 # Purebasic
 
-> This program is being developed under PureBasic 5.61 (Windows - x64)
+> This program is being developed under PureBasic 5.61 and 5.62 (Windows 10 - x64)
 > Current compatibility with the program is limited to windows 7,8,8.1 and 10 
 
 # System Requirements
@@ -32,6 +47,10 @@ _It is strict and **can** be annoying_
 
 * System **Minimum** Memory is 2gb!!
   Nothing below this amount will run! This is like this so 32-bit computers can still run this program.
+  
+  > A memory Override version of the program is being worked on right now.
+  > If your computer has less than 2gb of memory you may switch to this version and
+  > there will be no visual differences to the program.
   
 * System reccomended specifications are:
 
