@@ -78,7 +78,7 @@ Module Prefs
   Proforma::ProformaS("XMLPrefSave")
    If CreateXML(0)     
     InsertXMLMap(RootXMLNode(0), Prefs())
-    Debug SaveXML(0,"Data\Preferences.xml") ;This really really crashes alot..
+    Debug SaveXML(0,"Data\Preferences.xml")
   EndIf
   Proforma::ProformaE("XMLPrefSave")  
 EndProcedure
@@ -91,7 +91,7 @@ Procedure ImprortPrefs()
     OpenFile(1,"Data\Preferences.xml")
     xml$ = ReadString(1)
     ParseXML(1,xml$)
-    ExtractXMLMap(MainXMLNode(1),Prefs())  ; This crashes even more. Works 15% of the time.
+    ExtractXMLMap(MainXMLNode(1),Prefs())
     FreeXML(1)
   EndIf
   

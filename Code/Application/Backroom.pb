@@ -10,17 +10,20 @@
 ;
  
 
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
 XIncludeFile "ThreadBranch_mod.pbi"
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Database_mod.pbi"
 XIncludeFile "Preferences.pbi"
 XIncludeFile "Crypto_mod.pbi"
 XIncludeFile "FileUtil_mod.pbi"
 XIncludeFile "Modul_NetworkData.pbi"
+XIncludeFile "ClientManager.pbi"
+XIncludeFile "ConnectionsManager.pb"
+XIncludeFile "Servermanager.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
@@ -31,6 +34,7 @@ Declare Initialize()
 Declare DetectSystem()
 Declare CreatePrettystuff()
 Declare CleanShutDown()
+Declare ConnectToNode(IP.s)
 ;
 ;- Structures
 ;
@@ -42,7 +46,8 @@ Declare CleanShutDown()
 ;
 Global KeyboardMode.i
 Global msg$, conplace
-
+Global App_Version.s = "1.0.0" 
+Global Memory_Override = 1
 ;
 ;- Maps
 
@@ -66,17 +71,19 @@ Procedure Initialize()
 Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
   
 CreateDirectory("Data")
+CreateDirectory("ReceivedData")
 UseModule SQLDatabase
 UseModule SQFormat
 UseModule SQuery
 UseModule ThreadBranch
 UseModule Prefs
+UseModule NodeServer
 UseModule NetworkData
+SetDataFolder("ReceivedData")
 ImprortPrefs()
 
-Input()
 
-Mainserver = InitServer(4455)
+Mainserver = createserver(4455)
 If Mainserver
   log::GenLogadd("MainServer","Info","Main Node server ID = "+Mainserver,"Initialize()")
 Else
@@ -190,12 +197,16 @@ AddThreadMember(Thread7)
 AddThreadMember(Thread8)
 AddThreadMember(Thread9)
 WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
-ProcedureReturn #True
 EndIf
+
+PrintN("Please Wait while Reconnecting with Node Network.")
+ConnectionMgr::ReconnectAll()
+
 
 EndProcedure
 
 Procedure DetectSystem()
+  
   Total = MemoryStatus(#PB_System_TotalPhysical)
   Current = MemoryStatus(#PB_System_FreePhysical)
   Debug Total
@@ -225,21 +236,34 @@ Procedure DetectSystem()
     Debug SysSpecTotal
     Debug SysSpecCurr
     If SysSpecTotal = 0
-      MessageRequester("System","System does not have Minimum Requeseted memory. Program will not run.",#PB_MessageRequester_Error)
+      If Memory_Override = 0
+        MessageRequester("System","System does not have Minimum Requeseted memory. Program will not run.",#PB_MessageRequester_Error)
+      EndIf
           Tolog$ = "System failed reccomended system spec."
           Log::GenLogadd("Detect0","Error",Tolog$,"DetectSystem()")
-      End
-    EndIf
+          If Memory_Override = 0
+            End
+          EndIf
+  EndIf
+  
     
-    If SysSpecCurr = 0
+  If SysSpecCurr = 0
+    If Memory_Override = 0
       MessageRequester("System","System does not currently have enough memory to Run program. Try exiting some programs.",#PB_MessageRequester_Error)
+      EndIf
                 Tolog$ = "System does not have enough free memory."
-           Log::GenLogadd("Detect1","Error",Tolog$,"DetectSystem()")
-      End
+                Log::GenLogadd("Detect1","Error",Tolog$,"DetectSystem()")
+                If Memory_Override = 0
+                  End
+                EndIf
+                
     EndIf
     
     If SysSpecCurr = 3
-      Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
+      If Memory_Override = 0
+        Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
+      EndIf
+      
       Tolog$ = "System Low on memory."
           Log::GenLogadd("Detect3","Warning",Tolog$,"DetectSystem()")
     If Result = #PB_MessageRequester_Yes
@@ -254,8 +278,7 @@ Procedure DetectSystem()
     ToLog$ = ToLog$+"---End of system exploration---"
     Log::GenLogadd("Detect0","Info",Tolog$,"DetectSystem()")
     
-    
-
+ 
 EndProcedure
 
 Procedure CreatePrettystuff()
@@ -397,20 +420,46 @@ Wend
 
 EndProcedure
 
-Procedure ConnectToNode()
+Procedure ConnectToNode(IP.s)
+  UseModule Log
+  UseModule ConnectionMgr
+  
+  If Len(IP.s) = 0
   ClearConsole()
   PrintN("Enter a Valid IP address of the node you Wish to connect too.")
   PrintN("(Please note that Discovering other Nodes may take some time)")
   PrintN("IP:")
   ValidIP$ = Input()
-  UseModule NetworkData
-  ConnectedClient = InitClient(ValidIP$, 4455,0,20)
+  If ValidIP$ = "localhost" Or ValidIP$ = "127.0.0.0"
+    PrintN("Error, this address is Invalid.")
+    Else
+      UseModule NetworkData
+      
+      AddConnection(1,ValidIP$)
+      
   If ConnectedClient 
     PrintN("The Node you have specified has connected.")
     Delay(1000)
   Else
     PrintN("Error when Connecting to Node.")
   EndIf
+EndIf
+ Else 
+   UseModule NetworkData
+   
+   AddConnection(1,ValidIP$)
+   
+  If ConnectedClient 
+    PrintN("The Node you have specified has connected.")
+    Delay(1000)
+  Else
+    GenLogadd("Node_Error","NODE_ERROR","Error when connecting to node: "+IP.s,"NODE_CONNECT")
+  EndIf
+EndIf
+
+
+
+
 EndProcedure
 
 
@@ -423,6 +472,7 @@ ProformaMakeInst("Database-Ini")
 ;
 KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
+Input()
 DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
@@ -465,7 +515,7 @@ Repeat
           Goto men
         EndIf
         If msg$ = Chr(52)
-          ConnectToNode()
+          ConnectToNode("")
           Goto men
         EndIf
         
@@ -482,12 +532,13 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 5
-; Folding = h-
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 474
+; FirstLine = 213
+; Folding = B-
 ; EnableThread
 ; EnableXP
-; Executable = C:\Users\Ruben\Desktop\BackRoom-Net\Test.exe
+; Executable = Test.exe
 ; CompileSourceDirectory
 ; Warnings = Display
 ; EnablePurifier

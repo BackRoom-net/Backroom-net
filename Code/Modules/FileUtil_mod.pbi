@@ -58,6 +58,7 @@ Module FileUtil
   
   Procedure SpredDir(*AESKey,*IniVector)
     EnableGraphicalConsole(1)
+    ClearConsole()
     PrintN("(Use < And > To move through items. Press enter to change value.)")
     Delay(1500)
     cony = 1
@@ -322,10 +323,11 @@ out:
 
 UseTARPacker()
 Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
+FilenameNull$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
 UniNumber = Random(1000)
 CreatePack(UniNumber,"FileTmp\InProgress\"+Filename$)
 CreateDirectory("FileTmp\Processing\"+Str(ProcessID))
-OpenFile(45,"FileTmp\InProgress\TarDef."+Filename$)
+OpenFile(45,"FileTmp\InProgress\TarDef."+FilenameNull$+".ls")
 While file(dimnumb)
   dimnumb = dimnumb+1
   Fileselect$ = file(dimnumb)
@@ -342,7 +344,8 @@ ClosePack(UniNumber)
 CloseFile(45)
 tardp = Random(9999,1)
 CreatePack(tardp,"FileTmp\Processing\"+Str(ProcessID)+"\defdir.packed")
-AddPackFile(tardp,"FileTmp\InProgress\TarDef."+Filename$,"Fs.dat")
+AddPackFile(tardp,"FileTmp\InProgress\TarDef."+FilenameNull$+".ls","Fs.dat")
+DeleteFile("FileTmp\InProgress\TarDef."+FilenameNull$+".ls")
 ClosePack(tardp)
 
 If SpredFile("FileTmp\InProgress\"+Filename$,*AESKey,*IniVector,*ProgressOut,ProcessID)
@@ -364,10 +367,10 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 345
-; FirstLine = 214
-; Folding = y-
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 344
+; FirstLine = 75
+; Folding = i-
 ; EnableThread
 ; EnableXP
 ; EnableOnError

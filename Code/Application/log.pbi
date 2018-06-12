@@ -154,7 +154,9 @@ EndProcedure
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 74
-; FirstLine = 39
+; CursorPosition = 63
+; FirstLine = 60
 ; Folding = P+
 ; EnableXP
+; Executable = Test.exe
+; CPU = 1

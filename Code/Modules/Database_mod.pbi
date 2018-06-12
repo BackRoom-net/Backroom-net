@@ -136,8 +136,6 @@ Module SQFormat
   
   Global Str$
   Declare SQLDbUpdate(UdbNumb)
-  Declare Logfinal(*Logmemory)
-  Declare Logt(Subsystem$,Text$)
   Global NewMap CommitThread.Strcu()
   
   ;-------- Table Functions
@@ -178,13 +176,6 @@ Module SQFormat
     Str$ = Str$ + ","
   EndIf
   ProcedureReturn Str$  
-  LogDebug$ = "SQL Formatted:"+Chr(32)
-  LogDebug$ = LogDebug$ + "Table Type:"+SQT$+Chr(32)
-  LogDebug$ = LogDebug$ + "Table Name:"+Name$+Chr(32)
-  LogDebug$ = LogDebug$ + "NotNull:"+Str(NotNull)+Chr(32)
-  LogDebug$ = LogDebug$ + "Primary Key:"+Str(PK)+Chr(32)
-  LogDebug$ = LogDebug$ + "Comma Added:"+Str(Comma)
-  Logt("Database_mod-SQLFormatter",LogDebug$)
   EndProcedure
   
   Procedure.s SQFOpen(Str$)
@@ -238,28 +229,6 @@ Module SQFormat
     ProcedureReturn Str$
   EndProcedure
   
- Procedure Logt(Subsystem$,Text$)  ;Thread maker for Logs
-    If logmode > 0 ;If the Log setting is not Null.
-  *logmemory = AllocateMemory(StringByteLength(Subsystem$+": "+Text$))
-  PokeS(*logmemory,Subsystem$+": "+Text$)
-  logtl = CreateThread(@Logfinal(),*logmemory)
-EndIf
-
-EndProcedure
-
-Procedure Logfinal(*logmemory) ;Thread for Logging
-  If logmode > 0
-  tofile$ = PeekS(*logmemory) ; Get Data from Memory address passed to the thread.
-  Date$ = FormatDate("%yy.%mm.%dd", Date()) ;  Get Date.
-  Time$ = FormatDate("%hh:%ii:%ss", Date()) ; Get time.
-  LockMutex(Log)                            ; Lock the mutex
-  OpenFile(1,logdir$+Date$+".log",#PB_File_Append) ; Open the Log file.
-  WriteStringN(1,Time$+":"+tofile$)               ; Write data and Date and formatted time/
-  CloseFile(1)   
-  UnlockMutex(Log)
-  FreeMemory(*logmemory)
-  EndIf
-EndProcedure
 
   
 EndModule
@@ -306,9 +275,9 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 92
-; FirstLine = 65
-; Folding = 04H0
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 221
+; FirstLine = 91
+; Folding = h+4-
 ; EnableThread
 ; EnableXP
