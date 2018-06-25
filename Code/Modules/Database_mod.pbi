@@ -67,12 +67,9 @@ Procedure initLogging(Setting,Directory$)     ;Creates Log For MySql.
 Procedure.i initdatabase(database,Name$) ;Creates A database.
  If Name$ = ":memory:"  ;Checks if the Application wants to make a database in memory for some odd reason.
    If OpenDatabase(database,Name$, "", "") ;Just open the database.
-     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.
-       ;Debug "Memory table created"
-       ;Logt("Database_mod-InitDatabase","Opened Database Successfully: "+Name$)
+     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));") ; Test writing to the database.     
        log::GenLogadd("databaseddm","Info","Opened Database Successfully: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
        Else
-         ;Logt("Database_mod-InitDatabase","Failed to open database: "+Name$)
          log::GenLogadd("databaseddmer","Info","Opened Database Successfully: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
     EndIf
   Else
@@ -81,7 +78,6 @@ Procedure.i initdatabase(database,Name$) ;Creates A database.
 Else
   If FileSize(Name$) = -1
   If CreateFile(0,Name$)
-    ;Logt("Database_mod-InitDatabase","Created Database File: "+Name$)
     log::GenLogadd("database34","Info","Created Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
     CloseFile(0)
     If OpenDatabase(database,Name$, "", "")
@@ -94,12 +90,12 @@ Else
     ProcedureReturn #True
   EndIf 
 Else
-  ;Logt("Database_mod-InitDatabase","Found Database File: "+Name$)
   Log::GenLogadd("database35","Info","Found Database File: "+Name$,"initdatabase()")
+  OpenDatabase(database,Name$, "", "")
+  ProcedureReturn 3
 EndIf
   If OpenDatabase(database,Name$, "", "")
     If DatabaseUpdate(database, "CREATE TABLE info (test VARCHAR(255));")
-      ;Logt("Database_mod-InitDatabase","Opened Database File: "+Name$)
       log::GenLogadd("database35","Info","Opened Database File: "+Name$+" Database assigned ID: "+Str(database),"initdatabase()")
       ProcedureReturn 3
     EndIf
@@ -275,9 +271,9 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 221
-; FirstLine = 91
-; Folding = h+4-
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 93
+; FirstLine = 15
+; Folding = 2+4-
 ; EnableThread
 ; EnableXP

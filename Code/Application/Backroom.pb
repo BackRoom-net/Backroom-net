@@ -10,12 +10,12 @@
 ;
  
 
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
 XIncludeFile "ThreadBranch_mod.pbi"
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Application"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-net\Code\Modules"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Database_mod.pbi"
 XIncludeFile "Preferences.pbi"
 XIncludeFile "Crypto_mod.pbi"
@@ -47,7 +47,7 @@ Declare ConnectToNode(IP.s)
 Global KeyboardMode.i
 Global msg$, conplace
 Global App_Version.s = "1.0.0" 
-Global Memory_Override = 1
+Global Memory_Override = 0
 ;
 ;- Maps
 
@@ -532,9 +532,9 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 474
-; FirstLine = 213
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 49
+; FirstLine = 27
 ; Folding = B-
 ; EnableThread
 ; EnableXP
