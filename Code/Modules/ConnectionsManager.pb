@@ -17,6 +17,7 @@ Module ConnectionMgr
     UseModule CliNode
     NewList Output.s()
     SQuery::SQLQuerySelect(1,"IP","'KnownClients'",0,Output.s())
+    PrintN("Nodes to connect too: "+Str(ListSize(Output())))
     If FirstElement(Output.s())
       Address$ = Output()
       Connect(Address$)
@@ -32,7 +33,7 @@ Module ConnectionMgr
 
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 18
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 19
 ; Folding = -
 ; EnableXP

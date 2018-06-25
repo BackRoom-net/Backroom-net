@@ -533,8 +533,8 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 49
-; FirstLine = 27
+; CursorPosition = 202
+; FirstLine = 174
 ; Folding = B-
 ; EnableThread
 ; EnableXP

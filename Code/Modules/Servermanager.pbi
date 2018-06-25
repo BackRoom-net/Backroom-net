@@ -81,7 +81,6 @@ Module NodeServer
 EndProcedure
 
 Procedure.i clientNew(ConnectionID)
-  Input()
   NewList TempCli.s()
   UseModule SQuery
   raw = GetClientIP(ConnectionID)
@@ -113,8 +112,8 @@ EndProcedure
  
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 83
-; FirstLine = 64
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 68
 ; Folding = -
 ; EnableXP
