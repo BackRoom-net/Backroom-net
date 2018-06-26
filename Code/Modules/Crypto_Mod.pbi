@@ -33,13 +33,14 @@ EndDeclareModule
 Module Cipher
   ;--
   Procedure GenerateKeySequence(ID$)
+    Input()
     ;Generation of Initial 16-Byte key
     *Key = AllocateMemory(32)           ; extra Bytes to avoid overflow from full memory
     Debug CryptRandomData(*Key,16)
     ; --------
     ;Generation of 28-byte Master key
     *Master = AllocateMemory(29)        ; extra one byte to avoid overflow
-    Debug CryptRandomData(*Key,28)
+    Debug CryptRandomData(*Master,28)
     ; --------
     ;Generation of Base64 key
     Base64Key$ = Base64Encoder(*key,16)
@@ -84,9 +85,9 @@ Module Cipher
   
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 67
-; FirstLine = 43
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 35
+; FirstLine = 34
 ; Folding = -
 ; EnableXP
 ; CompileSourceDirectory
