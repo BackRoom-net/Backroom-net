@@ -35,6 +35,7 @@ Declare DetectSystem()
 Declare CreatePrettystuff()
 Declare CleanShutDown()
 Declare ConnectToNode(IP.s)
+Declare ViewCurrentConnections()
 ;
 ;- Structures
 ;
@@ -287,6 +288,12 @@ Procedure CreatePrettystuff()
   
 EndProcedure
 
+
+;--------
+;- GUI functions
+;--------
+
+
 Procedure CleanShutDown()
   EnableGraphicalConsole(1)
   UseModule Proforma
@@ -462,6 +469,9 @@ EndIf
 
 EndProcedure
 
+Procedure ViewCurrentConnections()
+  
+EndProcedure
 
 
 ;-------------
@@ -496,6 +506,7 @@ PrintN("Press 1 To create a new package")
 PrintN("Press 2 To view current packaging processes")
 PrintN("Press 3 To view current connections")
 PrintN("Press 4 To connect to a new node")
+PrintN("Press 5 To view download list")
 PrintN("Press escape to exit")
 
 Repeat
@@ -512,6 +523,10 @@ Repeat
         EndIf
         If msg$ = Chr(50)
           ViewPackProcess()
+          Goto men
+        EndIf
+        If msg$ = Chr(51)
+          ViewCurrentConnections()
           Goto men
         EndIf
         If msg$ = Chr(52)
@@ -533,9 +548,9 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 202
-; FirstLine = 174
-; Folding = B-
+; CursorPosition = 292
+; FirstLine = 77
+; Folding = A-
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
