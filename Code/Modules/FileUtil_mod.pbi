@@ -65,6 +65,8 @@ Module FileUtil
     RotoPos = 0
     max = 1
     ConsoleLocate(0,cony)
+    ClearConsole()
+    Print("New Value:")
     Repeat
     key$ = Inkey()
     If key$ <> ""
@@ -144,8 +146,8 @@ Filename$ = GetFilePart(File$)
 CreateDirectory("FileTmp\Processing\"+PackageName$)
 FileSize.i = Lof(UniNumber)
 Parts.d = Filesize.i/Size.i
-
-
+Megs = Filesize.i/1000000
+Debug megs
 ; --------------
 
 
@@ -248,6 +250,8 @@ Repeat
   EndProcedure
   
   Procedure SpredDirThread(ProcessID)
+    ;- > Beginning of thread
+    ;- > Get info from memory
     LockMutex(InfoPassMutex)
     Path$ = FileInfopass(Str(ProcessID)) \File 
     *AESKey = FileInfopass() \aesmem
@@ -255,6 +259,8 @@ Repeat
     DeleteMapElement(FileInfopass(),Str(ProcessID))
     UnlockMutex(InfoPassMutex)
     
+    
+    ;- > Scan direcotory
     LockMutex(ThreadStatMutex)
     Filethreads(Str(ProcessID)) \ID = Str(ProcessID)
     Filethreads() \Job = "Scanning Directory"
@@ -314,24 +320,34 @@ filesindim = 0
 Wend
 out:
 
+
+
+;- > Send status to external
     LockMutex(ThreadStatMutex)
     Filethreads(Str(ProcessID)) \ID = Str(ProcessID)
     Filethreads() \Job = "Packing Tar..."
     Filethreads() \Status = "Packing..."
     Filethreads() \Message = ""
     UnlockMutex(ThreadStatMutex)
-
+    
+    ;- > Pack Tar __________
+    ;- filenames
 UseTARPacker()
-Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
-FilenameNull$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"
-UniNumber = Random(1000)
-CreatePack(UniNumber,"FileTmp\InProgress\"+Filename$)
-CreateDirectory("FileTmp\Processing\"+Str(ProcessID))
-OpenFile(45,"FileTmp\InProgress\TarDef."+FilenameNull$+".ls")
-While file(dimnumb)
-  dimnumb = dimnumb+1
-  Fileselect$ = file(dimnumb)
-  FileTarPath$ = RemoveString(Fileselect$,Base$)
+Filename$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar"     ;setting filenames for later
+FilenameNull$ = Str(Random(99999))+"BR"+Str(Random(99999))+".tar" ;more filenames
+UniNumber = Random(1000)                                          ;random number for opening a pack.
+                                                             ; I do this because there can be problems with using the some numbers.
+
+;- create pack
+CreatePack(UniNumber,"FileTmp\InProgress\"+Filename$)        ;create temp Tar file.
+CreateDirectory("FileTmp\Processing\"+Str(ProcessID))        ;Create a directory in temp for later.
+OpenFile(45,"FileTmp\InProgress\TarDef."+FilenameNull$+".ls"); Opens the directory index for the Tar file.
+
+
+While file(dimnumb)                                   ;while there are files in the directory listing
+  dimnumb = dimnumb+1                                 ;add 1 to dimnumb
+  Fileselect$ = file(dimnumb)                         ;put the directory in a variable for modifying.
+  FileTarPath$ = RemoveString(Fileselect$,Base$)      ; Modifying stuff.
   FileTarPath$ = LTrim(FileTarPath$)
   LockMutex(ThreadStatMutex)
   Writestrmem$ = "Writing: "+FileTarPath$
@@ -367,9 +383,9 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 344
-; FirstLine = 75
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 343
+; FirstLine = 90
 ; Folding = i-
 ; EnableThread
 ; EnableXP

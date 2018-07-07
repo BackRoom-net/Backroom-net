@@ -1,11 +1,65 @@
-﻿DeclareModule NodeServer
-  Declare.i createserver(port)
-  
-  
+﻿DeclareModule network
+    Global NewList AllClients.i()
+  Declare Connect(Node_Address$)
+Declare AddConnection(cat,Val.s)
+Declare ReconnectAll()
+Declare.i createserver(port)
 EndDeclareModule
 
-Module NodeServer
+Module network
+
+;--Client stuff
+ 
   Declare NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
+  
+  Procedure Connect(Node_Address$)
+    ConnectionID = NetworkData::InitClient(Node_Address$, 4455, @NewData())
+    If Not ConnectionID
+      Log::GenLogadd("ConCon","NODE_ERROR","Could not Connect to Node:"+Node_Address$,"NODE_ClientMgr_Connect()")
+    Else
+      InsertElement(AllClients())
+      AllClients() = ConnectionID
+    EndIf
+    
+  EndProcedure
+  
+  Procedure NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
+    
+  
+  UseModule NetworkData
+  
+  If SEvent = #PB_NetworkEvent_Disconnect
+    Logging("Callback: Server disconnected: ID " + Str(ConnectionID))
+    exit = 1
+    ProcedureReturn 0
+  EndIf
+  
+  With *NewData
+    Logging("Callback: New data from ConnectionID " + Str(ConnectionID) + ": DataID " + Str(\DataID))
+    Select \Type
+      Case #NetInteger
+        Logging("Callback: Result = " + Str(\Integer))
+        
+      Case #NetString
+        Logging("Callback: Result = " + \String)
+        
+      Case #NetData
+        Debug "Data"
+        
+      Case #NetFile
+        
+    EndSelect
+    
+  EndWith
+  
+  ProcedureReturn 0
+  
+  UnuseModule NetworkData
+
+EndProcedure
+;--Server stuff
+
+ Declare NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
   Declare ClientNew(ConnectionID)
   NewList Connected.i()
   
@@ -108,12 +162,34 @@ Procedure.i clientNew(ConnectionID)
 
 
 EndProcedure
+;--General Connections
 
- 
+  Procedure AddConnection(cat,Val.s)
+    Request$ = SQFormat::SQLInsert(Request$,"'KnownClients'","IP, Ping, HandShakeSuccessful, AESCatch, SHA1, SHA2, SHA3, MD5, CRC32, Base64Master, Base64Key, MasterKey, Key","'"+Val.s+"', '0', '12', '0', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS'",1)
+    Debug Request$
+    SQFormat::SQLCommit(1,Request$)
+    CliNode::Connect(Val.s)
+  EndProcedure
+  
+  Procedure ReconnectAll()
+    UseModule CliNode
+    NewList Output.s()
+    SQuery::SQLQuerySelect(1,"IP","'KnownClients'",0,Output.s())
+    PrintN("Nodes to connect too: "+Str(ListSize(Output())))
+    If FirstElement(Output.s())
+      Address$ = Output()
+      Connect(Address$)
+      While NextElement(Output())
+        Address$ = Output()
+        Connect(Address$)
+      Wend
+      Else
+      Log::GenLogadd("Recon","Info","Database Indicates there are no known clients. Could not connect to any Nodes.","NODE_ConnectionMgr_ReconnectAll()")
+    EndIf
+  EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 68
-; Folding = -
+; CursorPosition = 4
+; Folding = D5
 ; EnableXP
