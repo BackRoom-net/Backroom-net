@@ -10,10 +10,10 @@ Module network
 
 ;--Client stuff
  
-  Declare NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
+  Declare NewDataC(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
   
   Procedure Connect(Node_Address$)
-    ConnectionID = NetworkData::InitClient(Node_Address$, 4455, @NewData())
+    ConnectionID = NetworkData::InitClient(Node_Address$, 4455, @NewDataC())
     If Not ConnectionID
       Log::GenLogadd("ConCon","NODE_ERROR","Could not Connect to Node:"+Node_Address$,"NODE_ClientMgr_Connect()")
     Else
@@ -23,7 +23,7 @@ Module network
     
   EndProcedure
   
-  Procedure NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
+  Procedure NewDataC(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
     
   
   UseModule NetworkData
@@ -59,19 +59,18 @@ Module network
 EndProcedure
 ;--Server stuff
 
- Declare NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
+ Declare NewDataS(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
   Declare ClientNew(ConnectionID)
   NewList Connected.i()
   
   Procedure.i createserver(port)
     UseModule NetworkData
-    ServerID = InitServer(port, @NewData())
+    ServerID = InitServer(port, @NewDataS())
     ProcedureReturn ServerID
     UnuseModule NetworkData
   EndProcedure
   
-  
-  Procedure NewData(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
+  Procedure NewDataS(SEvent, ConnectionID, *NewData.NetworkData::udtDataset)
   
   UseModule NetworkData
 
@@ -82,9 +81,7 @@ EndProcedure
     SendString(ConnectionID, 0, "Server Hello")
     
    If ClientNew(ConnectionID)
-    UseModule ConnectionMgr
     AddConnection(1,ip)
-    UnuseModule ConnectionMgr
   EndIf
   
     
@@ -168,11 +165,10 @@ EndProcedure
     Request$ = SQFormat::SQLInsert(Request$,"'KnownClients'","IP, Ping, HandShakeSuccessful, AESCatch, SHA1, SHA2, SHA3, MD5, CRC32, Base64Master, Base64Key, MasterKey, Key","'"+Val.s+"', '0', '12', '0', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS', 'NS'",1)
     Debug Request$
     SQFormat::SQLCommit(1,Request$)
-    CliNode::Connect(Val.s)
+    Connect(Val.s)
   EndProcedure
   
   Procedure ReconnectAll()
-    UseModule CliNode
     NewList Output.s()
     SQuery::SQLQuerySelect(1,"IP","'KnownClients'",0,Output.s())
     PrintN("Nodes to connect too: "+Str(ListSize(Output())))
@@ -190,6 +186,7 @@ EndProcedure
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 4
-; Folding = D5
+; CursorPosition = 170
+; FirstLine = 81
+; Folding = z+
 ; EnableXP

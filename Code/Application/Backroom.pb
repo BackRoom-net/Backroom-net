@@ -21,9 +21,7 @@ XIncludeFile "Preferences.pbi"
 XIncludeFile "Crypto_mod.pbi"
 XIncludeFile "FileUtil_mod.pbi"
 XIncludeFile "Modul_NetworkData.pbi"
-XIncludeFile "ClientManager.pbi"
-XIncludeFile "ConnectionsManager.pb"
-XIncludeFile "Servermanager.pbi"
+XIncludeFile "Network_mod.pbi"
 UseModule Proforma
 UseModule Cipher
 UseModule FileUtil
@@ -78,7 +76,7 @@ UseModule SQFormat
 UseModule SQuery
 UseModule ThreadBranch
 UseModule Prefs
-UseModule NodeServer
+UseModule Network
 UseModule NetworkData
 SetDataFolder("ReceivedData")
 ImprortPrefs()
@@ -201,7 +199,7 @@ WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 EndIf
 
 PrintN("Please Wait while Reconnecting with Node Network.")
-ConnectionMgr::ReconnectAll()
+Network::ReconnectAll()
 
 
 EndProcedure
@@ -429,7 +427,7 @@ EndProcedure
 
 Procedure ConnectToNode(IP.s)
   UseModule Log
-  UseModule ConnectionMgr
+  UseModule Network
   
   If Len(IP.s) = 0
   ClearConsole()
@@ -548,9 +546,9 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 292
-; FirstLine = 77
-; Folding = A-
+; CursorPosition = 428
+; FirstLine = 204
+; Folding = h-
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
