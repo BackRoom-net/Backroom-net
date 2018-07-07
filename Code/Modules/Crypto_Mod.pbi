@@ -5,7 +5,7 @@
 ;            OS: Windows/XP/Vista/7/10
 ;    Notes:
 ;    Please Do not Distribute. - Do not Edit.
-;    Module is Crutial to User Security.
+;    Module is crucial to User Security.
 
 DeclareModule Cipher
   Structure CipherSuite ; Structure...
@@ -33,7 +33,6 @@ EndDeclareModule
 Module Cipher
   ;--
   Procedure GenerateKeySequence(ID$)
-    Input()
     ;Generation of Initial 16-Byte key
     *Key = AllocateMemory(32)           ; extra Bytes to avoid overflow from full memory
     Debug CryptRandomData(*Key,16)
@@ -86,8 +85,7 @@ Module Cipher
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 35
-; FirstLine = 34
+; CursorPosition = 7
 ; Folding = -
 ; EnableXP
 ; CompileSourceDirectory
