@@ -107,8 +107,7 @@ EndIf
 ProcedureReturn #True
 EndProcedure
 
-Procedure.i iniopendatabase(Database,Name$)
-EndProcedure
+
 
 EndModule
 
@@ -271,9 +270,8 @@ EndModule
 
 
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 93
-; FirstLine = 15
-; Folding = 2+4-
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 109
+; Folding = F-8-
 ; EnableThread
 ; EnableXP

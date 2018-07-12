@@ -10,12 +10,12 @@
 ;
  
 
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
 XIncludeFile "ThreadBranch_mod.pbi"
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
-IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Modules"
 XIncludeFile "Database_mod.pbi"
 XIncludeFile "Preferences.pbi"
 XIncludeFile "Crypto_mod.pbi"
@@ -47,6 +47,15 @@ Global KeyboardMode.i
 Global msg$, conplace
 Global App_Version.s = "1.0.0" 
 Global Memory_Override = 0
+Global LogExist
+
+If FileSize(FormatDate("%yy.%mm.%dd", Date())+".log") > 1
+  LogExist = 1
+Else 
+  LogExist = 0
+EndIf
+
+
 ;
 ;- Maps
 
@@ -260,23 +269,49 @@ Procedure DetectSystem()
     
     If SysSpecCurr = 3
       If Memory_Override = 0
-        Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
+        Result = MessageRequester("System","System is Low on memory. Are you sure you would like to continue running the program?"+Chr(13)+"If Chrome is detected, we will close it for you.",#PB_MessageRequester_Warning | #PB_MessageRequester_YesNo)
       EndIf
       
       Tolog$ = "System Low on memory."
           Log::GenLogadd("Detect3","Warning",Tolog$,"DetectSystem()")
-    If Result = #PB_MessageRequester_Yes
+          If Result = #PB_MessageRequester_Yes
+            PrintN("Please wait while Chrome Processes are killed...")
+            RunProgram("c:\windows\system32\taskkill.exe","/IM chrome.exe /F","", #PB_Program_Wait | #PB_Program_Hide)
+            ClearConsole()
     Else
       End
       EndIf
     EndIf
-    
+    If LogExist = 1
+      Log::GenLogadd("Detect1","Info","Skipped over system detect because of existing records.","DetectSystem()")
+    Else
+    PrintN("Please Wait while loading System information...")
     Tolog$ = "---Beginning of system exploration---"+Chr(13)
     Tolog$ = Tolog$+"CPU Name: "+CPUName()+Chr(13)
     Tolog$ = ToLog$+"CPU Cores:"+Str(CountCPUs(#PB_System_CPUs))+Chr(13)
+    Tolog$ = ToLog$+"Loading system Information from windows..."+Chr(13)
+    
+    prog = RunProgram("c:\windows\system32\systeminfo.exe","","", #PB_Program_Open | #PB_Program_Read | #PB_Program_Hide)
+    
+   If prog
+    While ProgramRunning(prog)
+      Error$ = ReadProgramError(prog) 
+      If Error$
+        Output$ = Output$ + Error$
+      EndIf
+      If AvailableProgramOutput(prog)
+        Output$ + ReadProgramString(prog) + Chr(13)
+      EndIf
+    Wend
+    Output$ + Chr(13) + Chr(13)
+  EndIf
+  CloseProgram(prog)
+  
+  ToLog$ = ToLog$+Output$+Chr(13)
     ToLog$ = ToLog$+"---End of system exploration---"
     Log::GenLogadd("Detect0","Info",Tolog$,"DetectSystem()")
-    
+  EndIf
+  
  
 EndProcedure
 
@@ -303,6 +338,61 @@ Procedure CleanShutDown()
     DeleteFile("Data\Preferences.xml")
   EndIf
   PrefExport()
+  CloseDatabase(1)
+  Log::GenLogadd("Shutdown","SHUTDOWN","Program is shutting down...","CleanShutDown()")
+  PrintN("Connecting to FTP server...")
+  If OpenFTP(1,"www.wow-interesting.com","loguploads@wow-interesting.com","plzupload")
+    PrintN("Connected Successfully. Getting ready to send Anonymous log files...")
+    PrintN("Please wait while Generating ID...")
+    ID$ = Str(Random(2147483647,0))
+    While SetFTPDirectory(1,ID$)
+      SetFTPDirectory(1,"..")
+      ID$ = Str(Random(2147483647,0))
+      count = count+1
+      If count = 5
+        PrintN("Error - Could not Send.")
+        Log::GenLogadd("Shutdown","SHUTDOWN ERROR","Could not generate valid log send ID that was not taken.","CleanShutDown()")
+        Goto fail
+      Else
+        PrintN("Random ID already exists. Retrying...")
+      EndIf
+    Wend 
+    PrintN("Generating Entry...")
+    CreateFTPDirectory(1,ID$)
+    SetFTPDirectory(1,ID$)
+    PrintN("Gathering Log files...")
+    Delay(1000)
+    Home$ = GetCurrentDirectory()
+    ExamineDirectory(1,Home$,"*.log")
+    While NextDirectoryEntry(1)
+      Filename$ = DirectoryEntryName(1)
+      FullPath$ = Home$+Filename$
+      Print("Uploading: "+Filename$)
+      If SendFTPFile(1,FullPath$,Filename$)
+        PrintN(" Done.")
+      Else
+        PrintN(" Fail.")
+      EndIf
+    Wend
+    PrintN("Please wait while sending database...")
+    SendFTPFile(1,Home$+"Data\Main.db","Database.db")
+    
+    PrintN("Please wait while Performance report file is sent...")
+    SendFTPFile(1,Home$+"Proforma_Mem_Dump.txt","Database.db")
+    
+  Else
+    Log::GenLogadd("Shutdown","SHUTDOWN ERROR","Was Unable to connect to the log server.","CleanShutDown()")
+    PrintN("Was unable to connect to the logging server... Upload Failed.")
+    Delay(1200)
+    Goto fail
+  EndIf
+  
+    
+    
+  CloseFTP(1)
+  PrintN("Completed Upload.")
+  Delay(2000)
+  fail:
   ClearConsole()
   PrintN("GoodBye.")
   Delay(1500)
@@ -480,7 +570,6 @@ ProformaMakeInst("Database-Ini")
 ;
 KeyboardMode.i = 2
 OpenConsole("BackRoom-Net")
-Input()
 DetectSystem()
 EnableGraphicalConsole(1)
 ProformaS("Database-Ini")
@@ -545,10 +634,10 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 428
-; FirstLine = 204
-; Folding = h-
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 284
+; FirstLine = 260
+; Folding = L+
 ; EnableThread
 ; EnableXP
 ; Executable = Test.exe
