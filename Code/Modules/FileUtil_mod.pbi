@@ -66,7 +66,6 @@ Module FileUtil
     max = 1
     ConsoleLocate(0,cony)
     ClearConsole()
-    Print("New Value:")
     Repeat
     key$ = Inkey()
     If key$ <> ""
@@ -128,6 +127,7 @@ Module FileUtil
     Structure plc
       file.s
       compressed.i
+      actual.i
       CheckSum.s
     EndStructure
     
@@ -207,6 +207,7 @@ Repeat
     compfile(Str(Partcount)) \CheckSum = Checksum$
     compfile() \compressed = Compdata
     Compfile() \file = FileFinger$
+    Compfile() \actual = Actread
     
     Compdata = 0
   Else
@@ -383,10 +384,10 @@ EndIf
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 343
-; FirstLine = 90
-; Folding = i-
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 209
+; FirstLine = 57
+; Folding = y-
 ; EnableThread
 ; EnableXP
 ; EnableOnError

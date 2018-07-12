@@ -18,7 +18,6 @@ DeclareModule Cipher
     MasterSHA1.s        ;I 
     MasterSHA2.s        ;Love
     MasterSHA3.s        ;Structures
-    AESMem.i            ;I'm so alone.
   EndStructure          ;Message me if you get it.
   OpenCryptRandom()
   UseSHA1Fingerprint()
@@ -34,12 +33,18 @@ Module Cipher
   ;--
   Procedure GenerateKeySequence(ID$)
     ;Generation of Initial 16-Byte key
-    *Key = AllocateMemory(32)           ; extra Bytes to avoid overflow from full memory
+    *Key = AllocateMemory(16)           ; extra Bytes to avoid overflow from full memory
     Debug CryptRandomData(*Key,16)
+    OpenFile(1,"IniVect.key")
+    WriteData(1,*Key,16)
+    CloseFile(1)
     ; --------
     ;Generation of 28-byte Master key
     *Master = AllocateMemory(29)        ; extra one byte to avoid overflow
     Debug CryptRandomData(*Master,28)
+    OpenFile(1,"Master.key")
+    WriteData(1,*Master,29)
+    CloseFile(1)
     ; --------
     ;Generation of Base64 key
     Base64Key$ = Base64Encoder(*key,16)
@@ -64,19 +69,12 @@ Module Cipher
     EncryptStorage() \MasterSHA2 = MasterSHA2$
     EncryptStorage() \MasterSHA3 = MasterSHA3$
     
-    *AESMem = AllocateMemory(32)
-    *Base64Key = AllocateMemory(StringByteLength(Base64Key$)+32)
-    PokeS(*Base64Key,Base64Key$)
+
     
     
     
     
-    If AESEncoder(*Master,*AESMem,28,*Base64Key,256,*Key)     ;After that whole mess we encript the Base64 Key.
-      EncryptStorage() \AESMem = *AESMem      
-      ProcedureReturn #True
-    Else
-      ProcedureReturn #False
-    EndIf
+
     
   EndProcedure
   ;--
@@ -84,8 +82,9 @@ Module Cipher
   
 EndModule
 
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 7
+; IDE Options = PureBasic 5.61 (Windows - x64)
+; CursorPosition = 38
+; FirstLine = 22
 ; Folding = -
 ; EnableXP
 ; CompileSourceDirectory
