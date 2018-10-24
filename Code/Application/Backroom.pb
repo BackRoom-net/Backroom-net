@@ -9,28 +9,23 @@
 ;- Declares
 ;
  
-
+ InitNetwork()
+ 
 IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
 XIncludeFile "ThreadBranch_mod.pbi"
 IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
 IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Modules"
-XIncludeFile "Database_mod.pbi"
 XIncludeFile "Preferences.pbi"
-XIncludeFile "Crypto_mod.pbi"
 XIncludeFile "FileUtil_mod.pbi"
-XIncludeFile "Modul_NetworkData.pbi"
-XIncludeFile "Network_mod.pbi"
 UseModule Proforma
-UseModule Cipher
 UseModule FileUtil
 ;
 ;
 ;
 Declare Initialize()
 Declare DetectSystem()
-Declare CreatePrettystuff()
 Declare CleanShutDown()
 Declare ConnectToNode(IP.s)
 Declare ViewCurrentConnections()
@@ -59,11 +54,10 @@ EndIf
 ;
 ;- Maps
 
-ProformaMakeInst("Memory-Map-Ini")
-ProformaS("Memory-Map-Ini")
+
 Global NewMap Keys.s()
 
-ProformaE("Memory-Map-Ini")
+
 
 ;
 ;- Procedures
@@ -78,137 +72,34 @@ Procedure Initialize()
   
 Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
   
-CreateDirectory("Data")
-CreateDirectory("ReceivedData")
-UseModule SQLDatabase
-UseModule SQFormat
-UseModule SQuery
-UseModule ThreadBranch
+
 UseModule Prefs
-UseModule Network
-UseModule NetworkData
-SetDataFolder("ReceivedData")
 ImprortPrefs()
 
 
-Mainserver = createserver(4455)
-If Mainserver
-  log::GenLogadd("MainServer","Info","Main Node server ID = "+Mainserver,"Initialize()")
-Else
-  Text$ = "Could not create a Main Node server. Check your firewall settings and restart the program."
-  MessageRequester("Network Error",Text$,#PB_MessageRequester_Error)
-EndIf
+; Mainserver = createserver(4455)
+; If Mainserver
+;   log::GenLogadd("MainServer","Info","Main Node server ID = "+Mainserver,"Initialize()")
+; Else
+;   Text$ = "Could not create a Main Node server. Check your firewall settings and restart the program."
+;   MessageRequester("Network Error",Text$,#PB_MessageRequester_Error)
+; EndIf
 
 
-Initlogging(1,"")
 
-If Initdatabase(1,"Data\Main.db") = 3
-  PrintN("Database opened Successfully. Skipping Initialization.")
-  Delay(500)
-Else
-CloseC1$ = SQFCreateTable(CloseC1$,"CloseClients")
-CloseC1$ = SQFOpen(CloseC1$)
-CloseC1$ = SQFMakeField(CloseC1$,"ClientNumber",1,1,1,1,1,0)          ;To be under "Close Clients" Ping < 15ms
-CloseC1$ = SQFclose(CloseC1$)
-
-CloseC2$ = SQFCreateTable(CloseC2$,"KnownClients")                    ;All Clients
-CloseC2$ = SQFOpen(CloseC2$)
-CloseC2$ = SQFMakeField(CloseC2$,"ClientNumber",1,1,1,1,1,1)
-CloseC2$ = SQFMakeField(CloseC2$,"IP",2,1,0,0,1,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Ping",1,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"HandShakeSuccessful",1,0,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"AESCatch",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"SHA1",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"SHA2",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"SHA3",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"MD5",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"CRC32",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Base64Master",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Base64Key",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"MasterKey",2,1,0,0,0,1)
-CloseC2$ = SQFMakeField(CloseC2$,"Key",2,1,0,0,0,0)
-CloseC2$ = SQFclose(CloseC2$)
+; AddThreadMember(Thread1)
+; AddThreadMember(Thread2)
+; AddThreadMember(Thread3)
+; AddThreadMember(Thread4)
+; AddThreadMember(Thread5)
+; AddThreadMember(Thread6)
+; AddThreadMember(Thread7)
+; AddThreadMember(Thread8)
+; AddThreadMember(Thread9)
+;WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
 
 
-CloseC3$ = SQFCreateTable(CloseC3$,"FriendlyClients")                   ;Clients that we have downloaded from before
-CloseC3$ = SQFOpen(CloseC3$)                                          ; It puts them at priority Refresh rate
-CloseC3$ = SQFMakeField(CloseC3$,"ClientNumber",1,1,1,1,0,1)
-CloseC3$ = SQFMakeField(CloseC3$,"IP",2,1,0,0,1,1)
-CloseC3$ = SQFMakeField(CloseC3$,"Ping",1,1,0,0,0,0)
-CloseC3$ = SQFclose(CloseC3$)
 
-
-CloseC4$ = SQFCreateTable(CloseC4$,"ActiveRfrClients")                ;When Active Refresh Is required. (Ex. Every second or so.)
-CloseC4$ = SQFOpen(CloseC4$)
-CloseC4$ = SQFMakeField(CloseC4$,"ClientNumber",1,1,1,1,0,0)
-CloseC4$ = SQFclose(CloseC4$)
-
-
-CloseC5$ = SQFCreateTable(CloseC5$,"PackagesOnHost")
-CloseC5$ = SQFOpen(CloseC5$)
-CloseC5$ = SQFMakeField(CloseC5$,"PackageNumber",1,1,1,1,0,1)
-CloseC5$ = SQFMakeField(CloseC5$,"PackageHash",2,1,0,0,0,1)
-CloseC5$ = SQFMakeField(CloseC5$,"ChunksInPackage",1,1,0,0,0,1)
-CloseC5$ = SQFMakeField(CloseC5$,"Lock",1,0,0,0,0,0)
-CloseC5$ = SQFclose(CloseC5$)
-
-
-CloseC6$ = SQFCreateTable(CloseC6$,"PackSummary")
-CloseC6$ = SQFOpen(CloseC6$)
-CloseC6$ = SQFMakeField(CloseC6$,"PackageNumber",1,1,0,0,0,1)
-CloseC6$ = SQFMakeField(CloseC6$,"Tags",2,1,0,0,0,1)
-CloseC6$ = SQFMakeField(CloseC6$,"SubTrees",2,0,0,0,0,1)
-CloseC6$ = SQFMakeField(CloseC6$,"Name",2,0,0,0,0,0)                ;Your name or user to display
-CloseC6$ = SQFclose(CloseC6$)
-
-CloseC7$ = SQFCreateTable(CloseC7$,"Downloadhistory")                   ;Clients that have downloaded before
-CloseC7$ = SQFOpen(CloseC7$)                                          ; It puts them at priority Refresh rate
-CloseC7$ = SQFMakeField(CloseC7$,"ClientNumber",1,1,1,1,0,1)
-CloseC7$ = SQFMakeField(CloseC7$,"IP",2,1,0,0,1,1)
-CloseC7$ = SQFMakeField(CloseC7$,"Ping",1,1,0,0,0,0)
-CloseC7$ = SQFclose(CloseC7$)
-
-CloseC8$ = SQFCreateTable(CloseC8$,"PackagesOnServer")
-CloseC8$ = SQFOpen(CloseC8$)
-CloseC8$ = SQFMakeField(CloseC8$,"PackageNumber",1,1,1,1,0,1)
-CloseC8$ = SQFMakeField(CloseC8$,"PackageHash",2,1,0,0,0,1)
-CloseC8$ = SQFMakeField(CloseC8$,"ChunksInPackage",1,1,0,0,0,1)
-CloseC8$ = SQFMakeField(CloseC8$,"InProgress",1,0,0,0,0,1)
-CloseC8$ = SQFMakeField(CloseC8$,"Progress",1,0,0,0,0,0)
-CloseC8$ = SQFclose(CloseC8$)
-
-CloseC9$ = SQFCreateTable(CloseC9$,"PackServerSummary")
-CloseC9$ = SQFOpen(CloseC9$)
-CloseC9$ = SQFMakeField(CloseC9$,"PackageNumber",1,1,0,0,0,1)
-CloseC9$ = SQFMakeField(CloseC9$,"Tags",2,1,0,0,0,1)
-CloseC9$ = SQFMakeField(CloseC9$,"SubTrees",2,0,0,0,0,1)
-CloseC9$ = SQFMakeField(CloseC9$,"Name",2,0,0,0,0,0)                ;Your name or user to display
-CloseC9$ = SQFclose(CloseC9$)
-
-
-Thread1 = SQLCommit(1,CloseC1$)
-Thread2 = SQLCommit(1,CloseC2$)
-Thread3 = SQLCommit(1,CloseC3$)
-Thread4 = SQLCommit(1,CloseC4$)
-Thread5 = SQLCommit(1,CloseC5$)
-Thread6 = SQLCommit(1,CloseC6$)
-Thread7 = SQLCommit(1,CloseC7$)
-Thread8 = SQLCommit(1,CloseC8$)
-Thread9 = SQLCommit(1,CloseC9$)
-AddThreadMember(Thread1)
-AddThreadMember(Thread2)
-AddThreadMember(Thread3)
-AddThreadMember(Thread4)
-AddThreadMember(Thread5)
-AddThreadMember(Thread6)
-AddThreadMember(Thread7)
-AddThreadMember(Thread8)
-AddThreadMember(Thread9)
-WaitThreadBranchGraphical("Waiting On Database Initilization...",900,7000)
-EndIf
-
-PrintN("Please Wait while Reconnecting with Node Network.")
-Network::ReconnectAll()
 
 
 EndProcedure
@@ -315,11 +206,6 @@ Procedure DetectSystem()
  
 EndProcedure
 
-Procedure CreatePrettystuff()
-  LoadImage(1,"favicon.ico")
-  
-  
-EndProcedure
 
 
 ;--------
@@ -516,41 +402,41 @@ Wend
 EndProcedure
 
 Procedure ConnectToNode(IP.s)
-  UseModule Log
-  UseModule Network
-  
-  If Len(IP.s) = 0
-  ClearConsole()
-  PrintN("Enter a Valid IP address of the node you Wish to connect too.")
-  PrintN("(Please note that Discovering other Nodes may take some time)")
-  PrintN("IP:")
-  ValidIP$ = Input()
-  If ValidIP$ = "localhost" Or ValidIP$ = "127.0.0.0"
-    PrintN("Error, this address is Invalid.")
-    Else
-      UseModule NetworkData
-      
-      AddConnection(1,ValidIP$)
-      
-  If ConnectedClient 
-    PrintN("The Node you have specified has connected.")
-    Delay(1000)
-  Else
-    PrintN("Error when Connecting to Node.")
-  EndIf
-EndIf
- Else 
-   UseModule NetworkData
-   
-   AddConnection(1,ValidIP$)
-   
-  If ConnectedClient 
-    PrintN("The Node you have specified has connected.")
-    Delay(1000)
-  Else
-    GenLogadd("Node_Error","NODE_ERROR","Error when connecting to node: "+IP.s,"NODE_CONNECT")
-  EndIf
-EndIf
+;   UseModule Log
+;   UseModule Network
+;   
+;   If Len(IP.s) = 0
+;   ClearConsole()
+;   PrintN("Enter a Valid IP address of the node you Wish to connect too.")
+;   PrintN("(Please note that Discovering other Nodes may take some time)")
+;   PrintN("IP:")
+;   ValidIP$ = Input()
+;   If ValidIP$ = "localhost" Or ValidIP$ = "127.0.0.0"
+;     PrintN("Error, this address is Invalid.")
+;     Else
+;       UseModule NetworkData
+;       
+;       AddConnection(1,ValidIP$)
+;       
+;   If ConnectedClient 
+;     PrintN("The Node you have specified has connected.")
+;     Delay(1000)
+;   Else
+;     PrintN("Error when Connecting to Node.")
+;   EndIf
+; EndIf
+;  Else 
+;    UseModule NetworkData
+;    
+;    AddConnection(1,ValidIP$)
+;    
+;   If ConnectedClient 
+;     PrintN("The Node you have specified has connected.")
+;     Delay(1000)
+;   Else
+;     GenLogadd("Node_Error","NODE_ERROR","Error when connecting to node: "+IP.s,"NODE_CONNECT")
+;   EndIf
+; EndIf
 
 
 
@@ -558,32 +444,26 @@ EndIf
 EndProcedure
 
 Procedure ViewCurrentConnections()
-  
+  ; this will happen some time later.
 EndProcedure
 
 
 ;-------------
 ;- Program side
 ;
-; Make Proforma Instances
-ProformaMakeInst("Database-Ini")
-;
-KeyboardMode.i = 2
+
+
+
+
 OpenConsole("BackRoom-Net")
 DetectSystem()
 EnableGraphicalConsole(1)
-ProformaS("Database-Ini")
 If Initialize()
  Debug "1"
 EndIf
-ProformaE("Database-Ini")
 
-ProformaMakeInst("Cipher-Gen")
-ProformaS("Cipher-Gen")
-Input()
-GenerateKeySequence("Main")
-ProformaE("Cipher-Gen")
-*KeyMem = EncryptStorage("Main") \keymem
+
+
 
 men:
 EnableGraphicalConsole(1)
@@ -605,20 +485,20 @@ Repeat
       CleanShutDown()
     EndIf
        If msg$ = Chr(49)
-          SpredDir(EncryptStorage() \MasterMem, *keyMem)
+          ;SpredDir(EncryptStorage() \MasterMem, *keyMem)
           ClearConsole()
           Goto men
         EndIf
         If msg$ = Chr(50)
-          ViewPackProcess()
+          ;ViewPackProcess()
           Goto men
         EndIf
         If msg$ = Chr(51)
-          ViewCurrentConnections()
+          ;ViewCurrentConnections()
           Goto men
         EndIf
         If msg$ = Chr(52)
-          ConnectToNode("")
+          ;ConnectToNode("")
           Goto men
         EndIf
         
@@ -635,21 +515,7 @@ Until Exit = 1
 
 
 Input()
-<<<<<<< HEAD
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 582
-; FirstLine = 210
-; Folding = B+
-=======
-; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 606
-; FirstLine = 58
-; Folding = A+
->>>>>>> fea81540a9f94d5e341434a377a9ca56897ae2c2
-; EnableThread
+; CursorPosition = 11
+; Folding = D-
 ; EnableXP
-; Executable = Backroom-net.exe
-; CompileSourceDirectory
-; Warnings = Display
-; EnablePurifier = 1,1,1,1
-; EnableUnicode

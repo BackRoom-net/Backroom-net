@@ -72,9 +72,9 @@ Procedure Loggingthread()
     WriteStringN(2,Time$+": "+Moddule$+">"+Type$+": "+message$)  
     CloseFile(2)
     Else
-  WriteStringN(1,Time$+": "+Moddule$+">"+Type$+": "+message$)               
-EndIf
-CloseFile(1)
+      WriteStringN(1,Time$+": "+Moddule$+">"+Type$+": "+message$)   
+    EndIf
+    CloseFile(1)
   DeleteMapElement(Logging())
 Wend
 ResetMap(Logging())
@@ -86,6 +86,7 @@ Else
   Repeat 
     Status = OpenFile(1,Date$+".log",#PB_File_Append)
     Delay(500)
+    CloseFile(1)
   Until Status = #True
 EndIf
 EndProcedure
@@ -154,8 +155,8 @@ EndProcedure
   EndProcedure
 EndModule
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 64
-; FirstLine = 47
+; CursorPosition = 88
+; FirstLine = 53
 ; Folding = P+
 ; EnableXP
 ; Executable = Backroom-net.exe
