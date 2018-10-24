@@ -1,4 +1,0 @@
-hello from outside of module
-hello from Module1
-hello from Module2
-hello again from outside of module
