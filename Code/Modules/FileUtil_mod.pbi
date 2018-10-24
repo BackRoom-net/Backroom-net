@@ -119,7 +119,8 @@ Module FileUtil
     FileInfopass(Str(ProcessID)) \aesmem = *AESKey
     FileInfopass() \File = Path$
     FileInfopass() \Inivect = *IniVector
-    thread = CreateThread(@SpredDirThread(),ProcessID)
+    ;thread = CreateThread(@SpredDirThread(),ProcessID)
+    SpredDirThread(ProcessID)
     ProcedureReturn ProcessID
   EndProcedure
   
@@ -183,16 +184,19 @@ Repeat
   Actread = ReadData(UniNumber,*Split,Size.i)
   FileFinger$ = Fingerprint(*Split,Actread,#PB_Cipher_CRC32)
   CheckSum$ = Fingerprint(*Split,ActRead,#PB_Cipher_SHA3)
+  
   If FileSize(FileFinger$) = -1
-    *Encoded = AllocateMemory(Actread+32)
-    *Compressed = AllocateMemory(Actread+32)
+    *Encoded = AllocateMemory(Actread)
+    *Compressed = AllocateMemory(Actread)
     OpenFile(CmpressFile,"FileTmp\Processing\"+PackageName$+"\"+FileFinger$)
     ProcessingString$ = "FileTmp\Processing\"+PackageName$+"\"+FileFinger$
      LockMutex(ThreadStatMutex)
      Filethreads(Str(ProcessID)) \Message = ProcessingString$
      Filethreads() \Status = "Encrypting File: "+Str(parts)+"/"+Str(Partcount)
      UnlockMutex(ThreadStatMutex)
-    Compdata = CompressMemory(*Split,Actread+32,*Compressed,Actread+32,#PB_PackerPlugin_Zip,9)
+     
+     Compdata = CompressMemory(*Split,Actread,*Compressed,Actread,#PB_PackerPlugin_Zip,9)
+     
     If Compdata = 0
       Compdata = AESEncoder(*Split,*Encoded,Actread,*AESKey,256,*IniVector)
     Else
@@ -242,6 +246,15 @@ Repeat
     InsertJSONMap(JSONValue(0), compfile())
     SaveJSON(0,"FileTmp\Processing\"+PackageName$+"\Order.json", #PB_JSON_PrettyPrint)
   EndIf
+  OpenFile(69,"FileTmp\Processing\"+PackageName$+"\IniVect.key")
+  WriteData(69,*IniVector,16)
+  CloseFile(69)
+   OpenFile(69,"FileTmp\Processing\"+PackageName$+"\Master.key")
+  WriteData(69,*AESKey,28)
+  CloseFile(69)
+  
+  
+  
   FreeMap(compfile())
   Proforma::ProformaE("FileUtil_"+Str(UniNumber))
   ms.i = Proforma::ProformaSpillResult("FileUtil_"+Str(UniNumber))
@@ -385,9 +398,9 @@ EndIf
 EndModule
 
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 209
-; FirstLine = 57
-; Folding = y-
+; CursorPosition = 122
+; FirstLine = 42
+; Folding = 7-
 ; EnableThread
 ; EnableXP
 ; EnableOnError
