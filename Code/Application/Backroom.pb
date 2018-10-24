@@ -378,7 +378,7 @@ Procedure CleanShutDown()
     SendFTPFile(1,Home$+"Data\Main.db","Database.db")
     
     PrintN("Please wait while Performance report file is sent...")
-    SendFTPFile(1,Home$+"Proforma_Mem_Dump.txt","Database.db")
+    SendFTPFile(1,Home$+"Proforma_Mem_Dump.txt","Proforma_mem_dump.txt")
     
   Else
     Log::GenLogadd("Shutdown","SHUTDOWN ERROR","Was Unable to connect to the log server.","CleanShutDown()")
@@ -580,6 +580,7 @@ ProformaE("Database-Ini")
 
 ProformaMakeInst("Cipher-Gen")
 ProformaS("Cipher-Gen")
+Input()
 GenerateKeySequence("Main")
 ProformaE("Cipher-Gen")
 *KeyMem = EncryptStorage("Main") \keymem
@@ -635,13 +636,13 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 606
-; FirstLine = 580
-; Folding = 8+
+; CursorPosition = 582
+; FirstLine = 210
+; Folding = B+
 ; EnableThread
 ; EnableXP
 ; Executable = Backroom-net.exe
 ; CompileSourceDirectory
 ; Warnings = Display
-; EnablePurifier
+; EnablePurifier = 1,1,1,1
 ; EnableUnicode
