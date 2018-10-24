@@ -634,10 +634,10 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.61 (Windows - x64)
+; IDE Options = PureBasic 5.62 (Windows - x64)
 ; CursorPosition = 606
-; FirstLine = 580
-; Folding = 8+
+; FirstLine = 58
+; Folding = A+
 ; EnableThread
 ; EnableXP
 ; Executable = Backroom-net.exe
