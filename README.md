@@ -23,15 +23,11 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 > Program is currently in The developmet Alpha stage and Is **Not** working.
 
-* Nodes can connect currently across local networks for testing a debugging.
-* The database Actually works now for storing Node addresses and such. (They currently aren't encrypted - Alpha)
-* Added A "ReceivedFiles" Directory that is for files currently being received.
-* Working on getting a firm Network handshake between Nodes.
+* Program is being reworked. No new features will be announced until this is done.
 
 ## Most Important New Features
-* Application is about 20% Faster.
 * New Logging system has higher Detail for debugging.
-* Node system has been employed.
+* If you choose to do a safe shutdown of the application, debug logs and the program database will be sent anonymously to my ftp server for analisis! 
 
 
 # Purebasic
@@ -40,6 +36,8 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 > Current compatibility with the program is limited to windows 7,8,8.1 and 10 
 
 # System Requirements
+
+**Because program is being reworked, these do not apply right now.**
 
 This program will run on most modern computers (1-3 years old)
 
