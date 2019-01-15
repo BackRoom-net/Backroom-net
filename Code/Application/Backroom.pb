@@ -6,28 +6,29 @@
 
 
 ;
-;- Declares
+;- Includes
 ;
  
  InitNetwork()
  
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Modules"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 XIncludeFile "Proforma_mod.pbi"
 XIncludeFile "ThreadBranch_mod.pbi"
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Application"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
-IncludePath "C:\Users\noisy\OneDrive\Documents\GitHub\Backroom-clone\Backroom-net\Code\Modules"
-XIncludeFile "Preferences.pbi"
+IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
+;XIncludeFile "Preferences.pbi"
 XIncludeFile "FileUtil_mod.pbi"
+XIncludeFile "bip_data_handler.pb"
+XIncludeFile "Custom_networkmod.pb"
 UseModule Proforma
-UseModule FileUtil
+;UseModule FileUtil
 ;
-;
+;- Declares
 ;
 Declare Initialize()
 Declare DetectSystem()
 Declare CleanShutDown()
-Declare ConnectToNode(IP.s)
 Declare ViewCurrentConnections()
 ;
 ;- Structures
@@ -41,7 +42,7 @@ Declare ViewCurrentConnections()
 Global KeyboardMode.i
 Global msg$, conplace
 Global App_Version.s = "1.0.0" 
-Global Memory_Override = 0
+Global Memory_Override = 1
 Global LogExist
 
 If FileSize(FormatDate("%yy.%mm.%dd", Date())+".log") > 1
@@ -55,7 +56,7 @@ EndIf
 ;- Maps
 
 
-Global NewMap Keys.s()
+
 
 
 
@@ -71,10 +72,20 @@ DisableExplicit
 Procedure Initialize()
   
 Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
-  
 
-UseModule Prefs
-ImprortPrefs()
+
+
+UseModule net
+StartServer(4455)
+StartServer(4456)
+Delay(1000)
+Log::GenLogadd("Init57","Info","Main Thread created two server threads.","Initialize()")
+StartClient(1,"127.0.0.1",4455)
+Delay(1000)
+Debug ClientSend(1,"SendBuff")
+Input()
+Delay(1000)
+
 
 
 ; Mainserver = createserver(4455)
@@ -169,8 +180,12 @@ Procedure DetectSystem()
             PrintN("Please wait while Chrome Processes are killed...")
             RunProgram("c:\windows\system32\taskkill.exe","/IM chrome.exe /F","", #PB_Program_Wait | #PB_Program_Hide)
             ClearConsole()
-    Else
-      End
+          Else
+            If Memory_Override = 1
+              Else
+                End
+              EndIf
+              
       EndIf
     EndIf
     If LogExist = 1
@@ -216,15 +231,15 @@ EndProcedure
 Procedure CleanShutDown()
   EnableGraphicalConsole(1)
   UseModule Proforma
-  UseModule Prefs
+  ;UseModule Prefs
   ClearConsole()
   PrintN("Please Wait...")
   SpillProforma()
-  If PrefChk()
-    DeleteFile("Data\Preferences.xml")
-  EndIf
-  PrefExport()
-  CloseDatabase(1)
+;   If PrefChk()
+;     DeleteFile("Data\Preferences.xml")
+;   EndIf
+;   PrefExport()
+;   CloseDatabase(1)
   Log::GenLogadd("Shutdown","SHUTDOWN","Program is shutting down...","CleanShutDown()")
   PrintN("Connecting to FTP server...")
   If OpenFTP(1,"www.wow-interesting.com","loguploads@wow-interesting.com","plzupload")
@@ -286,6 +301,7 @@ Procedure CleanShutDown()
 EndProcedure
 
 Procedure ViewPackProcess()
+  UseModule FileUtil
   ConX = 0
   ConY = 0
   Structure watc
@@ -515,7 +531,9 @@ Until Exit = 1
 
 
 Input()
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 11
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 84
+; FirstLine = 67
 ; Folding = D-
+; EnableThread
 ; EnableXP
