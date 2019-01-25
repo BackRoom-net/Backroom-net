@@ -26,6 +26,7 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 * Program is being reworked. No new features will be announced until this is done.
 
 ## Most Important New Features
+* A new streaming module is being worked on right now. This will allow files to be streamed across the network seamlessly. This also includes post compression of files. No encryption yet.
 * New Logging system has higher Detail for debugging.
 * If you choose to do a safe shutdown of the application, debug logs and the program database will be sent anonymously to my ftp server for analisis! 
 
@@ -39,12 +40,12 @@ Please request for Collaboration!  - Ruben Rodriguez - rubenrodvideos@gmail.com
 
 **Because program is being reworked, these do not apply right now.**
 
-This program will run on most modern computers (1-3 years old)
+This program will run on most modern computers (1-4 years old)
 
 _It is strict and **can** be annoying_
 
 * System **Minimum** Memory is 2gb!!
-  Nothing below this amount will run! This is like this so 32-bit computers can still run this program.
+  Nothing below this amount will run! This is in place so 32-bit computers can still run this program.
   
   > A memory Override version of the program is being worked on right now.
   > If your computer has less than 2gb of memory you may switch to this version and
