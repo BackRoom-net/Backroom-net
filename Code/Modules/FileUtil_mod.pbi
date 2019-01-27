@@ -1,17 +1,13 @@
 ﻿
 
 DeclareModule FileUtil
-  CreateDirectory("FileTmp")
-  CreateDirectory("FileTmp\InProgress")
-  CreateDirectory("FileTmp\Processing")
-  CreateDirectory("Package")
   ;Declare SpredFile(File$,*AESKey,*IniVector,*ProgressOut,ProcessID)
   ;Declare SpredDir(*AESKey,*IniVector)
   ;Declare FileThreadWatcher(NullVar)
-  Global FileTarMutex = CreateMutex()
-  Global FileZipMutex = CreateMutex()
-  Global InfoPassMutex = CreateMutex()
-  Global ThreadStatMutex = CreateMutex()
+;   Global FileTarMutex = CreateMutex()
+;   Global FileZipMutex = CreateMutex()
+;   Global InfoPassMutex = CreateMutex()
+;   Global ThreadStatMutex = CreateMutex()
   Structure part
     Checksum.s
     filefinger.s
@@ -398,8 +394,7 @@ Module FileUtil
 EndModule
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 40
-; FirstLine = 15
+; CursorPosition = 28
 ; Folding = -
 ; EnableThread
 ; EnableXP
