@@ -1,10 +1,10 @@
-﻿EnableExplicit
+﻿
 
 DeclareModule Log
   Declare AddMsg(msg.s)
   Declare DumpToFile()
   Declare GenLogadd(Unique$,type$,message$,from$)
-  Declare loggingthread()
+  Declare loggingthread(Nullval)
 ;   Declare NonThreadLogging(Unique$,type$,message$,from$)
 EndDeclareModule
 
@@ -39,10 +39,11 @@ EndStructure
 ;   EndIf
 ;   
 ;   If Sync = 0
-  LockMutex(Log)
+    LockMutex(Log)
+    ResetMap(Logging())
   Logging(Unique$) \from = from$
-  Logging() \message = message$
-  Logging() \type = type$
+  Logging(Unique$) \message = message$
+  Logging(Unique$) \type = type$
   If IsThread(threadnumberlogging)
   Else
     threadnumberlogging = CreateThread(@Loggingthread(),0)
@@ -54,7 +55,7 @@ EndStructure
 
 EndProcedure
 
-Procedure Loggingthread()
+Procedure Loggingthread(Nullval)
   Date$ = FormatDate("%yy.%mm.%dd", Date())
   LockMutex(Log)
   If OpenFile(1,Date$+".log",#PB_File_Append)
@@ -79,7 +80,7 @@ Procedure Loggingthread()
 Wend
 ResetMap(Logging())
 UnlockMutex(Log)
-Delay(500)
+Delay(50)
 Goto main
 Else
   MessageRequester("Internal Error","Could not read Log file. Please check if other applications are using it. Logging will be resumed as soon as the File is freed.")
@@ -154,9 +155,9 @@ EndProcedure
     ProcedureReturn
   EndProcedure
 EndModule
-; IDE Options = PureBasic 5.61 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 53
+; IDE Options = PureBasic 5.62 (Windows - x64)
+; CursorPosition = 86
+; FirstLine = 55
 ; Folding = P+
 ; EnableXP
 ; Executable = Backroom-net.exe

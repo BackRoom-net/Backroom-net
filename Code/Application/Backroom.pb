@@ -472,6 +472,7 @@ EndProcedure
 
 
 OpenConsole("BackRoom-Net")
+Input()
 DetectSystem()
 EnableGraphicalConsole(1)
 If Initialize()
@@ -532,8 +533,8 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 84
-; FirstLine = 67
+; CursorPosition = 474
+; FirstLine = 228
 ; Folding = D-
 ; EnableThread
 ; EnableXP
