@@ -2,11 +2,25 @@ DeclareModule ThreadBranch
   Structure tl
     Thread.i 
   EndStructure
+  
+  Structure ThrdJob
+    ID.s
+    Job.s
+    Status.s
+    Message.s
+  EndStructure
+  
+  
   Declare SelfTest()
   Declare WaitThreadBranch()
   Declare WaitThreadBranchGraphical(Title$,EndDelay,WarningTime)
   Declare AddThreadMember(ThreadID)
+  Declare ViewThreadProcess()
   Global NewMap ThreadMap.tl()
+  ; -
+  ; process threads here ___
+  Global NewMap processThrds.ThrdJob()
+  Global ThreadStatMutex = CreateMutex()
 EndDeclareModule
 
 Module ThreadBranch
@@ -14,6 +28,8 @@ Declare TestThread(var)
 Global ThreadCount = 0
 Global LastThreadCount = 0
 Global LogCount = 0
+
+;- >wait on threads utility
   Procedure AddThreadMember(ThreadID)
     If FindMapElement(ThreadMap(),Str(ThreadID))
       ProcedureReturn #False
@@ -52,7 +68,7 @@ Global LogCount = 0
       ProcedureReturn Progress.i
     EndProcedure
     
-    Procedure.i WaitThreadBranchGraphical(Title$,EndDelay,WarningTime)
+  Procedure.i WaitThreadBranchGraphical(Title$,EndDelay,WarningTime)
       EnableGraphicalConsole(1)
       ClearConsole()
       ConX = 1
@@ -222,7 +238,186 @@ Global LogCount = 0
     Delay(Random(4000))
   EndProcedure
   
+  ;- >Thread tracking utility
   
+  Procedure ViewThreadProcess()
+  UseModule FileUtil
+  ConX = 0
+  ConY = 0
+  Structure watc
+    posy.i
+    Process.s
+    job.s
+    stat.s
+    msg.s
+    Drawn.i
+  EndStructure
+  NewMap Watcher.watc()
+  
+  
+  EnableGraphicalConsole(1)
+  ClearConsole()
+  While Inkey() <> Chr(27)
+  LockMutex(ThreadStatMutex)
+  While NextMapElement(FileThreads()) 
+    ProcessID$ = FileThreads() \ID
+    JobCurr$ = FileThreads() \Job
+    StatCurr$ = FileThreads() \Status
+    MsgCurr$ = FileThreads() \Message
+    
+    ProIDlen = Len(ProcessID$)
+    Joblen = Len(JobCurr$)
+    Statlen = Len(StatCurr$)
+    Msglen = Len(MsgCurr$)
+    
+    
+    ProcessForm$ = "Process: "+FileThreads() \ID
+    JobForm$ = "Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status
+    InfoForm$ = "Info: "+FileThreads() \Message
+    
+    If FindMapElement(Watcher(),ProcessID$)
+      If Watcher() \Drawn = 1
+       curpos.i = Watcher() \posy
+       
+       If MsgCurr$ <> Watcher() \msg
+         Fill$ = Space(150)
+         ConsoleLocate(0,curpos+2)
+         Print(Fill$)
+         ConsoleLocate(0,curpos+2)
+         Print(InfoForm$)
+       EndIf
+       
+       If StatCurr$ <> Watcher() \stat Or JobCurr$ <> Watcher() \job
+         Fill$ = Space(90)
+         ConsoleLocate(0,curpos+1)
+         Print(Fill$)
+         ConsoleLocate(0,curpos+1)
+         Print(JobForm$)
+       EndIf
+       
+       If ProcessID$ = ""
+         ResetMap(Watcher())
+         While NextMapElement(Watcher())
+           DeleteMapElement(Watcher())
+         Wend
+         ClearConsole()
+       Else
+        If FindMapElement(Watcher(),ProcessID$)
+         If Not FindMapElement(FileThreads(), ProcessID$)
+           DeleteMapElement(Watcher())
+           ResetMap(Watcher())
+           While NextMapElement(Watcher())
+             Posincon = Watcher() \posy
+             If Posincon <> 0
+               Watcher() \posy = Posincon-4
+               Watcher() \Drawn = 0
+             EndIf
+           Wend
+           ResetMap(Watcher())
+           ClearConsole()
+         EndIf
+       EndIf
+       EndIf
+       
+        
+     Else
+       ConsoleLocate(ConX,ConY)
+       watcher() \posy = ConY
+        PrintN(ProcessForm$)
+        PrintN(JobForm$)
+        PrintN(InfoForm$)
+        watcher() \Drawn = 1
+        ConY = ConY+4
+      EndIf
+  Else
+    Watcher(ProcessID$) \Drawn = 0
+    Watcher() \Process = ProcessID$
+    Watcher() \job = JobCurr$
+    Watcher() \stat = StatCurr$
+    Watcher() \msg = MsgCurr$
+  EndIf
+  
+    
+      
+  Wend
+  ResetMap(FileThreads())
+  If NextMapElement(FileThreads())
+    ResetMap(FileThreads())
+  Else
+    Delay(500)
+    ClearConsole()
+    PrintN("No Current Jobs Running.")
+    PrintN("Press Esc. to exit.")
+    UnlockMutex(ThreadStatMutex)
+  EndIf
+  
+  UnlockMutex(ThreadStatMutex)
+  Delay(36)
+Wend
+
+EndProcedure
+
+  Procedure.i updateThrdJob(Uniq_ID,Job$,Status$,Message$)
+    If Uniq_ID = 0
+      ProcedureReturn 0
+    EndIf
+    
+    LockMutex(ThreadStatMutex)
+    If FindMapElement(processThrds(),Str(Uniq_ID))
+      If Job$ <> ""
+        processThrds(Str(Uniq_ID)) \Job = Job$
+      EndIf
+      If Status$ <> ""
+        processThrds(Str(Uniq_ID)) \Status = Status$
+      EndIf
+      If Message$ <> ""
+        processThrds(Str(Uniq_ID)) \Message = Message$
+      EndIf
+      UnlockMutex(ThreadStatMutex)
+      ProcedureReturn 1
+    Else
+      ProcedureReturn 0
+    EndIf
+    
+  EndProcedure
+  
+  Procedure.i newThrdJob(Uniq_ID,Job$,Status$,Message$)
+    redo:
+    If Uniq_ID = 0
+      Uniq_ID = Str(Random(999999,1)+Random(999999,1))
+      LockMutex(ThreadStatMutex)
+      ResetMap(processThrds())
+      If FindMapElement(processThrds(),Str(Uniq_ID))
+        Uniq_ID = 0
+        Goto redo
+      EndIf
+      ResetMap(processThrds())
+      UnlockMutex(ThreadStatMutex)
+    EndIf
+    
+    LockMutex(ThreadStatMutex)
+    processThrds(Str(Uniq_ID)) \ID = Uniq_ID
+    processThrds() \Job = Job$
+    processThrds() \Status = Status$
+    UnlockMutex(ThreadStatMutex)
+    
+    ProcedureReturn Uniq_ID  
+  EndProcedure
+  
+  Procedure.i closeThrdJob(Uniq_ID)
+    LockMutex(ThreadStatMutex)
+    If FindMapElement(processThrds(),Str(Uniq_ID))
+      DeleteMapElement(processThrds(),Str(Uniq_ID))
+      UnlockMutex(ThreadStatMutex)
+      ProcedureReturn 1
+    Else
+      UnlockMutex(ThreadStatMutex)
+      ProcedureReturn 0
+    EndIf
+    
+  EndProcedure
+  
+
 EndModule
 
 ;UseModule ThreadBranch
@@ -230,6 +425,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 227
-; Folding = f-
+; CursorPosition = 413
+; FirstLine = 21
+; Folding = Dg
 ; EnableXP
