@@ -18,6 +18,7 @@ IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Application"
 XIncludeFile "log.pbi"
 IncludePath "C:\Users\Ruben\Documents\GitHub\Backroom-net\Code\Modules"
 ;XIncludeFile "Preferences.pbi"
+XIncludeFile "Stream_mod.pb"
 XIncludeFile "FileUtil_mod.pbi"
 XIncludeFile "bip_data_handler.pb"
 XIncludeFile "Custom_networkmod.pb"
@@ -39,8 +40,6 @@ Declare ViewCurrentConnections()
 ;
 ;- Variables
 ;
-Global KeyboardMode.i
-Global msg$, conplace
 Global App_Version.s = "1.0.0" 
 Global Memory_Override = 1
 Global LogExist
@@ -77,13 +76,11 @@ Log::GenLogadd("Init56","Info","Beginning of log----","Initialize()")
 
 UseModule net
 StartServer(4455)
-StartServer(4456)
 Delay(1000)
 Log::GenLogadd("Init57","Info","Main Thread created two server threads.","Initialize()")
 StartClient(1,"127.0.0.1",4455)
 Delay(1000)
 Debug ClientSend(1,"SendBuff")
-Input()
 Delay(1000)
 
 
@@ -300,123 +297,6 @@ Procedure CleanShutDown()
   End
 EndProcedure
 
-Procedure ViewPackProcess()
-  UseModule FileUtil
-  ConX = 0
-  ConY = 0
-  Structure watc
-    posy.i
-    Process.s
-    job.s
-    stat.s
-    msg.s
-    Drawn.i
-  EndStructure
-  NewMap Watcher.watc()
-  
-  
-  EnableGraphicalConsole(1)
-  ClearConsole()
-  While Inkey() <> Chr(27)
-  LockMutex(ThreadStatMutex)
-  While NextMapElement(FileThreads()) 
-    ProcessID$ = FileThreads() \ID
-    JobCurr$ = FileThreads() \Job
-    StatCurr$ = FileThreads() \Status
-    MsgCurr$ = FileThreads() \Message
-    
-    ProIDlen = Len(ProcessID$)
-    Joblen = Len(JobCurr$)
-    Statlen = Len(StatCurr$)
-    Msglen = Len(MsgCurr$)
-    
-    
-    ProcessForm$ = "Process: "+FileThreads() \ID
-    JobForm$ = "Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status
-    InfoForm$ = "Info: "+FileThreads() \Message
-    
-    If FindMapElement(Watcher(),ProcessID$)
-      If Watcher() \Drawn = 1
-       curpos.i = Watcher() \posy
-       
-       If MsgCurr$ <> Watcher() \msg
-         Fill$ = Space(150)
-         ConsoleLocate(0,curpos+2)
-         Print(Fill$)
-         ConsoleLocate(0,curpos+2)
-         Print(InfoForm$)
-       EndIf
-       
-       If StatCurr$ <> Watcher() \stat Or JobCurr$ <> Watcher() \job
-         Fill$ = Space(90)
-         ConsoleLocate(0,curpos+1)
-         Print(Fill$)
-         ConsoleLocate(0,curpos+1)
-         Print(JobForm$)
-       EndIf
-       
-       If ProcessID$ = ""
-         ResetMap(Watcher())
-         While NextMapElement(Watcher())
-           DeleteMapElement(Watcher())
-         Wend
-         ClearConsole()
-       Else
-        If FindMapElement(Watcher(),ProcessID$)
-         If Not FindMapElement(FileThreads(), ProcessID$)
-           DeleteMapElement(Watcher())
-           ResetMap(Watcher())
-           While NextMapElement(Watcher())
-             Posincon = Watcher() \posy
-             If Posincon <> 0
-               Watcher() \posy = Posincon-4
-               Watcher() \Drawn = 0
-             EndIf
-           Wend
-           ResetMap(Watcher())
-           ClearConsole()
-         EndIf
-       EndIf
-       EndIf
-       
-        
-     Else
-       ConsoleLocate(ConX,ConY)
-       watcher() \posy = ConY
-        PrintN(ProcessForm$)
-        PrintN(JobForm$)
-        PrintN(InfoForm$)
-        watcher() \Drawn = 1
-        ConY = ConY+4
-      EndIf
-  Else
-    Watcher(ProcessID$) \Drawn = 0
-    Watcher() \Process = ProcessID$
-    Watcher() \job = JobCurr$
-    Watcher() \stat = StatCurr$
-    Watcher() \msg = MsgCurr$
-  EndIf
-  
-    
-      
-  Wend
-  ResetMap(FileThreads())
-  If NextMapElement(FileThreads())
-    ResetMap(FileThreads())
-  Else
-    Delay(500)
-    ClearConsole()
-    PrintN("No Current Jobs Running.")
-    PrintN("Press Esc. to exit.")
-    UnlockMutex(ThreadStatMutex)
-  EndIf
-  
-  UnlockMutex(ThreadStatMutex)
-  Delay(36)
-Wend
-
-EndProcedure
-
 Procedure ConnectToNode(IP.s)
 ;   UseModule Log
 ;   UseModule Network
@@ -472,13 +352,12 @@ EndProcedure
 
 
 OpenConsole("BackRoom-Net")
-Input()
 DetectSystem()
 EnableGraphicalConsole(1)
 If Initialize()
  Debug "1"
 EndIf
-
+Input()
 
 
 
@@ -502,7 +381,7 @@ Repeat
       CleanShutDown()
     EndIf
        If msg$ = Chr(49)
-          ;SpredDir(EncryptStorage() \MasterMem, *keyMem)
+          ;go to some sort of procedure.
           ClearConsole()
           Goto men
         EndIf
@@ -533,8 +412,8 @@ Until Exit = 1
 
 Input()
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 474
-; FirstLine = 228
-; Folding = D-
+; CursorPosition = 298
+; FirstLine = 74
+; Folding = g
 ; EnableThread
 ; EnableXP
