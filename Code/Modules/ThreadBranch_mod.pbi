@@ -241,7 +241,6 @@ Global LogCount = 0
   ;- >Thread tracking utility
   
   Procedure ViewThreadProcess()
-  UseModule FileUtil
   ConX = 0
   ConY = 0
   Structure watc
@@ -259,11 +258,11 @@ Global LogCount = 0
   ClearConsole()
   While Inkey() <> Chr(27)
   LockMutex(ThreadStatMutex)
-  While NextMapElement(FileThreads()) 
-    ProcessID$ = FileThreads() \ID
-    JobCurr$ = FileThreads() \Job
-    StatCurr$ = FileThreads() \Status
-    MsgCurr$ = FileThreads() \Message
+  While NextMapElement(processThrds()) 
+    ProcessID$ = processThrds() \ID
+    JobCurr$ = processThrds() \Job
+    StatCurr$ = processThrds() \Status
+    MsgCurr$ = processThrds() \Message
     
     ProIDlen = Len(ProcessID$)
     Joblen = Len(JobCurr$)
@@ -271,9 +270,9 @@ Global LogCount = 0
     Msglen = Len(MsgCurr$)
     
     
-    ProcessForm$ = "Process: "+FileThreads() \ID
-    JobForm$ = "Job: "+FileThreads() \Job +"Status: "+FileThreads() \Status
-    InfoForm$ = "Info: "+FileThreads() \Message
+    ProcessForm$ = "Process: "+processThrds() \ID
+    JobForm$ = "Job: "+processThrds() \Job +"Status: "+processThrds() \Status
+    InfoForm$ = "Info: "+processThrds() \Message
     
     If FindMapElement(Watcher(),ProcessID$)
       If Watcher() \Drawn = 1
@@ -303,7 +302,7 @@ Global LogCount = 0
          ClearConsole()
        Else
         If FindMapElement(Watcher(),ProcessID$)
-         If Not FindMapElement(FileThreads(), ProcessID$)
+         If Not FindMapElement(processThrds(), ProcessID$)
            DeleteMapElement(Watcher())
            ResetMap(Watcher())
            While NextMapElement(Watcher())
@@ -340,9 +339,9 @@ Global LogCount = 0
     
       
   Wend
-  ResetMap(FileThreads())
-  If NextMapElement(FileThreads())
-    ResetMap(FileThreads())
+  ResetMap(processThrds())
+  If NextMapElement(processThrds())
+    ResetMap(processThrds())
   Else
     Delay(500)
     ClearConsole()
@@ -384,7 +383,7 @@ EndProcedure
   Procedure.i newThrdJob(Uniq_ID,Job$,Status$,Message$)
     redo:
     If Uniq_ID = 0
-      Uniq_ID = Str(Random(999999,1)+Random(999999,1))
+      Uniq_ID = Random(999999,1)+Random(999999,1)
       LockMutex(ThreadStatMutex)
       ResetMap(processThrds())
       If FindMapElement(processThrds(),Str(Uniq_ID))
@@ -396,7 +395,7 @@ EndProcedure
     EndIf
     
     LockMutex(ThreadStatMutex)
-    processThrds(Str(Uniq_ID)) \ID = Uniq_ID
+    processThrds(Str(Uniq_ID)) \ID = Str(Uniq_ID)
     processThrds() \Job = Job$
     processThrds() \Status = Status$
     UnlockMutex(ThreadStatMutex)
@@ -425,7 +424,7 @@ EndModule
 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 413
-; FirstLine = 21
-; Folding = Dg
+; CursorPosition = 397
+; FirstLine = 156
+; Folding = Dq
 ; EnableXP

@@ -49,7 +49,8 @@ Module net
   Declare ClientThread(ClientAgent)
   Declare ServerSend(ClientID,retco$,message$)
   Declare.s ServerExtractData(FormedMessage$)
-  Declare clientmaster(ClientAgent)
+  Declare ClientLayer(ClientAgent)
+  Declare.s commandMath(String$)
   ;Declare ClientSendData(ClientAgent,String$)
   InitNetwork()
   
@@ -85,18 +86,18 @@ Module net
             ResetMap(Threads())
             AddMapElement(Threads(),Str(ClientID))
             Threads() = Thread
-            GenLogadd("serverthread"+Str(ServerID),"THREAD","ServerID: "+Str(ServerID)+" Client connected. New ID: "+Str(ClientID),"serverthread() - main")
+            ;GenLogadd("serverthread"+Str(ServerID),"THREAD","ServerID: "+Str(ServerID)+" Client connected. New ID: "+Str(ClientID),"serverthread() - main")
             
             
           Case #PB_NetworkEvent_Disconnect
             Debug "Client: "+Str(ClientID)+" Disconnected."
             LockMutex(mapaccess)
-            Debug Str(Threads(Str(ClientID)))+" Is the Thread ID."
+            ;Debug Str(Threads(Str(ClientID)))+" Is the Thread ID."
             KillThread(Threads(Str(ClientID)))
             DeleteMapElement(Threads(),Str(ClientID))
             UnlockMutex(mapaccess)
-            Debug "killed thread"
-            GenLogadd("serverthread"+Str(ServerID),"THREAD","ServerID: "+Str(ServerID)+" Client disconnected. Client: "+Str(ClientID)+" Thread killed.","serverthread() - main")
+            ;Debug "killed thread"
+            ;GenLogadd("serverthread"+Str(ServerID),"THREAD","ServerID: "+Str(ServerID)+" Client disconnected. Client: "+Str(ClientID)+" Thread killed.","serverthread() - main")
             
           Case #PB_NetworkEvent_Data
             *ReceiveBuffer = AllocateMemory(65536)
@@ -105,7 +106,7 @@ Module net
             AddMapElement(Memlist(),Str(ClientID))
             Memlist(Str(ClientID)) = *ReceiveBuffer
             UnlockMutex(mapmemlis)
-            GenLogadd("serverthread"+Str(ServerID),"THREAD","ServerID: "+Str(ServerID)+" Received data from: "+Str(ClientID)+" Memory address reserved: "+*ReceiveBuffer,"serverthread() - main")
+            ;GenLogadd("serverthread"+Str(ServerID),"THREAD","ServerID: "+Str(ServerID)+" Received data from: "+Str(ClientID)+" Memory address reserved: "+*ReceiveBuffer,"serverthread() - main")
             
         EndSelect
       Else
@@ -144,9 +145,10 @@ Module net
         received$ = PeekS(memory,65536,#PB_UTF8)
         FreeMemory(memory)
         DeleteMapElement(Memlist(),Str(ClientID))
+        UnlockMutex(mapmemlis)
         message$ = StringField(received$,2,"<sep-ret*message>")
         retco$ = StringField(received$,1,"<sep-ret*message>")
-        GenLogadd("ServerThread"+Str(ClientID),"THREAD","Received data raw: "+received$+" From memory address: "+Str(memory),"ServerIndividualThread("+Str(ClientID)+")")
+        ;GenLogadd("ServerThread"+Str(ClientID),"THREAD","Received data raw: "+received$+" From memory address: "+Str(memory),"ServerIndividualThread("+Str(ClientID)+")")
     ;- custom commands section
     
    If message$ <> "" 
@@ -156,23 +158,16 @@ Module net
         
         Case "SendBuff"
         SendNetworkString(ClientID,"This should be readable")
-        GenLogadd("ServerThread"+Str(ClientID),"THREAD","Sent Client "+Str(ClientID)+" A test buffer.","ServerIndividualThread("+Str(ClientID)+")")
+        ;GenLogadd("ServerThread"+Str(ClientID),"THREAD","Sent Client "+Str(ClientID)+" A test buffer.","ServerIndividualThread("+Str(ClientID)+")")
         
       Default
-        Command$ = StringField(message$,1,"(")
+        If FindString(message$,"Math")
+          out$ = commandMath(message$)
+          ServerSend(ClientID,retco$,out$)
+        EndIf
     EndSelect
   EndIf
-  Command$ = StringField(message$,1,"(")
-  If command$ <> ""
-    Select Command$
-        Case "Client hello"
-        ServerSend(ClientID,retco$,"Server hello")
-        
-        Case "SendBuff"
-        SendNetworkString(ClientID,"This should be readable")
-        GenLogadd("ServerThread"+Str(ClientID),"THREAD","Sent Client "+Str(ClientID)+" A test buffer.","ServerIndividualThread("+Str(ClientID)+")")
-    EndSelect
-  EndIf
+
   
     ;- end of custom commands section
     message$ = ""
@@ -186,8 +181,53 @@ Module net
     Until exit = 1
   EndProcedure
   
+  Procedure.s commandMath(String$)
+    strlen = Len(String$)
+    RealMath$ = Right(String$,strlen-5)
+    totalLen = Len(RealMath$)
+    Debug String$
+    Debug RealMath$
+    do1 = FindString(RealMath$, "+")
+    do2 = FindString(RealMath$, "-")
+    do3 = FindString(RealMath$, "/")
+    do4 = FindString(RealMath$, "*")
+    
+    ;do = 2
+    
+    If do1 Or do2 Or do3 Or do4
+      do = do1+do2+do3+do4
+      first = totalLen - do
+      str2$ = Mid(RealMath$,do+1)
+      str2len = (Len(str2$)+1)-totalLen
+      str1$ = Mid(RealMath$,1,totalLen)
+      Debug str1$
+      Debug str2$
+      
+      If str1$ = ""
+        ProcedureReturn "value one has no integer value"
+      ElseIf str2$ = ""
+        ProcedureReturn "value two has no integer value"
+      EndIf
+      
+      If do1
+        ans = Val(str1$)+Val(str2$)
+      ElseIf do2
+        ans = Val(str1$)-Val(str2$)
+      ElseIf do3
+        ansd.d = Val(str1$)/Val(str2$)
+        ProcedureReturn Str(ansd.d)
+      ElseIf do4
+        ans = Val(str1$)*Val(str2$)
+      EndIf
+      ProcedureReturn Str(ans)
+    Else
+      ProcedureReturn "Unsupported"
+    EndIf
+  EndProcedure
+  
+  
   Procedure ServerSend(ClientID,retco$,message$)
-    SendNetworkString(ClientID,retco$+"<sep-ret*message>"+message$,#PB_Unicode)
+    SendNetworkString(ClientID,retco$+"<sep-ret*message>"+message$,#PB_UTF8)
   EndProcedure
   
   Procedure.s ServerExtractData(FormedMessage$)
@@ -252,7 +292,7 @@ Module net
     
     ConnectionID = OpenNetworkConnection(ConnAddress$,ConnPort)
     If ConnectionID
-      CreateThread(@clientmaster(),ClientAgent)
+      ClientLayer = CreateThread(@ClientLayer(),ClientAgent)
       Repeat
         ; send out any data so that it is possible we can get data back quicker.
         LockMutex(sendmutex)
@@ -282,31 +322,19 @@ Module net
               *ReceiveBuffer = AllocateMemory(65536)
               ReceiveNetworkData(ConnectionID,*ReceiveBuffer,65536)
               Received$ = PeekS(*ReceiveBuffer,65536,#PB_UTF8)
-              Debug Received$
-              
-              retco$ = StringField(Received$,1,"<sep-ret*message>")
-              message$ = StringField(Received$,2,"<sep-ret*message>")
-              
-            If retco$
-              LockMutex(inmutex)
-              AddElement(inbox())
-              Inbox() \ClientAgent = ClientAgent
-              Inbox() \message = Message$
-              Inbox() \returncode = retco$
-              UnlockMutex(inmutex)
-            Else
+
               LockMutex(datmutex)
               AddElement(Databox())
               Databox() \ClientAgent = ClientAgent
               Databox() \MemoryAddress = *ReceiveBuffer
               UnlockMutex(datmutex)
-            EndIf
             
             Case #PB_NetworkEvent_Disconnect
               exit = 1
               LockMutex(ClientlizMutx)
               DeleteMapElement(Clients(),Str(ClientAgent))
               UnlockMutex(ClientlizMutx)
+              KillThread(ClientLayer)
           EndSelect
         Else
           Delay(1)
@@ -322,6 +350,22 @@ Module net
     EndIf
  
   EndProcedure
+  
+  Procedure ClientLayer(ClientAgent)
+    Repeat
+      LockMutex(datmutex)
+      While NextElement(Databox())
+        memory = Databox() \MemoryAddress
+        If FindString(PeekS(memory,65536,#PB_UTF8),"<sep-ret*message>")
+          retco$ = StringField(Received$,1,"<sep-ret*message>")
+          message$ = StringField(Received$,2,"<sep-ret*message>")
+          retco$ = StringField(Received$,1,"<sep-ret*message>")
+        EndIf
+      Wend
+      Delay(5)
+    ForEver
+  EndProcedure
+  
   
   Procedure.s ClientSendDataWait(ClientAgent,String$)
     returncode$ = Str(Random(9999,0))
@@ -347,7 +391,7 @@ Module net
       If ListIndex(Inbox()) = ListSize(Inbox())
         ResetList(Inbox())
         UnlockMutex(inmutex)
-        Delay(100)
+        Delay(5)
         LockMutex(inmutex)
       EndIf
     Next
@@ -377,43 +421,13 @@ Module net
   EndProcedure
   
   
-  Procedure clientmaster(ClientAgent)
-    CreateDirectory("StreamTemp")
-    CreateDirectory("StreamTemp\"+Str(ClientAgent))
-    GenLogadd("TamalKings","THREAD","Initialized Directory: "+"StreamTemp\"+Str(ClientAgent),"clientmaster("+Str(ClientAgent)+")")
-    Repeat
-      LockMutex(ClientlizMutx)
-      If Clients(Str(ClientAgent)) \Status = 1
-        UnlockMutex(ClientlizMutx) 
-        
-      LockMutex(datmutex)
-      ForEach Databox()
-        If Databox() \ClientAgent = ClientAgent
-          OpenFile(1,"StreamTemp\"+Str(ClientAgent)+"\Stream.file",#PB_File_Append)
-          *Buff = Databox() \MemoryAddress
-          WriteData(1,*Buff,65536)
-          FreeMemory(*Buff)
-          DeleteElement(Databox())
-        EndIf
-      Next
-      UnlockMutex(datmutex)
-      Delay(5)
-      
-    Else
-      GenLogadd("TamalKings","THREAD","Client Status not 1","clientmaster("+Str(ClientAgent)+")")
-        DeleteMapElement(Clients(),Str(ClientAgent))
-        exit = 1
-      EndIf
-    Until exit = 1
-    
-  EndProcedure
   
   
 EndModule 
 
 ; IDE Options = PureBasic 5.62 (Windows - x64)
-; CursorPosition = 130
-; FirstLine = 127
-; Folding = b9-
+; CursorPosition = 357
+; FirstLine = 208
+; Folding = PY+
 ; EnableXP
 ; Executable = ServerTest.exe
